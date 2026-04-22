@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NEXO V28 - FIX FINAL</title>
+    <style>
+        :root { --cyan: #00f2ff; --pink: #ff00ff; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        
+        .escena { 
+            position: relative; width: 100vw; height: 100vh; 
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .nave-container {
+            position: relative; width: 100%; aspect-ratio: 16/9;
+            max-height: 100%;
+            transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            transform-origin: center center;
+        }
+
+        .fondo-img {
+            position: absolute; width: 100%; height: 100%;
+            background: url('2.png') no-repeat center center;
+            background-size: contain; z-index: 1; pointer-events: none; 
+        }
+
+        .hitbox { 
+            position: absolute; top: 38%; height: 42%; 
+            cursor: pointer; z-index: 1000;
+            background: rgba(0, 255, 255, 0.08); 
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        /* RECALIBRACIÓN TOTAL BASADA EN 1000087976.jpg */
+        #b1 { left: 15.2%; width: 4.2%; } /* FRESCO: Ajustado al neón verde */
+        #b2 { left: 22.2%; width: 4.8%; } /* FRÍO: Ajustado al neón rosa */
+        #b3 { left: 29.8%; width: 5.4%; } /* PANADERÍA: Ajustado al neón amarillo */
+        
+        #b4 { left: 41.5%; width: 13.2%; } /* OFERTAS: Centrado quirúrgico */
+        
+        #b5 { left: 60.8%; width: 14.5%; } /* INTELIGENTE */
+        #b6 { left: 79.5%; width: 4.8%; } /* ALMACÉN */
+        #b7 { left: 87.5%; width: 4.5%; } /* BEBIDAS */
+
+        .zoom-active { transform: scale(2.4) translate(var(--zx), var(--zy)); }
+
+        .panel { 
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%; 
+            background: rgba(5, 5, 10, 0.98); backdrop-filter: blur(15px);
+            z-index: 2000; transition: 0.5s ease; border-top: 5px solid var(--cyan);
+            padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        .panel.ver { bottom: 0; }
+        .cerrar { background: var(--pink); color: white; padding: 12px 20px; border: none; border-radius: 8px; font-weight: bold; float: right; }
+        .item { display: flex; align-items: center; border-bottom: 1px solid #222; padding: 15px 0; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="escena">
+    <div id="nave" class="nave-container">
+        <div class="fondo-img"></div>
+        <div id="b1" class="hitbox" data-zx="38%" data-zy="5%" onclick="abrir('MERCADO FRESCO', this)"></div>
+        <div id="b2" class="hitbox" data-zx="26%" data-zy="5%" onclick="abrir('ZONA DE FRÍO Y CARNES', this)"></div>
+        <div id="b3" class="hitbox" data-zx="18%" data-zy="5%" onclick="abrir('PANADERÍA Y DULCES', this)"></div>
+        <div id="b4" class="hitbox" data-zx="0%" data-zy="5%" onclick="abrir('OFERTAS DEL DÍA', this)"></div>
+        <div id="b5" class="hitbox" data-zx="0%" data-zy="5%" onclick="abrir('SECTOR INTELIGENTE', this)"></div>
+        <div id="b6" class="hitbox" data-zx="-25%" data-zy="5%" onclick="abrir('ALMACÉN GENERAL', this)"></div>
+        <div id="b7" class="hitbox" data-zx="-38%" data-zy="5%" onclick="abrir('BEBIDAS Y BODEGA', this)"></div>
+    </div>
+</div>
+
+<div id="miPanel" class="panel">
+    <button class="cerrar" onclick="cerrar()">X CERRAR</button>
+    <h2 id="tit" style="color:var(--cyan); text-transform: uppercase;">SECTOR</h2>
+    <div id="cont"></div>
+</div>
+
+<script>
+    let productos = [];
+    const csv = "https://docs.google.com/spreadsheets/d/1JjsihoO4WLUdJdW6VX6XCzlwQLkV75XtpvIrN2KAVw8/gviz/tq?tqx=out:csv";
+
+    async function cargar() {
+        try {
+            const r = await fetch(csv);
+            const t = await r.text();
+            const filas = t.split('\n').slice(1);
+            productos = filas.map(f => {
+                const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/"/g, '').trim());
+                return { n: c[0], p: c[1], i: c[2], s: c[3] };
+            }).filter(p => p.n);
+        } catch (e) { console.error("Error CSV"); }
+    }
+
+    function abrir(s, btn) {
+        const nave = document.getElementById('nave');
+        nave.style.setProperty('--zx', btn.getAttribute('data-zx'));
+        nave.style.setProperty('--zy', btn.getAttribute('data-zy'));
+        nave.classList.add('zoom-active');
+        document.getElementById('tit').innerText = s;
+        const lista = document.getElementById('cont');
+        const filtrados = productos.filter(p => p.s && p.s.toUpperCase().trim() === s.toUpperCase().trim());
+        setTimeout(() => {
+            lista.innerHTML = filtrados.length > 0 ? filtrados.map(p => `
+                <div class="item">
+                    <img src="${p.i}" style="width:70px; height:70px; border-radius:5px" onerror="this.src='https://via.placeholder.com/70'">
+                    <div style="flex:1; margin-left:15px">
+                        <div style="font-weight:bold">${p.n}</div>
+                        <div style="color:var(--cyan); font-size:1.3rem">$${p.p}</div>
+                    </div>
+                </div>`).join('') : "<p style='text-align:center; padding:40px; opacity:0.5'>SIN STOCK</p>";
+            document.getElementById('miPanel').classList.add('ver');
+        }, 450);
+    }
+
+    function cerrar() {
+        document.getElementById('miPanel').classList.remove('ver');
+        document.getElementById('nave').classList.remove('zoom-active');
+    }
+    cargar();
+</script>
+</body>
+</html>
