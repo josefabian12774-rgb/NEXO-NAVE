@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POM-POM | NEXO-NAVE</title>
+    <title>POM-POM | NAVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black text-white font-sans">
@@ -11,9 +11,9 @@
         <h1 class="text-3xl font-black italic tracking-tighter">POM-POM <span class="text-yellow-400 not-italic text-xl">NAVE</span></h1>
     </header>
     <main class="p-4 max-w-4xl mx-auto mt-10">
-        <h2 class="text-yellow-500 font-black text-2xl mb-8 uppercase italic underline decoration-red-600">Menú en Vivo</h2>
-        <div id="reactor-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center py-10">
-            <p class="animate-pulse text-slate-500 font-bold">CONECTANDO CON LA BASE DE DATOS...</p>
+        <h2 class="text-yellow-500 font-black text-2xl mb-8 uppercase italic">Menú en Vivo</h2>
+        <div id="reactor-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <p class="animate-pulse text-slate-500">CONECTANDO...</p>
         </div>
     </main>
     <script type="module">
@@ -21,7 +21,7 @@
         async function cargar() {
             const container = document.getElementById('reactor-container')
             const { data, error } = await supabase.from('productos').select('*').order('nombre')
-            if (error) { container.innerHTML = `<p class="text-red-500">${error.message}</p>`; return; }
+            if (error) { container.innerHTML = `<p>${error.message}</p>`; return; }
             container.innerHTML = data.map(item => `
                 <div class="bg-neutral-900 p-6 rounded-[2rem] border-2 border-slate-800 shadow-xl">
                     <span class="text-[10px] bg-red-600 px-2 py-1 rounded-full font-black uppercase">${item.categoria}</span>
@@ -33,26 +33,5 @@
         }
         cargar()
     </script>
-</body>
-</html>
-        setTimeout(() => {
-            lista.innerHTML = filtrados.length > 0 ? filtrados.map(p => `
-                <div class="item">
-                    <img src="${p.i}" style="width:70px; height:70px; border-radius:5px" onerror="this.src='https://via.placeholder.com/70'">
-                    <div style="flex:1; margin-left:15px">
-                        <div style="font-weight:bold">${p.n}</div>
-                        <div style="color:var(--cyan); font-size:1.3rem">$${p.p}</div>
-                    </div>
-                </div>`).join('') : "<p style='text-align:center; padding:40px; opacity:0.5'>SIN STOCK</p>";
-            document.getElementById('miPanel').classList.add('ver');
-        }, 450);
-    }
-
-    function cerrar() {
-        document.getElementById('miPanel').classList.remove('ver');
-        document.getElementById('nave').classList.remove('zoom-active');
-    }
-    cargar();
-</script>
 </body>
 </html>
