@@ -1,6 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
 const supabaseUrl = 'https://manaejtcurxbcsozqcsh.supabase.co'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hbmFlanRjdXJ4YmNzb3pxY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2MDU3NDMsImV4cCI6MjA2MTI2NTc0M30.4uU8pDbeZtY5xZpP6_y30Yx_j-Fp3n8k_h_J_6_0_0' 
+const supabaseKey = 'import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const supabaseUrl = 'https://manaejtcurxbcsozqcsh.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hbmFlanRjdXJ4YmNzb3pxY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU2MDU3NDMsImV4cCI6MjA2MTI2NTc0M30.4uU8pDbeZtY5xZpP6_y30Yx_j-Fp3n8k_h_J_6_0_0'
+
+export const supabase = createClient(supabaseUrl, supabaseKey)
+2NTc0M30.4uU8pDbeZtY5xZpP6_y30Yx_j-Fp3n8k_h_J_6_0_0' 
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
