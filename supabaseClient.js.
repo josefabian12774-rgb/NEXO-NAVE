@@ -1,7 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// Configuración de la Nave Pom-Pom
 const supabaseUrl = 'https://manaejtcurxbcsozqcsh.supabase.co'
-const supabaseKey = 'sb_public_pon_aca_tu_clave_larga' // <--- PEGA ACÁ TU CLAVE ANON
+const supabaseKey = 'sb_publishable_LTZY6uMVRCNd_K41dnw8tw_xn3XU0ko' 
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
