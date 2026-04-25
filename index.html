@@ -3,35 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POM-POM | NAVE</title>
+    <title>POMPÓN | NAVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white font-sans">
-    <header class="p-6 border-b-4 border-yellow-500 bg-red-600 sticky top-0 z-50 text-center shadow-2xl">
-        <h1 class="text-3xl font-black italic tracking-tighter">POM-POM <span class="text-yellow-400 not-italic text-xl">NAVE</span></h1>
+<body class="bg-black text-white">
+    <header class="p-6 border-b border-red-600 bg-red-600">
+        <h1 class="text-3xl font-black italic">POMPÓN <span class="text-yellow-400">NAVE</span></h1>
     </header>
-    <main class="p-4 max-w-4xl mx-auto mt-10">
-        <h2 class="text-yellow-500 font-black text-2xl mb-8 uppercase italic">Menú en Vivo</h2>
-        <div id="reactor-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <p class="animate-pulse text-slate-500">CONECTANDO...</p>
+
+    <main class="p-4 max-w-4xl mx-auto">
+        <h2 class="text-yellow-500 italic font-bold text-xl mb-4 text-center">MENÚ EN VIVO</h2>
+        <div id="contenedor-menu" class="grid grid-cols-1 gap-4">
+            <div id="loading" class="text-gray-400">CONECTANDO...</div>
         </div>
     </main>
-    <script type="module">
-        import { supabase } from './supabaseClient.js'
-        async function cargar() {
-            const container = document.getElementById('reactor-container')
-            const { data, error } = await supabase.from('productos').select('*').order('nombre')
-            if (error) { container.innerHTML = `<p>${error.message}</p>`; return; }
-            container.innerHTML = data.map(item => `
-                <div class="bg-neutral-900 p-6 rounded-[2rem] border-2 border-slate-800 shadow-xl">
-                    <span class="text-[10px] bg-red-600 px-2 py-1 rounded-full font-black uppercase italic">${item.categoria}</span>
-                    <h3 class="text-2xl font-black mt-2 italic">${item.nombre}</h3>
-                    <p class="text-slate-500 text-sm my-4">${item.descripcion || 'Especialidad Pom-Pom'}</p>
-                    <div class="text-4xl font-black text-yellow-400 font-mono italic">$${item.precio}</div>
-                </div>
-            `).join('')
-        }
-        cargar()
-    </script>
+
+    <script type="module" src="supabaseClient.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
