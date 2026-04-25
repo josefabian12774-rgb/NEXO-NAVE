@@ -24,10 +24,10 @@
             if (error) { container.innerHTML = `<p>${error.message}</p>`; return; }
             container.innerHTML = data.map(item => `
                 <div class="bg-neutral-900 p-6 rounded-[2rem] border-2 border-slate-800 shadow-xl">
-                    <span class="text-[10px] bg-red-600 px-2 py-1 rounded-full font-black uppercase">${item.categoria}</span>
+                    <span class="text-[10px] bg-red-600 px-2 py-1 rounded-full font-black uppercase italic">${item.categoria}</span>
                     <h3 class="text-2xl font-black mt-2 italic">${item.nombre}</h3>
                     <p class="text-slate-500 text-sm my-4">${item.descripcion || 'Especialidad Pom-Pom'}</p>
-                    <div class="text-4xl font-black text-yellow-400 font-mono">$${item.precio}</div>
+                    <div class="text-4xl font-black text-yellow-400 font-mono italic">$${item.precio}</div>
                 </div>
             `).join('')
         }
