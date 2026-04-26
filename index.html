@@ -3,150 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POMPÓN NAVE v2.0</title>
+    <title>NEXO NAVE - COMMAND CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        
         body { 
             background: #000;
-            background-image: radial-gradient(circle at center, #2b0d02 0%, #000 100%);
+            background-image: 
+                radial-gradient(circle at center, rgba(120, 30, 0, 0.3) 0%, transparent 70%),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
             color: #fff; font-family: 'Orbitron', sans-serif;
             height: 100vh; margin: 0; overflow: hidden;
         }
 
-        /* EFECTO DE ESCANEO REAL */
-        .overlay {
+        /* EFECTO HUD PROFESIONAL */
+        .scanlines {
             position: fixed; inset: 0; pointer-events: none; z-index: 100;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-                        repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 69, 0, 0.03) 2px);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
         }
 
-        /* REACTOR CENTRAL DE COMBUSTIÓN */
-        .reactor-main {
-            position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
+        /* REACTOR CENTRAL - ESTÉTICA INDUSTRIAL */
+        .reactor-wrap {
+            position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
             width: 320px; height: 320px;
         }
 
-        .ring-fire {
+        .outer-ring {
             position: absolute; inset: 0;
             border: 4px solid transparent; border-top: 4px solid #ff4500; border-bottom: 4px solid #ff4500;
             border-radius: 50%; animation: spin 3s linear infinite;
-            filter: drop-shadow(0 0 25px #ff4500);
+            filter: drop-shadow(0 0 20px #ff4500);
         }
 
-        .ring-structure {
+        .inner-chassis {
             position: absolute; inset: 25px;
-            background: rgba(15, 15, 15, 0.9);
-            border: 8px solid #1a1a1a; border-radius: 50%;
-            box-shadow: inset 0 0 60px #000, 0 0 30px rgba(255, 69, 0, 0.5);
+            background: conic-gradient(from 0deg, #111, #333, #111, #333, #111);
+            border: 2px solid #444; border-radius: 50%;
+            box-shadow: inset 0 0 50px #000, 0 0 30px rgba(255,69,0,0.4);
             display: flex; align-items: center; justify-content: center;
         }
 
-        .core-chicken {
-            width: 150px; filter: drop-shadow(0 0 30px #ff4500);
-            animation: pulse 2s infinite ease-in-out;
+        .core-asset {
+            width: 140px; filter: drop-shadow(0 0 25px #ff4500);
+            animation: breathe 2s infinite ease-in-out;
         }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); filter: brightness(1) drop-shadow(0 0 20px #ff4500); } 50% { transform: scale(1.05); filter: brightness(1.3) drop-shadow(0 0 40px #ff4500); } }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.1); opacity: 1; } }
 
-        /* TARJETAS HUD (IGUALES A LA FOTO) */
+        /* TARJETAS HUD FLOTANTES - COPIA FIEL DE LA FOTO */
         .hud-card {
-            position: absolute; width: 160px;
-            background: rgba(20, 20, 20, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 69, 0, 0.2);
-            border-left: 5px solid #ff3c00;
-            padding: 15px;
-            clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            transition: 0.3s;
+            position: absolute; width: 170px;
+            background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid #ff2200;
+            padding: 15px; clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
         }
 
-        .c-tl { top: -20px; left: -110px; } /* PARRILLADA */
-        .c-tr { top: -20px; right: -110px; } /* MILANESA */
-        .c-bl { bottom: -20px; left: -110px; } /* EMPANADAS */
-        .c-br { bottom: -20px; right: -110px; } /* BEBIDAS */
+        .c-1 { top: -20px; left: -120px; }  /* EMPANADAS */
+        .c-2 { top: -20px; right: -120px; } /* SIDES */
+        .c-3 { bottom: -10px; left: -120px; } /* PIZZAS */
+        .c-4 { bottom: -10px; right: -120px; } /* DIPS */
 
-        .t-sector { font-size: 7px; color: #ffae00; font-weight: 900; letter-spacing: 2px; }
-        .t-name { font-size: 10px; font-weight: 900; margin: 4px 0; color: #fff; text-transform: uppercase; }
-        .t-price { color: #ffcc00; font-size: 18px; font-weight: 900; font-style: italic; }
+        .node-label { font-size: 7px; color: #ffae00; letter-spacing: 2px; font-weight: 900; }
+        .node-name { font-size: 10px; font-weight: 900; margin: 3px 0; text-transform: uppercase; color: #fff; }
+        .node-price { color: #ffcc00; font-size: 18px; font-weight: 900; font-style: italic; }
 
-        /* MATRIZ DE BEBIDAS */
-        .fuel-grid {
-            position: fixed; bottom: 100px; width: 100%;
+        /* BEBIDAS: CELDAS DE ENERGÍA */
+        .power-grid {
+            position: fixed; bottom: 90px; width: 100%;
             display: flex; justify-content: center; gap: 20px;
         }
-        .fuel-unit {
-            width: 80px; height: 45px; border: 1px solid #333;
-            background: #080808; position: relative; overflow: hidden;
+        .cell {
+            width: 80px; height: 45px; border: 1px solid #333; background: #080808;
+            position: relative; overflow: hidden;
         }
-        .fuel-bar {
+        .charge {
             position: absolute; bottom: 0; width: 100%;
             background: linear-gradient(0deg, #800, #ff4500);
-            animation: fuel-charge 3s infinite alternate;
+            animation: charging 3s infinite ease-in-out;
         }
-        .fuel-txt {
+        .cell-text {
             position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
             font-size: 9px; font-weight: 900; color: #fff; text-shadow: 0 0 5px #000;
         }
 
-        @keyframes fuel-charge { from { height: 20%; } to { height: 90%; } }
+        @keyframes charging { 0%, 100% { height: 30%; } 50% { height: 85%; } }
 
-        /* NAV HUD */
+        /* NAV FINAL */
         nav {
             position: fixed; bottom: 0; width: 100%;
             display: flex; justify-content: space-around; padding: 25px;
-            background: rgba(5, 5, 5, 0.95); border-top: 2px solid #222;
+            background: rgba(5,5,5,0.98); border-top: 1px solid #222;
             font-size: 12px; font-weight: 900;
         }
-        .active { color: #ff3c00; text-shadow: 0 0 15px #ff3c00; }
+        .active { color: #ff2200; text-shadow: 0 0 15px #ff2200; }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
+    <div class="scanlines"></div>
 
-    <header class="p-8 text-center relative z-50">
+    <header class="p-8 text-center">
         <h1 class="text-3xl font-black italic tracking-tighter uppercase">POMPÓN <span class="text-red-600">NAVE</span></h1>
-        <p class="text-[8px] text-zinc-500 tracking-[8px] mt-1">COMMAND TERMINAL // RIO GRANDE</p>
+        <p class="text-[8px] text-zinc-500 tracking-[8px] mt-2">NEXO ARQUETIPO // RIO GRANDE</p>
     </header>
 
-    <div class="reactor-main">
-        <div class="ring-fire"></div>
-        <div class="ring-structure">
-            <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="core-chicken" alt="CORE">
+    <div class="reactor-wrap">
+        <div class="outer-ring"></div>
+        <div class="inner-chassis">
+            <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="core-asset" alt="POLLO">
         </div>
 
-        <div class="hud-card c-tl">
-            <div class="t-sector">SEC: PARRILLA</div>
-            <div class="t-name">PARRILLADA COMPLETA</div>
-            <div class="t-price">$12.500</div>
+        <div class="hud-card c-1">
+            <div class="node-label">SEC: EMPANADAS</div>
+            <div class="node-name">GOURMET EMPANADAS</div>
+            <div class="node-price">$8.000</div>
         </div>
 
-        <div class="hud-card c-tr">
-            <div class="t-sector">SEC: SANDWICH</div>
-            <div class="t-name">MILANESA NAVE</div>
-            <div class="t-price">$5.800</div>
+        <div class="hud-card c-2">
+            <div class="node-label">SEC: SIDES</div>
+            <div class="node-name">CRISPY POTATOES</div>
+            <div class="node-price">$2.500</div>
         </div>
 
-        <div class="hud-card c-bl">
-            <div class="t-sector">SEC: MASAS</div>
-            <div class="t-name">DOCENA EMPANADAS</div>
-            <div class="t-price">$8.000</div>
+        <div class="hud-card c-3">
+            <div class="node-label">SEC: PIZZAS</div>
+            <div class="node-name">ARTISAN PIZZAS</div>
+            <div class="node-price">$4.200</div>
         </div>
 
-        <div class="hud-card c-br">
-            <div class="t-sector">SEC: EXTRAS</div>
-            <div class="t-name">DIPS & SALSAS</div>
-            <div class="t-price">$600</div>
+        <div class="hud-card c-4">
+            <div class="node-label">SEC: DIPS</div>
+            <div class="node-name">PREMIUM DIPS</div>
+            <div class="node-price">$600</div>
         </div>
     </div>
 
-    <div class="fuel-grid">
-        <div class="fuel-unit"><div class="fuel-bar" style="animation-delay: 0s;"></div><div class="fuel-txt">QUILMES</div></div>
-        <div class="fuel-unit"><div class="fuel-bar" style="animation-delay: 1s;"></div><div class="fuel-txt">GASEOSA</div></div>
-        <div class="fuel-unit"><div class="fuel-bar" style="animation-delay: 2s;"></div><div class="fuel-txt">VINO</div></div>
+    <div class="power-grid">
+        <div class="cell"><div class="charge" style="animation-delay: 0s;"></div><div class="cell-text">QUILMES</div></div>
+        <div class="cell"><div class="charge" style="animation-delay: 1s;"></div><div class="cell-text">GASEOSA</div></div>
+        <div class="cell"><div class="charge" style="animation-delay: 2s;"></div><div class="cell-text">VINO CORE</div></div>
     </div>
 
     <nav>
