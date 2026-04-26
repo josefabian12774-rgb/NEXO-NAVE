@@ -5,125 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POMPÓN NAVE v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; margin: 0; height: 100vh; overflow: hidden; }
         
-        /* CABECERA */
-        header { text-align: center; padding: 20px; }
-        .titulo { font-style: italic; font-weight: 900; font-size: 1.8rem; text-transform: uppercase; }
-        .titulo span { color: #ff4500; text-shadow: 0 0 10px #ff4500; }
+        /* FONDO TECNOLÓGICO */
+        .bg-tech { position: fixed; inset: 0; background: radial-gradient(circle at center, #200, #000); z-index: -1; }
 
-        /* EL REACTOR CENTRAL */
-        .escena { position: relative; height: 350px; display: flex; align-items: center; justify-content: center; margin-top: 20px; }
+        /* REACTOR CENTRAL */
+        .reactor-box { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; }
         
-        .reactor-main { position: relative; width: 220px; height: 220px; z-index: 10; }
-        
-        .anillo-externo {
-            position: absolute; width: 100%; height: 100%;
-            border: 4px solid transparent; border-top: 4px solid #ff4500; border-bottom: 4px solid #ff4500;
-            border-radius: 50%; animation: girar 4s linear infinite;
-            box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+        .anillo-fuego {
+            position: absolute; inset: 0; border: 4px solid transparent;
+            border-top: 4px solid #ff4500; border-bottom: 4px solid #ff4500;
+            border-radius: 50%; animation: spin 3s linear infinite;
+            filter: drop-shadow(0 0 15px #ff4500);
         }
-
-        .anillo-marcas {
-            position: absolute; width: 85%; height: 85%; top: 7.5%; left: 7.5%;
-            border: 2px dashed #ffae00; border-radius: 50%; opacity: 0.4;
-            animation: girar-reves 15s linear infinite;
-        }
-
-        .nucleo {
-            position: absolute; width: 70%; height: 70%; top: 15%; left: 15%;
-            background: radial-gradient(circle, #441100 0%, #000 80%);
-            border: 2px solid #333; border-radius: 50%;
+        
+        .anillo-metal {
+            position: absolute; inset: 20px; border: 8px solid #222;
+            border-radius: 50%; box-shadow: inset 0 0 20px #000, 0 0 10px #444;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: inset 0 0 30px #ff4500;
         }
 
-        .nucleo img { width: 80%; filter: drop-shadow(0 0 10px #ff4500); }
+        .pollo-core { width: 100px; height: 100px; background: url('https://i.ibb.co/6R0n7Y0/pollo-reactor.png') no-repeat center; background-size: contain; filter: drop-shadow(0 0 20px #ff4500); }
 
-        @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes girar-reves { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* TARJETAS FLOTANTES */
-        .tarjeta-flotante {
-            position: absolute; background: rgba(20, 20, 20, 0.9);
-            border: 1px solid rgba(255, 69, 0, 0.3); padding: 10px;
-            border-radius: 8px; width: 140px; box-shadow: 0 0 15px rgba(255, 69, 0, 0.2);
-            font-size: 0.7rem; z-index: 20;
+        /* TARJETAS HUD */
+        .hud-card {
+            position: absolute; width: 150px; background: rgba(0,0,0,0.8);
+            border: 1px solid #444; border-left: 4px solid #ff4500;
+            padding: 10px; clip-path: polygon(0 0, 90% 0, 100% 20%, 100% 100%, 0 100%);
         }
+        
+        .pos-1 { top: -20px; left: -100px; } /* Empanadas */
+        .pos-2 { bottom: -20px; left: -100px; } /* Pizzas */
+        .pos-3 { top: -20px; right: -100px; } /* Platos */
+        .pos-4 { bottom: -20px; right: -100px; } /* Bebidas */
 
-        .t-empanadas { top: 10%; left: 5%; }
-        .t-pizzas { bottom: 10%; left: 5%; }
-        .t-bebidas { top: 10%; right: 5%; }
-        .t-dips { bottom: 10%; right: 5%; }
+        .label { font-size: 8px; color: #888; text-transform: uppercase; }
+        .name { font-size: 10px; font-weight: 900; margin: 2px 0; }
+        .price { color: #ffcc00; font-size: 14px; font-weight: 900; font-style: italic; }
 
-        .precio { color: #ffae00; font-weight: 900; font-size: 0.9rem; display: block; margin-top: 5px; }
-
-        /* NAVEGACIÓN INFERIOR */
-        nav {
-            position: fixed; bottom: 0; width: 100%; background: #0a0a0a;
-            display: flex; justify-content: space-around; padding: 15px;
-            border-top: 1px solid #333; font-size: 0.6rem; color: #666;
-        }
-        .nav-item.active { color: #ff4500; text-shadow: 0 0 5px #ff4500; }
+        /* NAVBAR */
+        nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 15px; background: #050505; border-top: 1px solid #222; font-size: 10px; }
+        .active { color: #ff4500; text-shadow: 0 0 8px #ff4500; }
     </style>
 </head>
 <body>
-
-    <header>
-        <div class="titulo italic">POMPÓN <span>NAVE</span> <small class="text-[10px] block text-zinc-500">v2.0</small></div>
+    <div class="bg-tech"></div>
+    
+    <header class="text-center p-6">
+        <h1 class="text-2xl font-black italic tracking-tighter">POMPÓN <span class="text-red-600">NAVE</span></h1>
     </header>
 
-    <div class="escena">
-        <div class="tarjeta-flotante t-empanadas">
-            <div class="text-zinc-400">EMPANADAS</div>
-            <div class="font-bold">DOCENA MIXTA</div>
-            <span class="precio">$8000</span>
+    <div class="reactor-box">
+        <div class="anillo-fuego"></div>
+        <div class="anillo-metal">
+            <div class="pollo-core"></div>
         </div>
 
-        <div class="tarjeta-flotante t-pizzas">
-            <div class="text-zinc-400">PIZZAS</div>
-            <div class="font-bold">MUZZA NAVE</div>
-            <span class="precio">$4200</span>
+        <div class="hud-card pos-1">
+            <div class="label">Sector: Empanadas</div>
+            <div class="name">DOCENA MIXTA</div>
+            <div class="price">$8000</div>
         </div>
 
-        <div class="reactor-main">
-            <div class="anillo-externo"></div>
-            <div class="anillo-marcas"></div>
-            <div class="nucleo">
-                <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" alt="Pollo">
-            </div>
-            <div class="absolute -bottom-8 w-full text-center text-[8px] text-orange-500 font-bold tracking-[4px]">FLAVOR REACTOR</div>
+        <div class="hud-card pos-2">
+            <div class="label">Sector: Pizzas</div>
+            <div class="name">MUZZA NAVE</div>
+            <div class="price">$4200</div>
         </div>
 
-        <div class="tarjeta-flotante t-bebidas">
-            <div class="text-zinc-400">BEBIDAS</div>
-            <div class="font-bold">QUILMES 1L</div>
-            <span class="precio">$3200</span>
+        <div class="hud-card pos-3">
+            <div class="label">Sector: Platos</div>
+            <div class="name">POLLO PARRILLA</div>
+            <div class="price">$5500</div>
         </div>
 
-        <div class="tarjeta-flotante t-dips">
-            <div class="text-zinc-400">DIPS</div>
-            <div class="font-bold">GARLIC AIOLI</div>
-            <span class="precio">$600</span>
+        <div class="hud-card pos-4">
+            <div class="label">Sector: Bebidas</div>
+            <div class="name">CERVEZA 1L</div>
+            <div class="price">$3200</div>
         </div>
     </div>
 
     <nav>
-        <div class="nav-item active text-center">
-            <div class="mb-1">🔥</div>IGNITION
-        </div>
-        <div class="nav-item text-center">
-            <div class="mb-1">⬢</div>ORBIT
-        </div>
-        <div class="nav-item text-center">
-            <div class="mb-1">👤</div>PILOT
-        </div>
-        <div class="nav-item text-center">
-            <div class="mb-1">🛒</div>SUPPLY
-        </div>
+        <div class="active">IGNITION</div>
+        <div>ORBIT</div>
+        <div>PILOT</div>
+        <div>SUPPLY</div>
     </nav>
-
 </body>
 </html>
