@@ -1,35 +1,32 @@
 const panel = document.getElementById('contenedor-menu');
 
-// DATOS DE PRUEBA PARA VER EL DISEÑO YA MISMO
-const platosEjemplo = [
-    { nombre: "Pollo a la Parrilla", precio: "5500", categoria: "platos" },
-    { nombre: "Empanadas Salteñas (Docena)", precio: "8000", categoria: "empanadas" },
-    { nombre: "Cerveza Quilmes 1L", precio: "3000", categoria: "bebidas" }
+// Simulamos los datos para que veas cómo queda
+const menuEjemplo = [
+    { nombre: "Pollo a la Parrilla", precio: "5500", cat: "PLATOS" },
+    { nombre: "Sándwich de Milanesa", precio: "4800", cat: "PLATOS" },
+    { nombre: "Empanada de Carne", precio: "800", cat: "EMPANADAS" },
+    { nombre: "Empanada de Jamón y Queso", precio: "800", cat: "EMPANADAS" },
+    { nombre: "Cerveza 1L", precio: "3200", cat: "BEBIDAS" },
+    { nombre: "Gaseosa 1.5L", precio: "2500", cat: "BEBIDAS" }
 ];
 
-function dibujarMenu(datos) {
-    panel.innerHTML = `
-        <div class="flex justify-center my-8">
-            <div class="w-32 h-32 rounded-full border-4 border-red-600 flex items-center justify-center bg-zinc-900 shadow-[0_0_20px_rgba(220,38,38,0.5)]">
-                <span class="text-red-600 font-black text-2xl tracking-tighter">NAVE</span>
-            </div>
-        </div>
-
-        <div class="grid gap-6">
-            ${datos.map(p => `
-                <div class="bg-zinc-900 p-4 rounded-xl border-l-8 border-red-600 shadow-xl transform transition hover:scale-105">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <span class="text-xs text-zinc-500 uppercase font-bold">${p.categoria}</span>
-                            <h3 class="font-bold text-xl uppercase tracking-tight text-white">${p.nombre}</h3>
-                        </div>
-                        <span class="text-3xl font-black text-yellow-500 tracking-tighter">$${p.precio}</span>
+function mostrarEstructura() {
+    // Agrupamos por categoría
+    const categorias = ["PLATOS", "EMPANADAS", "BEBIDAS"];
+    
+    panel.innerHTML = categorias.map(cat => `
+        <section>
+            <h2 class="text-red-600 font-bold tracking-widest text-sm mb-4 border-l-4 border-red-600 pl-2 uppercase">${cat}</h2>
+            <div class="grid gap-3">
+                ${menuEjemplo.filter(i => i.cat === cat).map(p => `
+                    <div class="bg-zinc-900 p-4 rounded-lg flex justify-between items-center border border-zinc-800 shadow-lg">
+                        <span class="font-bold uppercase text-sm">${p.nombre}</span>
+                        <span class="text-yellow-500 font-black text-xl">$${p.precio}</span>
                     </div>
-                </div>
-            `).join('')}
-        </div>
-    `;
+                `).join('')}
+            </div>
+        </section>
+    `).join('');
 }
 
-// Ejecutamos el dibujo con los ejemplos para que veas el diseño
-dibujarMenu(platosEjemplo);
+mostrarEstructura();
