@@ -1,32 +1,34 @@
 const panel = document.getElementById('contenedor-menu');
 
-// Simulamos los datos para que veas cómo queda
-const menuEjemplo = [
-    { nombre: "Pollo a la Parrilla", precio: "5500", cat: "PLATOS" },
-    { nombre: "Sándwich de Milanesa", precio: "4800", cat: "PLATOS" },
-    { nombre: "Empanada de Carne", precio: "800", cat: "EMPANADAS" },
-    { nombre: "Empanada de Jamón y Queso", precio: "800", cat: "EMPANADAS" },
-    { nombre: "Cerveza 1L", precio: "3200", cat: "BEBIDAS" },
-    { nombre: "Gaseosa 1.5L", precio: "2500", cat: "BEBIDAS" }
+// Categorías según la nota guardada
+const categorias = ["PLATOS", "EMPANADAS", "PIZZAS", "DIPS", "BEBIDAS"];
+
+// Datos de prueba para verificar el visual antes de conectar Supabase
+const items = [
+    { n: "POLLO A LA PARRILLA", p: "5500", d: "Con papas rústicas y aderezo", c: "PLATOS" },
+    { n: "SÁNDWICH DE MILANESA", p: "4800", d: "Completo con papas", c: "PLATOS" },
+    { n: "EMPANADA DE CARNE", p: "800", d: "Picante o suave", c: "EMPANADAS" },
+    { n: "ARTISAN PIZZAS", p: "4200", d: "Margherita clásica con albahaca", c: "PIZZAS" },
+    { n: "PREMIUM DIPS", p: "600", d: "Garlic Aioli cremosa", c: "DIPS" },
+    { n: "CERVEZA 1L", p: "3200", d: "Quilmes o Brahma", c: "BEBIDAS" }
 ];
 
-function mostrarEstructura() {
-    // Agrupamos por categoría
-    const categorias = ["PLATOS", "EMPANADAS", "BEBIDAS"];
-    
+function dibujar() {
     panel.innerHTML = categorias.map(cat => `
-        <section>
-            <h2 class="text-red-600 font-bold tracking-widest text-sm mb-4 border-l-4 border-red-600 pl-2 uppercase">${cat}</h2>
-            <div class="grid gap-3">
-                ${menuEjemplo.filter(i => i.cat === cat).map(p => `
-                    <div class="bg-zinc-900 p-4 rounded-lg flex justify-between items-center border border-zinc-800 shadow-lg">
-                        <span class="font-bold uppercase text-sm">${p.nombre}</span>
-                        <span class="text-yellow-500 font-black text-xl">$${p.precio}</span>
+        <div class="mb-6">
+            <h2 class="text-red-600 font-bold italic tracking-tighter text-xl mb-3 uppercase border-b border-red-900/30">${cat}</h2>
+            <div class="grid gap-4">
+                ${items.filter(i => i.c === cat).map(plato => `
+                    <div class="tarjeta-plato p-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold text-lg leading-tight uppercase">${plato.n}</h3>
+                            <p class="text-zinc-500 text-xs italic">${plato.d}</p>
+                        </div>
+                        <div class="text-2xl font-black text-yellow-500 italic">$${plato.p}</div>
                     </div>
                 `).join('')}
             </div>
-        </section>
+        </div>
     `).join('');
 }
-
-mostrarEstructura();
+dibujar();
