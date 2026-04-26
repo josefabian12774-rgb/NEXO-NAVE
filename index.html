@@ -3,51 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POMPÓN NAVE - MENU</title>
+    <title>POMPÓN NAVE - REACTOR</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000; font-family: 'sans-serif'; }
-        .titulo-nave { font-style: italic; font-weight: 900; letter-spacing: -1px; }
-        .reactor-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 20px auto;
-            border: 2px solid #555;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(220,38,38,0.2) 0%, rgba(0,0,0,1) 70%);
+        body { background-color: #000; color: white; font-family: sans-serif; }
+        .titulo-nave { font-style: italic; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+        
+        /* EL REACTOR QUE GIRA (HECHO CON PURO CÓDIGO) */
+        .reactor-wrap {
+            position: relative; width: 160px; height: 160px; margin: 20px auto;
             display: flex; align-items: center; justify-content: center;
         }
-        .anillo-brillante {
-            position: absolute;
-            width: 110%; height: 110%;
-            border: 3px solid #dc2626;
-            border-radius: 50%;
-            box-shadow: 0 0 20px #dc2626, inset 0 0 20px #dc2626;
-            opacity: 0.6;
+        .anillo-giratorio {
+            position: absolute; width: 100%; height: 100%;
+            border: 4px dashed #ff4500; border-radius: 50%;
+            animation: girar 8s linear infinite;
+            box-shadow: 0 0 15px #ff4500;
         }
-        .tarjeta-plato {
-            background: linear-gradient(145deg, #18181b, #09090b);
-            border-left: 5px solid #dc2626;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        .centro-reactor {
+            width: 70%; height: 70%; background: radial-gradient(circle, #333, #000);
+            border-radius: 50%; border: 2px solid #555;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+        }
+        @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* TARJETAS ESTILO NAVE */
+        .tarjeta {
+            background: #111; border-left: 5px solid #ff4500;
+            padding: 15px; border-radius: 4px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
         }
     </style>
 </head>
-<body class="text-white p-4">
-    <header class="text-center mb-4">
-        <h1 class="text-4xl titulo-nave uppercase">POMPÓN <span class="text-red-600">NAVE</span></h1>
-        <div class="h-1 w-full bg-gradient-to-r from-transparent via-red-600 to-transparent mt-2"></div>
+<body class="p-4">
+    <header class="text-center border-b border-zinc-800 pb-4">
+        <h1 class="text-3xl titulo-nave">POMPÓN <span class="text-orange-600">NAVE</span></h1>
     </header>
 
-    <div class="reactor-container">
-        <div class="anillo-brillante"></div>
-        <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" alt="Reactor" class="w-32 z-10">
-        <div class="absolute bottom-4 text-red-600 font-black tracking-widest text-xs">FLAVOR REACTOR</div>
+    <div class="reactor-wrap">
+        <div class="anillo-giratorio"></div>
+        <div class="centro-reactor">
+            <div class="text-[10px] font-bold text-orange-500 tracking-tighter">FLAVOR</div>
+            <div class="text-lg font-black italic">NAVE</div>
+        </div>
     </div>
 
-    <div id="contenedor-menu" class="max-w-md mx-auto space-y-8 pb-20">
+    <div id="menu-real" class="max-w-md mx-auto">
         </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>
