@@ -3,17 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MENU NAVE</title>
+    <title>MENU POMPÓN NAVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .circulo-central {
+            width: 120px;
+            height: 120px;
+            border: 4px solid #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            background: #18181b;
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+        }
+    </style>
 </head>
-<body class="bg-black text-white p-5">
-    <header class="border-b-4 border-red-600 bg-zinc-900 p-4 mb-6 text-center">
-        <h1 class="text-4xl font-black italic uppercase italic">POMPÓN <span class="text-red-600">NAVE</span></h1>
+<body class="bg-black text-white p-4 font-sans">
+    <header class="text-center py-4 border-b border-zinc-800">
+        <h1 class="text-3xl font-black italic">POMPÓN <span class="text-red-600">NAVE</span></h1>
     </header>
-    <div id="contenedor-menu" class="grid gap-4 max-w-md mx-auto text-center">
-        <p class="animate-pulse">CARGANDO MENÚ...</p>
+
+    <div class="circulo-central">
+        <span class="text-red-600 font-black text-xl italic text-center leading-none">NAVE<br><small class="text-white text-[10px]">MENU</small></span>
     </div>
-    <script type="module" src="supabaseClient.js"></script>
+
+    <div id="contenedor-menu" class="max-w-md mx-auto space-y-8">
+        <p class="text-center text-zinc-600 italic">Cargando estructura visual...</p>
+    </div>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>
