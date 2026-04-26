@@ -3,141 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POMPÓN NAVE v2.0</title>
+    <title>CLI-O TERMINAL: POMPÓN NAVE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        body { background: #050505; color: #0f0; font-family: 'Share Tech Mono', monospace; overflow: hidden; }
         
-        /* CABECERA (HUD TOP) */
-        .header-hud { text-align: center; padding: 20px 0; border-bottom: 2px solid #333; background: rgba(10,10,10,0.9); }
-        .titulo { font-style: italic; font-weight: 900; font-size: 2rem; letter-spacing: -2px; }
-        .titulo span { color: #ff0000; text-shadow: 0 0 15px #ff0000; }
+        /* SCANLINES EFECTO NAVE VIEJA */
+        body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
 
-        /* ESCENA CENTRAL DEL REACTOR - POSICIONAMIENTO ABSOLUTO */
-        .scene { position: relative; height: 350px; display: flex; align-items: center; justify-content: center; margin-top: 40px; }
+        /* EL REACTOR DE COMBUSTIÓN (EL POLLO) */
+        .reactor-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 280px; height: 280px; border: 2px solid #0f0; border-radius: 50%; box-shadow: 0 0 20px #0f0; animation: pulse 2s infinite; }
+        .radar-line { position: absolute; top: 50%; left: 50%; width: 50%; height: 2px; background: #0f0; transform-origin: left center; animation: radar 4s linear infinite; }
         
-        .reactor-main { position: relative; width: 220px; height: 220px; z-index: 10; }
+        @keyframes radar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 10px #0f0; } 50% { box-shadow: 0 0 30px #0f0; } 100% { box-shadow: 0 0 10px #0f0; } }
+
+        /* MÓDULOS DE PLATOS (ESTRUCTURA HÍBRIDA) */
+        .module { position: absolute; border: 1px solid #0f0; padding: 10px; background: rgba(0, 20, 0, 0.8); width: 160px; text-transform: uppercase; }
+        .module::before { content: "SYS_ACTIVE"; font-size: 8px; position: absolute; top: -12px; left: 0; }
         
-        /* GIRO MECÁNICO COMPLEJO */
-        .anillo-fuego {
-            position: absolute; inset: 0; border: 4px solid transparent;
-            border-top: 4px solid #ff4500; border-bottom: 4px solid #ff4500;
-            border-radius: 50%; animation: girar-fuego 3s linear infinite;
-            filter: drop-shadow(0 0 15px #ff4500);
-        }
-        
-        .anillo-datos {
-            position: absolute; inset: 15px; border: 1px dashed #ffae00;
-            border-radius: 50%; animation: girar-datos 12s linear infinite; opacity: 0.3;
-        }
+        .m-1 { top: 5%; left: 5%; border-left: 10px solid #0f0; } /* PARRILLADA */
+        .m-2 { top: 5%; right: 5%; border-right: 10px solid #0f0; } /* MILANESA */
+        .m-3 { bottom: 15%; left: 5%; border-left: 10px solid #0f0; } /* EMPANADAS */
 
-        .nucleo {
-            position: absolute; inset: 30px; background: radial-gradient(circle, #300, #000);
-            border: 3px solid #444; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; overflow: hidden;
-            box-shadow: inset 0 0 40px #ff4500;
-        }
-        /* CENTRO: POLLO A LA PARRILLA */
-        .nucleo img { width: 75%; filter: drop-shadow(0 0 20px #ff4500); transform: scale(1.1); }
-
-        @keyframes girar-fuego { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes girar-datos { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-
-        /* TARJETAS HUD FLOTANTES (RECREANDO image_26.png) */
-        .card-hud {
-            position: absolute; width: 145px; background: rgba(15,15,15,0.95);
-            border-left: 5px solid #ff0000; padding: 12px;
-            clip-path: polygon(0 0, 90% 0, 100% 15%, 100% 100%, 0 100%);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); transition: 0.3s;
-        }
-        .card-hud:hover { transform: scale(1.05); border-left: 5px solid #ffae00; box-shadow: 0 0 25px rgba(255, 174, 0, 0.4); }
-        
-        /* ALREDEDOR: PARRILLADA, MILANESA, EMPANADAS */
-        .pos-tl { top: -20px; left: -100px; } /* Parrillada */
-        .pos-tr { top: -20px; right: -100px; } /* Milanesa */
-        .pos-bl { bottom: -20px; left: -100px; } /* Empanadas */
-        .pos-br { bottom: -20px; right: -100px; } /* (Espacio extra o Dips) */
-
-        .hud-sector { font-size: 7px; color: #ffae00; font-weight: 900; }
-        .hud-name { font-size: 9px; font-weight: 900; margin: 3px 0; text-transform: uppercase; font-style: italic; }
-        .hud-price { color: #ffcc00; font-size: 14px; font-weight: 900; font-style: italic; tracking: -1px; }
-
-        /* SECCIÓN CREATIVA: BEBIDAS (FUEL MATRIX) */
-        .fuel-matrix {
-            position: fixed; bottom: 80px; width: 100%; display: flex; 
-            justify-content: center; gap: 20px; padding: 0 20px;
-        }
-        .fuel-slot { width: 70px; height: 45px; border: 1px solid #333; position: relative; background: #080808; overflow: hidden; }
-        .fuel-bar { position: absolute; bottom: 0; width: 100%; background: linear-gradient(180deg, #ff4500, #900); animation: fuel-charge 2s infinite ease-out; }
-        .fuel-label { position: absolute; top: -14px; width: 100%; text-align: center; font-size: 6px; color: #888; font-weight: bold; text-transform: uppercase; }
-        .fuel-price { position: absolute; inset: 0; display: flex; items-center; justify-content: center; font-size: 10px; font-weight: 900; text-shadow: 0 0 5px #000; }
-
-        @keyframes fuel-charge { 0% { height: 10%; } 50% { height: 90%; } 100% { height: 10%; } }
-
-        /* NAVBAR INFERIOR */
-        nav { position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 20px; background: #050505; border-top: 2px solid #222; font-size: 9px; }
-        .active { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        /* BEBIDAS: MATRIZ DE COMBUSTIBLE */
+        .fuel-matrix { position: fixed; bottom: 0; width: 100%; height: 60px; border-top: 1px solid #0f0; display: flex; align-items: center; justify-content: space-around; background: #000; font-size: 10px; }
+        .fuel-cell { border: 1px solid #0f0; padding: 5px 10px; cursor: pointer; }
+        .fuel-cell:hover { background: #0f0; color: #000; }
     </style>
 </head>
 <body>
-    <div class="header-hud">
-        <div class="titulo italic uppercase">POMPÓN <span>NAVE</span></div>
-        <div class="text-[7px] text-zinc-500 tracking-[5px]">FLAVOR CONTROL SYSTEM v2.0</div>
+
+    <div class="p-4 flex justify-between items-start">
+        <div>
+            <h1 class="text-xl font-bold">[ POMPÓN NAVE v2.0 ]</h1>
+            <p class="text-[10px]">LOC: RIO GRANDE_TDF // STATUS: ONLINE</p>
+        </div>
+        <div class="text-right text-[10px]">
+            <p>COEFICIENTE: 0.98</p>
+            <p>ARCH: NEXO_ARQUETIPO</p>
+        </div>
     </div>
 
-    <div class="scene">
-        <div class="card-hud pos-tl">
-            <div class="hud-sector">Sector: Parrilla</div>
-            <div class="hud-name">PARRILLADA COMPLETA</div>
-            <div class="hud-price">$12500</div>
+    <div class="reactor-core">
+        <div class="radar-line"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+            <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="w-32 opacity-80" alt="POLLO">
         </div>
+    </div>
 
-        <div class="card-hud pos-tr">
-            <div class="hud-sector">Sector: Sándwich</div>
-            <div class="hud-name">SANDWICH MILANESA</div>
-            <div class="hud-price">$5800</div>
-        </div>
+    <div class="module m-1">
+        <p class="text-[8px] text-green-300">CAT: PARRILLA</p>
+        <h2 class="font-bold text-sm">PARRILLADA COMPLETA</h2>
+        <p class="text-lg font-black mt-1">$12.500</p>
+    </div>
 
-        <div class="card-hud pos-bl">
-            <div class="hud-sector">Sector: Masas</div>
-            <div class="hud-name">DOCENA EMPANADAS</div>
-            <div class="hud-price">$8000</div>
-        </div>
+    <div class="module m-2">
+        <p class="text-[8px] text-green-300">CAT: SANDWICH</p>
+        <h2 class="font-bold text-sm">MILANESA NAVE</h2>
+        <p class="text-lg font-black mt-1">$5.800</p>
+    </div>
 
-        <div class="reactor-main">
-            <div class="anillo-fuego"></div>
-            <div class="anillo-datos"></div>
-            <div class="nucleo">
-                <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" alt="POLLO A LA PARRILLA CORE">
-            </div>
-            <div class="absolute -bottom-8 w-full text-center text-[7px] text-orange-500 font-bold tracking-[3px]">FLAVOR REACTOR ACTIVE</div>
-        </div>
+    <div class="module m-3">
+        <p class="text-[8px] text-green-300">CAT: MASAS</p>
+        <h2 class="font-bold text-sm">EMPANADA DOC.</h2>
+        <p class="text-lg font-black mt-1">$8.000</p>
     </div>
 
     <div class="fuel-matrix">
-        <div class="fuel-slot">
-            <div class="fuel-label">QUILMES 1L</div>
-            <div class="fuel-bar" style="animation-delay: 0s;"></div>
-            <div class="fuel-price">$3200</div>
-        </div>
-        <div class="fuel-slot">
-            <div class="fuel-label">GASEOSA</div>
-            <div class="fuel-bar" style="animation-delay: 0.5s;"></div>
-            <div class="fuel-price">$1500</div>
-        </div>
-        <div class="fuel-slot">
-            <div class="fuel-label">VINOTECA CORE</div>
-            <div class="fuel-bar" style="animation-delay: 1s;"></div>
-            <div class="fuel-price">$4500</div>
-        </div>
+        <div class="fuel-cell">FUEL_A: QUILMES [$3200]</div>
+        <div class="fuel-cell">FUEL_B: GASEOSA [$1500]</div>
+        <div class="fuel-cell">FUEL_C: WINE_CORE [$4500]</div>
     </div>
 
-    <nav>
-        <div class="active">IGNITION</div>
-        <div>ORBIT</div>
-        <div>PILOT CORE</div>
-        <div>SUPPLY</div>
-    </nav>
 </body>
 </html>
