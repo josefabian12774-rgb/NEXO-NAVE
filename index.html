@@ -3,113 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POMPÓN NAVE - HUD FINAL</title>
+    <title>NEXO NAVE ENGINE v3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; height: 100vh; overflow: hidden; margin: 0; }
         
-        body { 
-            background: #000; background-image: radial-gradient(circle at center, #2b0d02 0%, #000 100%);
-            color: #fff; font-family: 'Orbitron', sans-serif;
-            height: 100vh; width: 100vw; margin: 0; overflow: hidden;
-            display: flex; flex-direction: column; align-items: center;
+        /* REACTOR CENTRAL */
+        .main-scene { height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; transform: scale(0.85); }
+        .reactor { width: 220px; height: 220px; border-radius: 50%; border: 4px solid #ff4500; box-shadow: 0 0 30px #ff4500; display: flex; align-items: center; justify-content: center; background: #111; z-index: 10; }
+        .img-core { width: 80%; filter: drop-shadow(0 0 15px #ff4500); }
+
+        /* PLATOS COMO BOTONES (Interactivos) */
+        .plato-btn {
+            position: absolute; width: 100px; background: rgba(20,20,20,0.9);
+            border: 1px solid #444; border-left: 4px solid #ff4500; padding: 5px;
+            cursor: pointer; transition: 0.2s; z-index: 20;
         }
+        .plato-btn:active { transform: scale(0.9); border-left-color: #00ff00; }
+        .img-thumb { width: 100%; height: 50px; background: #222; margin-bottom: 3px; }
+        .txt-label { font-size: 7px; text-align: center; }
 
-        /* CAPA DE ESCANEO */
-        .hud-scan { position: fixed; inset: 0; pointer-events: none; z-index: 100; background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 69, 0, 0.05) 2px); }
+        /* POSICIONES */
+        .p1 { top: -70px; left: -50px; } .p2 { top: -100px; left: 50%; transform: translateX(-50%); } .p3 { top: -70px; right: -50px; }
+        .p4 { bottom: -70px; left: -50px; } .p5 { bottom: -100px; left: 50%; transform: translateX(-50%); } .p6 { bottom: -70px; right: -50px; }
 
-        header { padding: 15px; text-align: center; z-index: 50; width: 100%; }
-        .titulo { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; }
-        .titulo span { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; }
-
-        /* ESCENA CENTRAL */
-        .main-scene { flex: 1; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
-
-        /* REACTOR */
-        .reactor-wrap { position: relative; width: 220px; height: 220px; z-index: 10; }
-        .ring-fire { position: absolute; inset: 0; border: 3px solid transparent; border-top: 3px solid #ff4500; border-bottom: 3px solid #ff4500; border-radius: 50%; animation: spin 4s linear infinite; filter: drop-shadow(0 0 15px #ff4500); }
-        .inner-chassis { position: absolute; inset: 15px; background: rgba(15, 15, 15, 0.95); border: 6px solid #1a1a1a; border-radius: 50%; box-shadow: inset 0 0 40px #000, 0 0 20px rgba(255, 69, 0, 0.5); display: flex; align-items: center; justify-content: center; }
-        .img-core { width: 100px; filter: drop-shadow(0 0 20px #ff4500); }
-
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* TARJETAS HUD - POSICIONAMIENTO EN ARCO */
-        .hud-card {
-            position: absolute; width: 105px; background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255, 69, 0, 0.3);
-            border-left: 3px solid #ff3c00; padding: 6px; clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8); text-align: center;
+        /* PUSH-UP MODAL (La ficha técnica) */
+        #push-up {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 70%;
+            background: rgba(10,10,10,0.98); border-top: 3px solid #ff4500;
+            z-index: 200; transition: 0.5s cubic-bezier(0.17, 0.84, 0.44, 1);
+            padding: 30px; display: flex; flex-direction: column; align-items: center;
         }
-        .name { font-size: 7px; font-weight: 900; margin-bottom: 2px; color: #aaa; text-transform: uppercase; }
-        .price { color: #ffcc00; font-size: 11px; font-weight: 900; }
-
-        /* FILA SUPERIOR (Arco arriba) */
-        .p-empanadas { top: -75px; left: -50px; }
-        .p-asado { top: -105px; left: 50%; transform: translateX(-50%); }
-        .p-pizzas { top: -75px; right: -50px; }
-
-        /* FILA INFERIOR (Arco abajo) */
-        .p-sandwich { bottom: -75px; left: -50px; }
-        .p-ensaladas { bottom: -105px; left: 50%; transform: translateX(-50%); }
-        .p-papas { bottom: -75px; right: -50px; }
-
-        /* BOTONES LATERALES (Ecuador del Reactor) */
-        .side-btn {
-            position: absolute; width: 70px; height: 35px; background: #111; 
-            border: 1px solid #ff4500; display: flex; align-items: center; justify-content: center;
-            font-size: 8px; font-weight: 900; color: #ff4500; text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(255, 69, 0, 0.4); z-index: 30;
-        }
-        .btn-salsas { left: -90px; top: 50%; transform: translateY(-50%); clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); }
-        .btn-postres { right: -90px; top: 50%; transform: translateY(-50%); clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%); }
-
-        /* CRIO-HELADERA */
-        .crio-chamber { width: 100%; height: 80px; display: flex; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.5); }
-        .crio-slot { flex: 1; max-width: 90px; border: 1px solid #333; position: relative; background: #050505; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: inset 0 0 10px #ff4500; }
-        .c-label { font-size: 6px; color: #888; }
-        .c-price { font-size: 10px; font-weight: 900; color: #ffae00; }
-
-        nav { width: 100%; display: flex; justify-content: space-around; padding: 15px; background: #000; border-top: 1px solid #222; font-size: 10px; color: #555; }
-        .active { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; }
+        #push-up.active { bottom: 0; }
+        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 20px; color: #ff4500; }
     </style>
 </head>
 <body>
-    <div class="hud-scan"></div>
-    <header>
-        <div class="titulo">POMPÓN <span>NAVE</span></div>
-        <div class="text-[7px] text-zinc-600 tracking-[5px]">TERMINAL V2.0 // RIO GRANDE</div>
-    </header>
 
     <main class="main-scene">
-        <div class="reactor-wrap">
-            <div class="ring-fire"></div>
-            <div class="inner-chassis">
-                <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="img-core" alt="POLLO">
+        <div class="reactor">
+            <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="img-core">
+            
+            <div class="plato-btn p1" onclick="openDetails('EMPANADAS', '$8.000', 'Mix de carne y jamón/queso')">
+                <div class="img-thumb"></div><div class="txt-label">EMPANADAS</div>
             </div>
-
-            <div class="hud-card p-empanadas"><div class="name">EMPANADAS</div><div class="price">$8.000</div></div>
-            <div class="hud-card p-asado"><div class="name">ASADO</div><div class="price">$12.500</div></div>
-            <div class="hud-card p-pizzas"><div class="name">PIZZAS</div><div class="price">$4.200</div></div>
-
-            <div class="side-btn btn-salsas">SALSAS</div>
-            <div class="side-btn btn-postres">POSTRES</div>
-
-            <div class="hud-card p-sandwich"><div class="name">SANDWICH</div><div class="price">$5.800</div></div>
-            <div class="hud-card p-ensaladas"><div class="name">ENSALADAS</div><div class="price">$2.500</div></div>
-            <div class="hud-card p-papas"><div class="name">PAPAS FRITAS</div><div class="price">$2.000</div></div>
-        </div>
+            <div class="plato-btn p2" onclick="openDetails('ASADO', '$12.500', 'Tira de asado premium')">
+                <div class="img-thumb"></div><div class="txt-label">ASADO</div>
+            </div>
+            <div class="plato-btn p3" onclick="openDetails('PIZZA', '$4.200', 'Muzzarella especial')">
+                <div class="img-thumb"></div><div class="txt-label">PIZZA</div>
+            </div>
+            </div>
     </main>
 
-    <div class="crio-chamber">
-        <div class="crio-slot"><div class="c-label">QUILMES</div><div class="c-price">$3.200</div></div>
-        <div class="crio-slot"><div class="c-label">GASEOSA</div><div class="c-price">$1.500</div></div>
-        <div class="crio-slot"><div class="c-label">VINOTECA</div><div class="c-price">$4.500</div></div>
+    <div id="push-up">
+        <div class="close-btn" onclick="closeDetails()">✕</div>
+        <h2 id="m-title" class="text-2xl font-black text-orange-500">TITULO</h2>
+        <p id="m-desc" class="text-gray-400 mt-2 text-center">Descripción del producto...</p>
+        <div id="m-price" class="text-4xl font-black mt-6">$0.00</div>
+        <button class="mt-8 bg-orange-600 px-10 py-3 font-bold rounded-full">AGREGAR A LA NAVE</button>
     </div>
 
-    <nav>
-        <div class="active">FUEL</div>
-        <div>ORBIT</div>
-        <div>PILOT</div>
-        <div>SUPPLY</div>
-    </nav>
+    <script>
+        function openDetails(title, price, desc) {
+            document.getElementById('m-title').innerText = title;
+            document.getElementById('m-price').innerText = price;
+            document.getElementById('m-desc').innerText = desc;
+            document.getElementById('push-up').classList.add('active');
+        }
+        function closeDetails() {
+            document.getElementById('push-up').classList.remove('active');
+        }
+    </script>
 </body>
 </html>
