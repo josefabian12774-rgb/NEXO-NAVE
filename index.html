@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXO NAVE - FULL WIDTH</title>
+    <title>NEXO NAVE - MAX SCALE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
@@ -16,74 +16,73 @@
             display: flex; flex-direction: column;
         }
 
-        header { height: 7vh; display: flex; align-items: center; justify-content: center; z-index: 50; }
-        .titulo { font-size: 1.3rem; font-weight: 900; font-style: italic; letter-spacing: 3px; }
-        .titulo span { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        header { height: 6vh; display: flex; align-items: center; justify-content: center; }
+        .titulo { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: 4px; }
+        .titulo span { color: #ff0000; text-shadow: 0 0 15px #ff0000; }
 
-        /* ESCENA CENTRAL - USANDO TODO EL ANCHO */
-        .main-scene { height: 60vh; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; padding: 0 10px; }
+        /* ESCENA CENTRAL EXPANDIDA */
+        .main-scene { height: 62vh; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
 
         /* REACTOR */
-        .reactor-wrap { position: relative; width: 150px; height: 150px; z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .ring-fire { position: absolute; inset: -5px; border: 2px solid transparent; border-top: 2px solid #ff0000; border-bottom: 2px solid #00f2ff; border-radius: 50%; animation: spin 4s linear infinite; filter: drop-shadow(0 0 8px #ff0000); }
-        .inner-chassis { width: 130px; height: 130px; background: #000; border: 2px solid #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.1); }
-        .img-core { width: 85px; filter: drop-shadow(0 0 12px #ff4500); }
+        .reactor-wrap { position: relative; width: 140px; height: 140px; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .ring-fire { position: absolute; inset: -10px; border: 3px solid transparent; border-top: 3px solid #ff0000; border-bottom: 3px solid #00f2ff; border-radius: 50%; animation: spin 3s linear infinite; filter: drop-shadow(0 0 10px #ff0000); }
+        .inner-chassis { width: 125px; height: 125px; background: #000; border: 2px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 25px rgba(0, 242, 255, 0.2); }
+        .img-core { width: 85px; filter: drop-shadow(0 0 15px #ff4500); }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* PLATOS MÁS GRANDES Y LEGIBLES */
+        /* PLATOS TAMAÑO MAX (Aprovechando el ancho) */
         .hud-card {
-            position: absolute; width: 115px; /* Más ancho */
-            background: rgba(5, 5, 5, 0.9); border: 1px solid #333; border-left: 5px solid #ff0000;
-            padding: 8px 5px; text-align: center; z-index: 20;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            position: absolute; width: 125px; /* Aumentado de 115px a 125px */
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #444; border-left: 6px solid #ff0000;
+            padding: 10px 5px; text-align: center; z-index: 20;
+            box-shadow: 0 6px 20px rgba(0,0,0,1);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .name { font-size: 9px; font-weight: 900; color: #ffae00; margin-bottom: 3px; letter-spacing: 1px; }
-        .price { font-size: 13px; font-weight: 900; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
+        .name { font-size: 10px; font-weight: 900; color: #ffae00; margin-bottom: 4px; letter-spacing: 1px; }
+        .price { font-size: 15px; font-weight: 900; color: #fff; text-shadow: 0 0 8px rgba(255,255,255,0.4); }
 
-        /* POSICIONES EXPANDIDAS HACIA LOS BORDES */
-        .p-empanadas { top: -30px; left: 5px; }
-        .p-asado { top: -85px; left: 50%; transform: translateX(-50%); }
-        .p-pizzas { top: -30px; right: 5px; }
-        .p-sandwich { bottom: -30px; left: 5px; }
-        .p-ensaladas { bottom: -85px; left: 50%; transform: translateX(-50%); }
-        .p-papas { bottom: -30px; right: 5px; }
+        /* POSICIONES AL BORDE DE PANTALLA */
+        .p-empanadas { top: -25px; left: 2vw; }
+        .p-asado { top: -90px; left: 50%; transform: translateX(-50%); }
+        .p-pizzas { top: -25px; right: 2vw; }
+        .p-sandwich { bottom: -25px; left: 2vw; }
+        .p-ensaladas { bottom: -90px; left: 50%; transform: translateX(-50%); }
+        .p-papas { bottom: -25px; right: 2vw; }
 
-        /* BOTONES LATERALES CON MÁS PRESENCIA */
-        .side-btn { position: absolute; width: 70px; height: 35px; background: #000; border: 1px solid #ff0000; color: #ff0000; font-size: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 30; }
-        .btn-salsas { left: -15px; top: 50%; transform: translateY(-50%); clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%); }
-        .btn-postres { right: -15px; top: 50%; transform: translateY(-50%); clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%); }
+        /* BOTONES LATERALES */
+        .side-btn { position: absolute; width: 75px; height: 40px; background: #000; border: 1px solid #ff0000; color: #ff0000; font-size: 9px; display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 30; }
+        .btn-salsas { left: -10px; top: 50%; transform: translateY(-50%); clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%); }
+        .btn-postres { right: -10px; top: 50%; transform: translateY(-50%); clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%); }
 
-        /* HELADERAS CRYO GLACIALES */
-        .crio-chamber { height: 21vh; width: 100%; display: flex; justify-content: center; gap: 8px; padding: 12px; background: rgba(0,8,15,0.95); border-top: 2px solid #00f2ff; }
+        /* HELADERAS CRYO GLACIALES AMPLIADAS */
+        .crio-chamber { height: 20vh; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 12px; background: rgba(0,8,15,0.95); border-top: 3px solid #00f2ff; }
         .crio-slot { 
-            flex: 1; border: 1px solid #00f2ff55; background: linear-gradient(180deg, #002a2a 0%, #000 100%);
-            border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+            flex: 1; border: 1px solid #00f2ff77; background: linear-gradient(180deg, #003333 0%, #000 100%);
+            border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .crio-label { font-size: 7px; color: #00f2ff; letter-spacing: 1.5px; font-weight: 900; margin-bottom: 4px; }
-        .crio-price { font-size: 12px; color: #fff; font-weight: 900; }
+        .crio-label { font-size: 8px; color: #00f2ff; letter-spacing: 2px; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 5px #00f2ff; }
+        .crio-price { font-size: 14px; color: #fff; font-weight: 900; }
 
         /* PUSH-UP */
         #push-up {
             position: fixed; bottom: -110%; left: 0; width: 100%; height: 65%;
-            background: rgba(2,2,2,0.98); border-top: 4px solid #ff0000; z-index: 200; 
+            background: rgba(0,0,0,0.98); border-top: 5px solid #ff0000; z-index: 200; 
             transition: 0.4s cubic-bezier(0.1, 0.8, 0.2, 1); padding: 30px;
             display: flex; flex-direction: column; align-items: center;
         }
         #push-up.active { bottom: 0; }
-        .close-x { position: absolute; top: 20px; right: 25px; font-size: 2rem; color: #ff0000; }
+        .close-x { position: absolute; top: 20px; right: 25px; font-size: 2.5rem; color: #ff0000; font-weight: 900; }
         
         .confirm-btn { 
-            margin-top: auto; width: 100%; background: #b30000; color: #fff; 
-            padding: 22px; font-weight: 900; border-radius: 8px; border: 1px solid #ff0000;
-            text-transform: uppercase; letter-spacing: 3px; font-size: 16px;
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
+            margin-top: auto; width: 100%; background: #cc0000; color: #fff; 
+            padding: 24px; font-weight: 900; border-radius: 10px; border: 1px solid #ff0000;
+            text-transform: uppercase; letter-spacing: 4px; font-size: 18px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
         }
 
-        nav { height: 12vh; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #1a1a1a; font-size: 10px; color: #444; }
-        .active-tab { color: #ff0000; font-weight: 900; }
+        nav { height: 12vh; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 2px solid #1a1a1a; font-size: 11px; color: #555; }
+        .active-tab { color: #ff0000; font-weight: 900; text-shadow: 0 0 8px #ff0000; }
     </style>
 </head>
 <body>
@@ -130,13 +129,13 @@
     <div id="push-up">
         <div class="close-x" onclick="cl()">✕</div>
         <h2 id="ht" class="text-2xl font-black text-orange-500 italic uppercase mt-4">PRODUCTO</h2>
-        <div id="hp" class="text-6xl font-black mt-10 text-white">$0.00</div>
+        <div id="hp" class="text-7xl font-black mt-10 text-white">$0.00</div>
         <button class="confirm-btn" onclick="cl()">Confirmar Pedido</button>
     </div>
 
     <nav>
-        <div class="active-tab">RADAR</div>
-        <div>CARGO</div>
+        <div class="active-tab">COMMAND</div>
+        <div>STOCKS</div>
         <div>SYSTEM</div>
     </nav>
 
