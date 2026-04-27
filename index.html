@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POMPÓN NAVE - HIGH-TECH HUD</title>
+    <title>NEXO NAVE - CRYO EDITION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body { 
-            background: #000; background-image: radial-gradient(circle at center, #1a0500 0%, #000 100%);
+            background: #000; background-image: radial-gradient(circle at center, #001a1a 0%, #000 100%);
             color: #fff; font-family: 'Orbitron', sans-serif;
             height: 100vh; width: 100vw; overflow: hidden;
             display: flex; flex-direction: column;
@@ -26,46 +26,47 @@
         /* REACTOR */
         .reactor-wrap { position: relative; width: 160px; height: 160px; z-index: 10; display: flex; align-items: center; justify-content: center; }
         .ring-fire { position: absolute; inset: -8px; border: 2px solid transparent; border-top: 2px solid #ff0000; border-bottom: 2px solid #ff4500; border-radius: 50%; animation: spin 3s linear infinite; filter: drop-shadow(0 0 8px #ff0000); }
-        .inner-chassis { width: 140px; height: 140px; background: #0a0a0a; border: 2px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 30px #ff450033; }
+        .inner-chassis { width: 140px; height: 140px; background: #0a0a0a; border: 2px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(255, 69, 0, 0.2); }
         .img-core { width: 95px; filter: drop-shadow(0 0 15px #ff4500); }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* PLATOS (Alineación Corregida) */
+        /* PLATOS (Alineación Simétrica) */
         .hud-card {
-            position: absolute; width: 90px; background: rgba(10, 10, 10, 0.9); 
-            border: 1px solid #222; border-left: 3px solid #ff0000;
+            position: absolute; width: 92px; background: rgba(5, 5, 5, 0.95); 
+            border: 1px solid #222; border-left: 4px solid #ff0000;
             padding: 5px; text-align: center; z-index: 20;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .name { font-size: 6px; font-weight: 900; color: #ffae00; margin-bottom: 2px; line-height: 1; }
+        .name { font-size: 6.5px; font-weight: 900; color: #ffae00; margin-bottom: 2px; text-transform: uppercase; }
         .price { font-size: 10px; font-weight: 900; color: #fff; }
 
-        /* Coordenadas simétricas */
-        .p-empanadas { top: -40px; left: -35px; }
+        /* Coordenadas */
+        .p-empanadas { top: -40px; left: -38px; }
         .p-asado { top: -80px; left: 50%; transform: translateX(-50%); }
-        .p-pizzas { top: -40px; right: -35px; }
-        .p-sandwich { bottom: -40px; left: -35px; }
+        .p-pizzas { top: -40px; right: -38px; }
+        .p-sandwich { bottom: -40px; left: -38px; }
         .p-ensaladas { bottom: -80px; left: 50%; transform: translateX(-50%); }
-        .p-papas { bottom: -40px; right: -35px; }
+        .p-papas { bottom: -40px; right: -38px; }
 
         .side-btn { position: absolute; width: 55px; height: 30px; background: #000; border: 1px solid #ff0000; color: #ff0000; font-size: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
         .btn-salsas { left: -75px; top: 50%; transform: translateY(-50%); clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 20% 100%, 0% 50%); }
         .btn-postres { right: -75px; top: 50%; transform: translateY(-50%); clip-path: polygon(0% 0%, 80% 0%, 100% 50%, 80% 100%, 0% 100%); }
 
-        /* BEBIDAS FUTURISTAS (Viales de energía) */
-        .crio-chamber { height: 20vh; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 15px; background: rgba(0,0,0,0.9); border-top: 1px solid #1a1a1a; }
+        /* CONTENEDORES CRYO (HELADERAS CON FRÍO) */
+        .crio-chamber { height: 20vh; width: 100%; display: flex; justify-content: center; gap: 8px; padding: 12px; background: rgba(0,5,10,0.9); border-top: 2px solid #00f2ff55; }
         .crio-slot { 
-            flex: 1; border: 1px solid #ff450044; background: linear-gradient(180deg, #0f0f0f 0%, #1a0800 100%);
-            border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 0 10px rgba(255, 69, 0, 0.1); position: relative; overflow: hidden;
+            flex: 1; border: 1px solid #00f2ff44; background: linear-gradient(180deg, #001a1a 0%, #00050a 100%);
+            border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: inset 0 0 15px rgba(0, 242, 255, 0.1); position: relative; overflow: hidden;
         }
-        .crio-slot::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #ff4500; opacity: 0.5; }
-        .crio-label { font-size: 5px; color: #aaa; letter-spacing: 1px; }
-        .crio-price { font-size: 10px; color: #ffae00; font-weight: 900; margin-top: 2px; }
+        .crio-slot::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: frost 3s infinite; }
+        @keyframes frost { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-        /* PUSH-UP MEJORADO */
+        .crio-label { font-size: 5px; color: #00f2ff; letter-spacing: 1px; font-weight: 900; text-shadow: 0 0 5px #00f2ff; }
+        .crio-price { font-size: 10px; color: #fff; font-weight: 900; margin-top: 2px; }
+
+        /* PUSH-UP */
         #push-up {
             position: fixed; bottom: -110%; left: 0; width: 100%; height: 65%;
             background: rgba(5,5,5,0.98); border-top: 3px solid #ff0000; z-index: 200; 
@@ -75,17 +76,17 @@
         #push-up.active { bottom: 0; }
         .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ff0000; cursor: pointer; }
         
-        /* BOTÓN DE IGNICIÓN (CONFIRMAR) */
+        /* BOTÓN IGNICIÓN ROJO CON TEXTO BLANCO */
         .confirm-btn { 
-            margin-top: auto; width: 100%; background: #990000; color: #fff; 
+            margin-top: auto; width: 100%; background: #990000; color: #ffffff; 
             padding: 18px; font-weight: 900; border-radius: 4px; border: 1px solid #ff0000;
             text-transform: uppercase; letter-spacing: 2px; font-size: 14px;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); text-shadow: 0 0 5px rgba(255,255,255,0.5);
         }
-        .confirm-btn:active { background: #ff0000; transform: scale(0.98); }
+        .confirm-btn:active { background: #ff0000; }
 
         nav { height: 12vh; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; font-size: 9px; color: #333; }
-        .active { color: #ff0000; font-weight: 900; text-shadow: 0 0 5px #ff0000; }
+        .active { color: #ff0000; font-weight: 900; }
     </style>
 </head>
 <body>
@@ -116,15 +117,15 @@
 
     <div class="crio-chamber">
         <div class="crio-slot" onclick="op('QUILMES 1L', '$3.200')">
-            <div class="crio-label uppercase">Fuel / Quilmes</div>
+            <div class="crio-label uppercase">CRYO / QUILMES</div>
             <div class="crio-price">$3.200</div>
         </div>
         <div class="crio-slot" onclick="op('GASEOSA 1.5L', '$1.500')">
-            <div class="crio-label uppercase">Energy / Soda</div>
+            <div class="crio-label uppercase">CRYO / SODA</div>
             <div class="crio-price">$1.500</div>
         </div>
         <div class="crio-slot" onclick="op('VINO SELEC.', '$4.500')">
-            <div class="crio-label uppercase">Core / Wine</div>
+            <div class="crio-label uppercase">CRYO / WINE</div>
             <div class="crio-price">$4.500</div>
         </div>
     </div>
@@ -132,14 +133,14 @@
     <div id="push-up">
         <div class="close-x" onclick="cl()">✕</div>
         <h2 id="ht" class="text-xl font-black text-orange-500 italic uppercase mt-4">PRODUCTO</h2>
-        <div id="hp" class="text-5xl font-black mt-6">$0.00</div>
-        <button class="confirm-btn" onclick="cl()">Ignición de Pedido</button>
+        <div id="hp" class="text-5xl font-black mt-6 text-white">$0.00</div>
+        <button class="confirm-btn" onclick="cl()">Confirmar Pedido</button>
     </div>
 
     <nav>
-        <div class="active">ENGINE</div>
-        <div>RADAR</div>
-        <div>LOGS</div>
+        <div class="active">RADAR</div>
+        <div>STOCKS</div>
+        <div>RECORDS</div>
     </nav>
 
     <script>
