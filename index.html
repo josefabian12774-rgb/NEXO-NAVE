@@ -3,173 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POMPÓN NAVE MOBILE</title>
+    <title>POMPÓN NAVE - HUD FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: #000;
-            background-image: radial-gradient(circle at center, #2b0d02 0%, #000 100%);
-            color: #fff; font-family: 'Share Tech Mono', monospace;
+            background: #000; background-image: radial-gradient(circle at center, #2b0d02 0%, #000 100%);
+            color: #fff; font-family: 'Orbitron', sans-serif;
             height: 100vh; width: 100vw; margin: 0; overflow: hidden;
-            display: flex; flex-direction: column;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* OVERLAY DE ESCANEO */
-        .hud-scan {
-            position: fixed; inset: 0; pointer-events: none; z-index: 100;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
-                        repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 69, 0, 0.05) 2px);
-        }
+        /* CAPA DE ESCANEO */
+        .hud-scan { position: fixed; inset: 0; pointer-events: none; z-index: 100; background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 69, 0, 0.05) 2px); }
 
-        /* HEADER COMPACTO PARA CELULAR */
-        header {
-            padding: 15px; text-align: center; border-bottom: 1px solid #333;
-            background: rgba(10,10,10,0.95); z-index: 50;
-        }
-        .titulo { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; font-weight: 900; font-style: italic; }
+        header { padding: 15px; text-align: center; z-index: 50; width: 100%; }
+        .titulo { font-size: 1.4rem; font-weight: 900; font-style: italic; letter-spacing: -1px; }
         .titulo span { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; }
 
-        /* CONTENEDOR PRINCIPAL MOBILE */
-        main { flex: 1; position: relative; display: flex; align-items: center; justify-content: center; }
+        /* ESCENA CENTRAL */
+        .main-scene { flex: 1; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-        /* REACTOR CENTRAL ESCALADO PARA CELULAR */
-        .reactor-wrap {
-            position: relative; width: 240px; height: 240px;
-        }
-
-        .ring-fire {
-            position: absolute; inset: 0;
-            border: 3px solid transparent; border-top: 3px solid #ff4500; border-bottom: 3px solid #ff4500;
-            border-radius: 50%; animation: spin 4s linear infinite;
-            filter: drop-shadow(0 0 15px #ff4500);
-        }
-
-        .inner-chassis {
-            position: absolute; inset: 20px;
-            background: rgba(15, 15, 15, 0.95);
-            border: 6px solid #1a1a1a; border-radius: 50%;
-            box-shadow: inset 0 0 40px #000, 0 0 20px rgba(255, 69, 0, 0.5);
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .img-core { width: 110px; filter: drop-shadow(0 0 20px #ff4500); animation: pulse 2s infinite ease-in-out; }
+        /* REACTOR */
+        .reactor-wrap { position: relative; width: 220px; height: 220px; z-index: 10; }
+        .ring-fire { position: absolute; inset: 0; border: 3px solid transparent; border-top: 3px solid #ff4500; border-bottom: 3px solid #ff4500; border-radius: 50%; animation: spin 4s linear infinite; filter: drop-shadow(0 0 15px #ff4500); }
+        .inner-chassis { position: absolute; inset: 15px; background: rgba(15, 15, 15, 0.95); border: 6px solid #1a1a1a; border-radius: 50%; box-shadow: inset 0 0 40px #000, 0 0 20px rgba(255, 69, 0, 0.5); display: flex; align-items: center; justify-content: center; }
+        .img-core { width: 100px; filter: drop-shadow(0 0 20px #ff4500); }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
-        /* TARJETAS HUD MOBILE (Posicionamiento adaptativo) */
+        /* TARJETAS HUD - POSICIONAMIENTO EN ARCO */
         .hud-card {
-            position: absolute; width: 120px;
-            background: rgba(15, 15, 15, 0.9); backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 69, 0, 0.2); border-left: 4px solid #ff3c00;
-            padding: 8px; clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8); z-index: 20;
+            position: absolute; width: 105px; background: rgba(15, 15, 15, 0.9); border: 1px solid rgba(255, 69, 0, 0.3);
+            border-left: 3px solid #ff3c00; padding: 6px; clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8); text-align: center;
         }
+        .name { font-size: 7px; font-weight: 900; margin-bottom: 2px; color: #aaa; text-transform: uppercase; }
+        .price { color: #ffcc00; font-size: 11px; font-weight: 900; }
 
-        /* Coordenadas para que no se salgan de la pantalla del cel */
-        .c-tl { top: -45px; left: -40px; }
-        .c-tr { top: -45px; right: -40px; }
-        .c-bl { bottom: -45px; left: -40px; }
-        .c-br { bottom: -45px; right: -40px; }
+        /* FILA SUPERIOR (Arco arriba) */
+        .p-empanadas { top: -75px; left: -50px; }
+        .p-asado { top: -105px; left: 50%; transform: translateX(-50%); }
+        .p-pizzas { top: -75px; right: -50px; }
 
-        .tag { font-size: 6px; color: #ffae00; font-weight: 900; letter-spacing: 1px; }
-        .name { font-family: 'Orbitron', sans-serif; font-size: 8px; font-weight: 900; margin: 2px 0; text-transform: uppercase; }
-        .price { color: #ffcc00; font-size: 14px; font-weight: 900; font-style: italic; }
+        /* FILA INFERIOR (Arco abajo) */
+        .p-sandwich { bottom: -75px; left: -50px; }
+        .p-ensaladas { bottom: -105px; left: 50%; transform: translateX(-50%); }
+        .p-papas { bottom: -75px; right: -50px; }
 
-        /* HELADERA DE CRIO-STASIS (Bebidas) */
-        .crio-chamber {
-            height: 100px; padding: 10px; display: flex; justify-content: center; gap: 10px;
-            background: linear-gradient(0deg, #0a0a0a 0%, transparent 100%);
-            z-index: 60;
+        /* BOTONES LATERALES (Ecuador del Reactor) */
+        .side-btn {
+            position: absolute; width: 70px; height: 35px; background: #111; 
+            border: 1px solid #ff4500; display: flex; align-items: center; justify-content: center;
+            font-size: 8px; font-weight: 900; color: #ff4500; text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 69, 0, 0.4); z-index: 30;
         }
+        .btn-salsas { left: -90px; top: 50%; transform: translateY(-50%); clip-path: polygon(15% 0, 100% 0, 100% 100%, 15% 100%, 0 50%); }
+        .btn-postres { right: -90px; top: 50%; transform: translateY(-50%); clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%); }
 
-        .crio-slot {
-            flex: 1; max-width: 80px; border: 1px solid #333; background: #050505;
-            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 5px; text-align: center; box-shadow: inset 0 0 10px #ff4500;
-        }
+        /* CRIO-HELADERA */
+        .crio-chamber { width: 100%; height: 80px; display: flex; justify-content: center; gap: 10px; padding: 10px; background: rgba(0,0,0,0.5); }
+        .crio-slot { flex: 1; max-width: 90px; border: 1px solid #333; position: relative; background: #050505; text-align: center; display: flex; flex-direction: column; justify-content: center; box-shadow: inset 0 0 10px #ff4500; }
+        .c-label { font-size: 6px; color: #888; }
+        .c-price { font-size: 10px; font-weight: 900; color: #ffae00; }
 
-        .crio-bar {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(0deg, #600, #ff4500);
-            animation: level 3s infinite alternate; opacity: 0.6;
-        }
-
-        @keyframes level { from { height: 20%; } to { height: 80%; } }
-
-        .crio-label { font-size: 6px; position: relative; z-index: 2; color: #aaa; }
-        .crio-val { font-size: 10px; position: relative; z-index: 2; font-weight: 900; color: #fff; }
-
-        /* NAV MOBILE */
-        nav {
-            display: flex; justify-content: space-around; padding: 15px;
-            background: #000; border-top: 1px solid #222; font-size: 10px;
-        }
-        .active { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; font-weight: 900; }
+        nav { width: 100%; display: flex; justify-content: space-around; padding: 15px; background: #000; border-top: 1px solid #222; font-size: 10px; color: #555; }
+        .active { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; }
     </style>
 </head>
 <body>
     <div class="hud-scan"></div>
-
     <header>
         <div class="titulo">POMPÓN <span>NAVE</span></div>
-        <div class="text-[7px] text-zinc-500 tracking-[4px]">MOBILE COMMAND TERMINAL</div>
+        <div class="text-[7px] text-zinc-600 tracking-[5px]">TERMINAL V2.0 // RIO GRANDE</div>
     </header>
 
-    <main>
+    <main class="main-scene">
         <div class="reactor-wrap">
             <div class="ring-fire"></div>
             <div class="inner-chassis">
                 <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="img-core" alt="POLLO">
             </div>
 
-            <div class="hud-card c-tl">
-                <div class="tag">SEC: PARRILLA</div>
-                <div class="name">PARRILLADA</div>
-                <div class="price">$12.500</div>
-            </div>
+            <div class="hud-card p-empanadas"><div class="name">EMPANADAS</div><div class="price">$8.000</div></div>
+            <div class="hud-card p-asado"><div class="name">ASADO</div><div class="price">$12.500</div></div>
+            <div class="hud-card p-pizzas"><div class="name">PIZZAS</div><div class="price">$4.200</div></div>
 
-            <div class="hud-card c-tr">
-                <div class="tag">SEC: SANDWICH</div>
-                <div class="name">MILANESA</div>
-                <div class="price">$5.800</div>
-            </div>
+            <div class="side-btn btn-salsas">SALSAS</div>
+            <div class="side-btn btn-postres">POSTRES</div>
 
-            <div class="hud-card c-bl">
-                <div class="tag">SEC: MASAS</div>
-                <div class="name">EMPANADAS</div>
-                <div class="price">$8.000</div>
-            </div>
-
-            <div class="hud-card c-br">
-                <div class="tag">SEC: EXTRAS</div>
-                <div class="name">DIPS</div>
-                <div class="price">$600</div>
-            </div>
+            <div class="hud-card p-sandwich"><div class="name">SANDWICH</div><div class="price">$5.800</div></div>
+            <div class="hud-card p-ensaladas"><div class="name">ENSALADAS</div><div class="price">$2.500</div></div>
+            <div class="hud-card p-papas"><div class="name">PAPAS FRITAS</div><div class="price">$2.000</div></div>
         </div>
     </main>
 
     <div class="crio-chamber">
-        <div class="crio-slot">
-            <div class="crio-bar" style="animation-delay: 0s;"></div>
-            <div class="crio-label">QUILMES</div>
-            <div class="crio-val">$3.200</div>
-        </div>
-        <div class="crio-slot">
-            <div class="crio-bar" style="animation-delay: 0.5s;"></div>
-            <div class="crio-label">GASEOSA</div>
-            <div class="crio-val">$1.500</div>
-        </div>
-        <div class="crio-slot">
-            <div class="crio-bar" style="animation-delay: 1s;"></div>
-            <div class="crio-label">VINO</div>
-            <div class="crio-val">$4.500</div>
-        </div>
+        <div class="crio-slot"><div class="c-label">QUILMES</div><div class="c-price">$3.200</div></div>
+        <div class="crio-slot"><div class="c-label">GASEOSA</div><div class="c-price">$1.500</div></div>
+        <div class="crio-slot"><div class="c-label">VINOTECA</div><div class="c-price">$4.500</div></div>
     </div>
 
     <nav>
