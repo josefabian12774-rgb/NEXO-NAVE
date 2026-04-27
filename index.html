@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POMPÓN NAVE - COMMAND CENTER</title>
+    <title>POMPÓN NAVE - CALIBRATED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
@@ -16,69 +16,61 @@
             display: flex; flex-direction: column;
         }
 
-        header { padding: 10px; text-align: center; z-index: 50; }
-        .titulo { font-size: 1.2rem; font-weight: 900; font-style: italic; color: #fff; }
-        .titulo span { color: #ff3c00; text-shadow: 0 0 10px #ff3c00; }
+        header { height: 8vh; display: flex; align-items: center; justify-content: center; z-index: 50; }
+        .titulo { font-size: 1.1rem; font-weight: 900; font-style: italic; }
+        .titulo span { color: #ff3c00; }
 
-        /* ESCENA CENTRAL - AJUSTE DE ESCALA PARA QUE ENTRE TODO */
-        .main-scene { flex: 1; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; transform: scale(0.85); }
+        /* ESCENA CENTRAL - REDUCIDA PARA DAR ESPACIO */
+        .main-scene { height: 62vh; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; }
 
-        /* REACTOR */
-        .reactor-wrap { position: relative; width: 180px; height: 180px; z-index: 10; display: flex; align-items: center; justify-content: center; }
-        .ring-fire { position: absolute; inset: -5px; border: 3px solid transparent; border-top: 3px solid #ff4500; border-bottom: 3px solid #ff4500; border-radius: 50%; animation: spin 4s linear infinite; filter: drop-shadow(0 0 10px #ff4500); }
-        .inner-chassis { width: 160px; height: 160px; background: #111; border: 4px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .img-core { width: 100px; filter: drop-shadow(0 0 15px #ff4500); }
+        /* REACTOR MÁS PEQUEÑO */
+        .reactor-wrap { position: relative; width: 160px; height: 160px; z-index: 10; display: flex; align-items: center; justify-content: center; }
+        .ring-fire { position: absolute; inset: -8px; border: 2px solid transparent; border-top: 2px solid #ff4500; border-bottom: 2px solid #ff4500; border-radius: 50%; animation: spin 4s linear infinite; filter: drop-shadow(0 0 8px #ff4500); }
+        .inner-chassis { width: 140px; height: 140px; background: #111; border: 3px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-core { width: 90px; filter: drop-shadow(0 0 15px #ff4500); }
 
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* PLATOS (HUD) */
+        /* HUD CARDS - AJUSTE DE ÓRBITA MÁS CERCANA */
         .hud-card {
-            position: absolute; width: 95px; background: rgba(20, 20, 20, 0.95); 
-            border-left: 3px solid #ff3c00; border-top: 1px solid #444; border-right: 1px solid #444; border-bottom: 1px solid #444;
-            padding: 6px; text-align: center; cursor: pointer; z-index: 20;
+            position: absolute; width: 85px; background: rgba(15, 15, 15, 0.95); 
+            border-left: 3px solid #ff3c00; border: 1px solid #333; border-left: 3px solid #ff3c00;
+            padding: 4px; text-align: center; z-index: 20;
             clip-path: polygon(0 0, 85% 0, 100% 20%, 100% 100%, 0 100%);
         }
-        .name { font-size: 6px; font-weight: 900; color: #ffae00; }
-        .price { font-size: 10px; font-weight: 900; color: #fff; }
+        .name { font-size: 6px; font-weight: 900; color: #ffae00; overflow: hidden; white-space: nowrap; }
+        .price { font-size: 9px; font-weight: 900; color: #fff; }
 
-        /* POSICIONES RADIALES */
-        .p-empanadas { top: -55px; left: -45px; }
-        .p-asado { top: -85px; left: 50%; transform: translateX(-50%); }
-        .p-pizzas { top: -55px; right: -45px; }
-        .p-sandwich { bottom: -55px; left: -45px; }
-        .p-ensaladas { bottom: -85px; left: 50%; transform: translateX(-50%); }
-        .p-papas { bottom: -55px; right: -45px; }
+        /* COORDENADAS RECALIBRADAS */
+        .p-empanadas { top: -45px; left: -40px; }
+        .p-asado { top: -75px; left: 50%; transform: translateX(-50%); }
+        .p-pizzas { top: -45px; right: -40px; }
+        .p-sandwich { bottom: -45px; left: -40px; }
+        .p-ensaladas { bottom: -75px; left: 50%; transform: translateX(-50%); }
+        .p-papas { bottom: -45px; right: -40px; }
 
-        /* BOTONES LATERALES */
-        .side-btn { position: absolute; width: 60px; height: 30px; background: #111; border: 1px solid #ff4500; color: #ff4500; font-size: 7px; display: flex; align-items: center; justify-content: center; font-weight: 900; z-index: 30; }
-        .btn-salsas { left: -80px; top: 50%; transform: translateY(-50%); }
-        .btn-postres { right: -80px; top: 50%; transform: translateY(-50%); }
+        .side-btn { position: absolute; width: 55px; height: 28px; background: #111; border: 1px solid #ff4500; color: #ff4500; font-size: 6px; display: flex; align-items: center; justify-content: center; z-index: 30; }
+        .btn-salsas { left: -75px; top: 50%; transform: translateY(-50%); }
+        .btn-postres { right: -75px; top: 50%; transform: translateY(-50%); }
 
-        /* HELADERA DE BEBIDAS (RESTAURADA) */
-        .crio-chamber { width: 100%; display: flex; justify-content: center; gap: 8px; padding: 12px; background: rgba(0,0,0,0.8); border-top: 1px solid #333; z-index: 40; }
-        .crio-slot { flex: 1; border: 1px solid #444; padding: 6px; text-align: center; background: #050505; box-shadow: inset 0 0 10px rgba(255, 60, 0, 0.2); }
-        .crio-label { font-size: 6px; color: #888; }
-        .crio-price { font-size: 9px; font-weight: 900; color: #ffae00; }
+        /* HELADERA - FIJADA AL FONDO */
+        .crio-chamber { height: 18vh; width: 100%; display: flex; justify-content: center; gap: 6px; padding: 10px; background: rgba(5,5,5,0.9); border-top: 1px solid #222; }
+        .crio-slot { flex: 1; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; }
+        .crio-label { font-size: 5px; color: #888; letter-spacing: 1px; }
+        .crio-price { font-size: 9px; color: #ffae00; font-weight: 900; }
 
-        /* PUSH-UP PANEL CON BOTÓN CERRAR */
+        /* PUSH-UP MEJORADO */
         #push-up {
-            position: fixed; bottom: -110%; left: 0; width: 100%; height: 60%;
+            position: fixed; bottom: -110%; left: 0; width: 100%; height: 65%;
             background: linear-gradient(180deg, #1a0800 0%, #000 100%);
-            border-top: 4px solid #ff4500; z-index: 200; transition: 0.4s ease-out;
+            border-top: 4px solid #ff3c00; z-index: 200; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1);
             padding: 20px; display: flex; flex-direction: column; align-items: center;
         }
         #push-up.active { bottom: 0; }
-        
-        .close-btn { 
-            align-self: flex-end; width: 30px; height: 30px; 
-            border: 1px solid #ff4500; color: #ff4500; 
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; margin-bottom: 10px; cursor: pointer;
-        }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; color: #ff3c00; font-weight: 900; }
+        .handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin-bottom: 20px; }
 
-        .drag-handle { width: 40px; height: 4px; background: #333; border-radius: 2px; margin-bottom: 15px; }
-
-        nav { width: 100%; display: flex; justify-content: space-around; padding: 15px; background: #000; border-top: 1px solid #222; font-size: 10px; color: #555; }
+        nav { height: 12vh; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; font-size: 9px; color: #444; }
         .active { color: #ff3c00; font-weight: 900; }
     </style>
 </head>
@@ -95,31 +87,31 @@
                 <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="img-core">
             </div>
 
-            <div class="hud-card p-empanadas" onclick="openP('EMPANADAS', '$8.000')"><div class="name">EMPANADAS</div><div class="price">$8.000</div></div>
-            <div class="hud-card p-asado" onclick="openP('ASADO', '$12.500')"><div class="name">ASADO</div><div class="price">$12.500</div></div>
-            <div class="hud-card p-pizzas" onclick="openP('PIZZAS', '$4.200')"><div class="name">PIZZAS</div><div class="price">$4.200</div></div>
+            <div class="hud-card p-empanadas" onclick="op('EMPANADAS', '$8.000')"><div class="name">EMPANADAS</div><div class="price">$8.000</div></div>
+            <div class="hud-card p-asado" onclick="op('ASADO', '$12.500')"><div class="name">ASADO</div><div class="price">$12.500</div></div>
+            <div class="hud-card p-pizzas" onclick="op('PIZZAS', '$4.200')"><div class="name">PIZZAS</div><div class="price">$4.200</div></div>
+            
+            <div class="side-btn btn-salsas" onclick="op('SALSAS', '$600')">SALSAS</div>
+            <div class="side-btn btn-postres" onclick="op('POSTRES', '$1.500')">POSTRES</div>
 
-            <div class="side-btn btn-salsas" onclick="openP('SALSAS', '$600')">SALSAS</div>
-            <div class="side-btn btn-postres" onclick="openP('POSTRES', '$1.500')">POSTRES</div>
-
-            <div class="hud-card p-sandwich" onclick="openP('SANDWICH', '$5.800')"><div class="name">SANDWICH</div><div class="price">$5.800</div></div>
-            <div class="hud-card p-ensaladas" onclick="openP('ENSALADAS', '$2.500')"><div class="name">ENSALADAS</div><div class="price">$2.500</div></div>
-            <div class="hud-card p-papas" onclick="openP('PAPAS FRITAS', '$2.000')"><div class="name">PAPAS</div><div class="price">$2.000</div></div>
+            <div class="hud-card p-sandwich" onclick="op('SANDWICH', '$5.800')"><div class="name">SANDWICH</div><div class="price">$5.800</div></div>
+            <div class="hud-card p-ensaladas" onclick="op('ENSALADAS', '$2.500')"><div class="name">ENSALADAS</div><div class="price">$2.500</div></div>
+            <div class="hud-card p-papas" onclick="op('PAPAS FRITAS', '$2.000')"><div class="name">PAPAS</div><div class="price">$2.000</div></div>
         </div>
     </main>
 
     <div class="crio-chamber">
-        <div class="crio-slot" onclick="openP('QUILMES 1L', '$3.200')"><div class="crio-label">QUILMES</div><div class="crio-price">$3.200</div></div>
-        <div class="crio-slot" onclick="openP('GASEOSA 1.5L', '$1.500')"><div class="crio-label">GASEOSA</div><div class="crio-price">$1.500</div></div>
-        <div class="crio-slot" onclick="openP('VINO SELEC.', '$4.500')"><div class="crio-label">VINO</div><div class="crio-price">$4.500</div></div>
+        <div class="crio-slot" onclick="op('QUILMES 1L', '$3.200')"><div class="crio-label">QUILMES</div><div class="crio-price">$3.200</div></div>
+        <div class="crio-slot" onclick="op('GASEOSA 1.5L', '$1.500')"><div class="crio-label">GASEOSA</div><div class="crio-price">$1.500</div></div>
+        <div class="crio-slot" onclick="op('VINO SELEC.', '$4.500')"><div class="crio-label">VINO</div><div class="crio-price">$4.500</div></div>
     </div>
 
     <div id="push-up">
-        <div class="drag-handle" onclick="closeP()"></div>
-        <div class="close-btn" onclick="closeP()">X</div>
-        <h2 id="pt" class="text-2xl font-black text-orange-500 italic uppercase">PRODUCTO</h2>
-        <div id="pp" class="text-4xl font-black mt-6">$0.00</div>
-        <button class="mt-auto w-full bg-orange-600 py-4 font-black rounded-lg uppercase" onclick="closeP()">Confirmar Pedido</button>
+        <div class="handle" onclick="cl()"></div>
+        <div class="close-x" onclick="cl()">✕</div>
+        <h2 id="ht" class="text-xl font-black text-orange-500 italic uppercase mt-4">PRODUCTO</h2>
+        <div id="hp" class="text-4xl font-black mt-6">$0.00</div>
+        <button class="mt-auto w-full bg-orange-600 py-4 font-black rounded-lg" onclick="cl()">CONFIRMAR</button>
     </div>
 
     <nav>
@@ -129,12 +121,12 @@
     </nav>
 
     <script>
-        function openP(t, p) {
-            document.getElementById('pt').innerText = t;
-            document.getElementById('pp').innerText = p;
+        function op(t, p) {
+            document.getElementById('ht').innerText = t;
+            document.getElementById('hp').innerText = p;
             document.getElementById('push-up').classList.add('active');
         }
-        function closeP() {
+        function cl() {
             document.getElementById('push-up').classList.remove('active');
         }
     </script>
