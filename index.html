@@ -1,30 +1,80 @@
-<!-- Conector Nexo Arquetipo - Nave Comidas -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-  const supabaseUrl = 'https://manaejtcurxbcsozqcsh.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // (Tu clave anon)
-  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nave Comidas - Nexo Arquetipo</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --cobalto: #0047ab; --metal: #2c3e50; --neon: #00f2ff; }
+        body { background: var(--metal); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        
+        /* Contenedor del Reactor (Carga la imagen principal) */
+        #reactor-central { 
+            text-align: center; border: 2px solid var(--neon); 
+            padding: 20px; border-radius: 15px; margin-bottom: 30px;
+            background: rgba(0,0,0,0.5);
+        }
+        #reactor-central img { max-width: 250px; border-radius: 50%; border: 4px solid var(--cobalto); }
 
-  async function cargarNave() {
-    const { data: platos, error } = await _supabase.from('platos').select('*');
-    
-    if (error) {
-      console.log("Error en los motores:", error);
-      return;
-    }
+        /* Grilla de Platos */
+        .grilla-naves { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+        .tarjeta-plato { 
+            background: #1a252f; border: 1px solid var(--cobalto); 
+            padding: 15px; border-radius: 10px; text-align: center;
+            transition: 0.3s;
+        }
+        .tarjeta-plato:hover { border-color: var(--neon); transform: translateY(-5px); }
+        .tarjeta-plato img { width: 100%; hieght: 180px; object-fit: cover; border-radius: 5px; }
+        .precio { color: var(--neon); font-weight: bold; font-size: 1.4em; }
+    </style>
+</head>
+<body>
 
-    const contenedor = document.getElementById('grid-platos');
-    contenedor.innerHTML = ''; // Limpiamos la basura anterior
+    <div id="reactor-central">
+        <h1>NAVE COMIDAS</h1>
+        <p>Unidad de Negocio Independiente - Nexo</p>
+        <div id="status-motor">Sincronizando con Supabase...</div>
+    </div>
 
-    platos.forEach(plato => {
-      contenedor.innerHTML += `
-        <div class="tarjeta-nave">
-          <img src="${plato.imagen_url}" alt="${plato.nombre}">
-          <h3>${plato.nombre}</h3>
-          <p class="precio">$${plato.precio}</p>
-        </div>
-      `;
-    });
-  }
-  cargarNave();
-</script>
+    <div class="grilla-naves" id="contenedor-platos">
+        <!-- Los platos se cargan acá automáticamente -->
+    </div>
+
+    <script>
+        const SB_URL = "https://manaejtcurxbcsozqcsh.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hbmFlanRjdXJ4YmNzb3pxY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTM5NDYsImV4cCI6MjA5MjQ2OTk0Nn0.nVDc7qImK__HF730UbCpVckB_chN_DdEYYOOFdmDm3c";
+        const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
+        async function conectarNave() {
+            const { data, error } = await _supabase.from('platos').select('*');
+            
+            if (error) {
+                document.getElementById('status-motor').innerText = "Error de Conexión";
+                return;
+            }
+
+            const lista = document.getElementById('contenedor-platos');
+            lista.innerHTML = "";
+            document.getElementById('status-motor').innerText = "Motor en Línea - Sistema Healthy";
+
+            data.forEach(plato => {
+                lista.innerHTML += `
+                    <div class="tarjeta-plato">
+                        <img src="${plato.imagen_url || 'https://via.placeholder.com/300'}" alt="Plato">
+                        <h3>${plato.nombre}</h3>
+                        <p class="precio">$${plato.precio}</p>
+                        <button style="width:100%; padding:10px; background:var(--cobalto); color:white; border:none; border-radius:5px;">
+                            SOLICITAR UNIDAD
+                        </button>
+                    </div>
+                `;
+            });
+        }
+        conectarNave();
+    </script>
+</body>
+</html>
