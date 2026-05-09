@@ -1,174 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXO NAVE - COMMAND CENTER</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
-        body { 
-            background: #000; background-image: radial-gradient(circle at center, #001a1a 0%, #000 100%);
-            color: #fff; font-family: 'Orbitron', sans-serif;
-            height: 100vh; width: 100vw; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
+<!-- Conector Nexo Arquetipo - Nave Comidas -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const supabaseUrl = 'https://manaejtcurxbcsozqcsh.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // (Tu clave anon)
+  const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        /* HEADER PROLIJO */
-        header { height: 8vh; display: flex; flex-direction: column; align-items: center; justify-content: center; border-bottom: 1px solid rgba(0, 242, 255, 0.1); }
-        .titulo { font-size: 1.2rem; font-weight: 900; font-style: italic; letter-spacing: 3px; }
-        .titulo span { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
-        .v2 { font-size: 0.8rem; color: #ffae00; margin-top: -5px; }
+  async function cargarNave() {
+    const { data: platos, error } = await _supabase.from('platos').select('*');
+    
+    if (error) {
+      console.log("Error en los motores:", error);
+      return;
+    }
 
-        /* EL CONTENEDOR DE LA NAVE */
-        .main-scene { 
-            flex: 1; position: relative; width: 100%; 
-            display: grid; grid-template-columns: 1fr 150px 1fr; grid-template-rows: 1fr 1fr 1fr;
-            align-items: center; justify-items: center; padding: 10px;
-        }
+    const contenedor = document.getElementById('grid-platos');
+    contenedor.innerHTML = ''; // Limpiamos la basura anterior
 
-        /* REACTOR CENTRAL */
-        .reactor-wrap { grid-column: 2; grid-row: 2; position: relative; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; }
-        .ring-fire { position: absolute; inset: -8px; border: 2px solid transparent; border-top: 2px solid #ff0000; border-bottom: 2px solid #00f2ff; border-radius: 50%; animation: spin 4s linear infinite; box-shadow: 0 0 15px rgba(255, 0, 0, 0.2); }
-        .inner-chassis { width: 130px; height: 130px; background: #000; border: 2px solid #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 30px rgba(0, 242, 255, 0.1); }
-        .img-core { width: 90px; filter: drop-shadow(0 0 12px #ff4500); }
-
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* TARJETAS HUD - ESTILO V2.0 (Boceto) */
-        .hud-card {
-            width: 115px; background: linear-gradient(135deg, rgba(20,20,20,0.9) 0%, rgba(5,5,5,0.95) 100%); 
-            border: 1px solid rgba(255, 174, 0, 0.3); border-top: 3px solid #ffae00;
-            padding: 10px 5px; text-align: center; border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.8); transition: 0.2s;
-        }
-        .hud-card:active { transform: scale(0.95); border-color: #ff0000; }
-        .name { font-size: 8px; font-weight: 900; color: #aaa; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
-        .price { font-size: 14px; font-weight: 900; color: #fff; }
-
-        /* DISTRIBUCIÓN GRUPAL (Siguiendo tu dibujo) */
-        .p-asado { grid-column: 2; grid-row: 1; align-self: end; margin-bottom: 15px; border-top-color: #ff0000; }
-        .p-empanadas { grid-column: 1; grid-row: 1; align-self: end; justify-self: end; margin-right: -10px; }
-        .p-pizzas { grid-column: 3; grid-row: 1; align-self: end; justify-self: start; margin-left: -10px; }
-        
-        .p-ensaladas { grid-column: 2; grid-row: 3; align-self: start; margin-top: 15px; }
-        .p-sandwich { grid-column: 1; grid-row: 3; align-self: start; justify-self: end; margin-right: -10px; }
-        .p-papas { grid-column: 3; grid-row: 3; align-self: start; justify-self: start; margin-left: -10px; }
-
-        /* BOTONES LATERALES */
-        .side-btn { width: 70px; height: 35px; background: #000; border: 1px solid #ff0000; color: #ff0000; font-size: 7px; display: flex; align-items: center; justify-content: center; font-weight: 900; border-radius: 2px; }
-        .btn-salsas { grid-column: 1; grid-row: 2; justify-self: end; margin-right: 15px; clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 15% 100%, 0% 50%); }
-        .btn-postres { grid-column: 3; grid-row: 2; justify-self: start; margin-left: 15px; clip-path: polygon(0% 0%, 85% 0%, 100% 50%, 85% 100%, 0% 100%); }
-
-        /* BEBIDAS CRYO GLACIALES */
-        .crio-chamber { height: 18vh; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 12px; background: rgba(0,5,10,0.95); border-top: 2px solid #00f2ff; }
-        .crio-slot { 
-            flex: 1; border: 1px solid rgba(0, 242, 255, 0.2); background: linear-gradient(180deg, #001a1a 0%, #000 100%);
-            border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .crio-label { font-size: 6px; color: #00f2ff; letter-spacing: 1px; font-weight: 900; opacity: 0.8; }
-        .crio-price { font-size: 12px; color: #fff; font-weight: 900; margin-top: 3px; }
-
-        /* PUSH-UP */
-        #push-up {
-            position: fixed; bottom: -110%; left: 0; width: 100%; height: 65%;
-            background: #000; border-top: 4px solid #ff0000; z-index: 200; 
-            transition: 0.4s cubic-bezier(0.1, 0.8, 0.2, 1); padding: 30px; display: flex; flex-direction: column; align-items: center;
-        }
-        #push-up.active { bottom: 0; }
-        .close-x { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #ff0000; }
-        .confirm-btn { margin-top: auto; width: 100%; background: #990000; color: #fff; padding: 20px; font-weight: 900; border-radius: 4px; text-transform: uppercase; font-size: 16px; border: 1px solid #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.3); }
-
-        /* NAV */
-        nav { height: 10vh; width: 100%; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; font-size: 10px; color: #444; }
-        .active-tab { color: #ff0000; font-weight: 900; text-shadow: 0 0 5px #ff0000; }
-    </style>
-</head>
-<body>
-
-    <header>
-        <div class="titulo italic">POMPÓN <span>NAVE</span></div>
-        <div class="v2 font-black">V2.0 COMMAND</div>
-    </header>
-
-    <main class="main-scene">
-        <div class="reactor-wrap">
-            <div class="ring-fire"></div>
-            <div class="inner-chassis">
-                <img src="https://i.ibb.co/6R0n7Y0/pollo-reactor.png" class="img-core">
-            </div>
+    platos.forEach(plato => {
+      contenedor.innerHTML += `
+        <div class="tarjeta-nave">
+          <img src="${plato.imagen_url}" alt="${plato.nombre}">
+          <h3>${plato.nombre}</h3>
+          <p class="precio">$${plato.precio}</p>
         </div>
-
-        <div class="hud-card p-asado" onclick="op('PREMIUM ASADO', '$12.500')">
-            <div class="name">Premium Asado</div>
-            <div class="price">$12.500</div>
-        </div>
-        <div class="hud-card p-empanadas" onclick="op('GOURMET EMPANADAS', '$8.000')">
-            <div class="name">Empanadas x3</div>
-            <div class="price">$8.000</div>
-        </div>
-        <div class="hud-card p-pizzas" onclick="op('ARTISAN PIZZAS', '$4.200')">
-            <div class="name">Artisan Pizzas</div>
-            <div class="price">$4.200</div>
-        </div>
-
-        <div class="side-btn btn-salsas" onclick="op('EXTRA SALSAS', '$600')">SALSAS</div>
-        <div class="side-btn btn-postres" onclick="op('NAVE POSTRES', '$1.500')">POSTRES</div>
-
-        <div class="hud-card p-sandwich" onclick="op('NAVE SANDWICH', '$5.800')">
-            <div class="name">Nave Sandwich</div>
-            <div class="price">$5.800</div>
-        </div>
-        <div class="hud-card p-ensaladas" onclick="op('FRESH ENSALADAS', '$2.500')">
-            <div class="name">Fresh Ensaladas</div>
-            <div class="price">$2.500</div>
-        </div>
-        <div class="hud-card p-papas" onclick="op('CRISPY POTATOES', '$2.000')">
-            <div class="name">Crispy Potatoes</div>
-            <div class="price">$2.000</div>
-        </div>
-    </main>
-
-    <div class="crio-chamber">
-        <div class="crio-slot" onclick="op('CRYO QUILMES', '$3.200')">
-            <div class="crio-label uppercase">CRYO / QUILMES</div>
-            <div class="crio-price">$3.200</div>
-        </div>
-        <div class="crio-slot" onclick="op('CRYO SODA', '$1.500')">
-            <div class="crio-label uppercase">CRYO / SODA</div>
-            <div class="crio-price">$1.500</div>
-        </div>
-        <div class="crio-slot" onclick="op('CRYO WINE', '$4.500')">
-            <div class="crio-label uppercase">CRYO / WINE</div>
-            <div class="crio-price">$4.500</div>
-        </div>
-    </div>
-
-    <div id="push-up">
-        <div class="close-x" onclick="cl()">✕</div>
-        <h2 id="ht" class="text-xl font-black text-orange-500 italic uppercase mt-4">PRODUCTO</h2>
-        <div id="hp" class="text-6xl font-black mt-10 text-white">$0.00</div>
-        <button class="confirm-btn" onclick="cl()">IGNITION / CONFIRMAR</button>
-    </div>
-
-    <nav>
-        <div class="active-tab">IGNITION</div>
-        <div>ORBIT</div>
-        <div>PILOT CORE</div>
-        <div>SUPPLY</div>
-    </nav>
-
-    <script>
-        function op(t, p) {
-            document.getElementById('ht').innerText = t;
-            document.getElementById('hp').innerText = p;
-            document.getElementById('push-up').classList.add('active');
-        }
-        function cl() {
-            document.getElementById('push-up').classList.remove('active');
-        }
-    </script>
-</body>
-</html>
+      `;
+    });
+  }
+  cargarNave();
+</script>
