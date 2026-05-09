@@ -3,78 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nave Comidas - Nexo Arquetipo</title>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <title>Nexo Arquetipo | Nave Pom-Pom</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        :root { --cobalto: #0047ab; --metal: #2c3e50; --neon: #00f2ff; }
-        body { background: var(--metal); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        
-        /* Contenedor del Reactor (Carga la imagen principal) */
-        #reactor-central { 
-            text-align: center; border: 2px solid var(--neon); 
-            padding: 20px; border-radius: 15px; margin-bottom: 30px;
-            background: rgba(0,0,0,0.5);
+        :root { --neon: #06b6d4; }
+        body { 
+            background-color: #000; 
+            color: #fff; 
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-        #reactor-central img { max-width: 250px; border-radius: 50%; border: 4px solid var(--cobalto); }
-
-        /* Grilla de Platos */
-        .grilla-naves { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-        }
-        .tarjeta-plato { 
-            background: #1a252f; border: 1px solid var(--cobalto); 
-            padding: 15px; border-radius: 10px; text-align: center;
-            transition: 0.3s;
-        }
-        .tarjeta-plato:hover { border-color: var(--neon); transform: translateY(-5px); }
-        .tarjeta-plato img { width: 100%; hieght: 180px; object-fit: cover; border-radius: 5px; }
-        .precio { color: var(--neon); font-weight: bold; font-size: 1.4em; }
+        .font-tech { font-family: 'Orbitron', sans-serif; }
+        .glow-border { border: 1px solid rgba(6, 182, 212, 0.2); transition: all 0.3s ease; }
+        .glow-border:hover { border-color: var(--neon); box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+        .modal-blur { backdrop-filter: blur(12px); background-color: rgba(0,0,0,0.85); }
+        [v-cloak] { display: none; }
     </style>
 </head>
 <body>
+    <div id="app" v-cloak class="min-h-screen flex flex-col items-center py-10 px-4">
+        
+        <header class="text-center mb-16 space-y-2">
+            <h1 class="font-tech text-4xl md:text-5xl font-black tracking-tighter text-cyan-500 uppercase italic">
+                Nexo Arquetipo
+            </h1>
+            <div class="h-px w-32 bg-cyan-500 mx-auto opacity-50"></div>
+            <p class="text-[10px] tracking-[0.5em] uppercase text-zinc-500 font-bold">Unidad de Negocio: Nave Pom-Pom</p>
+        </header>
 
-    <div id="reactor-central">
-        <h1>NAVE COMIDAS</h1>
-        <p>Unidad de Negocio Independiente - Nexo</p>
-        <div id="status-motor">Sincronizando con Supabase...</div>
-    </div>
+        <main class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl w-full">
+            <div v-for="item in assets" :key="item.id" 
+                 @click="abrirSistema(item)"
+                 class="group relative aspect-square bg-zinc-900/50 rounded-xl overflow-hidden cursor-pointer glow-border">
+                
+                <img :src="getURL(item.img)" 
+                     :alt="item.label"
+                     class="object-cover w-full h-full opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                
+                <div class="absolute bottom-4 left-0 right-0 px-2 text-center">
+                    <p class="font-tech text-[9px] md:text-[11px] font-bold tracking-widest uppercase text-white group-hover:text-cyan-400 transition-colors">
+                        {{ item.label }}
+                    </p>
+                </div>
+            </div>
+        </main>
 
-    <div class="grilla-naves" id="contenedor-platos">
-        <!-- Los platos se cargan acá automáticamente -->
+        <transition name="fade">
+            <div v-if="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-blur">
+                <div class="bg-zinc-950 border border-cyan-500/50 w-full max-w-lg rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-20 h-1 bg-cyan-500"></div>
+                    
+                    <button @click="modal = false" class="absolute top-4 right-4 text-zinc-600 hover:text-cyan-500 font-tech text-xs tracking-widest">
+                        [ ESC_SISTEMA ]
+                    </button>
+
+                    <h2 class="font-tech text-2xl font-black text-white uppercase italic mb-6">
+                        <span class="text-cyan-500 mr-2">></span>{{ seleccionada.label }}
+                    </h2>
+
+                    <div class="space-y-4 font-mono text-sm">
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span class="text-zinc-500">ESTADO:</span>
+                            <span class="text-cyan-400 animate-pulse uppercase">Listo para Despliegue</span>
+                        </div>
+                        <div class="flex justify-between border-b border-zinc-800 pb-2">
+                            <span class="text-zinc-500">ORIGEN:</span>
+                            <span class="text-zinc-300 uppercase italic">Nexo Arquetipo Core</span>
+                        </div>
+                        
+                        <div class="mt-8 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
+                            <p class="text-zinc-400 text-xs leading-relaxed italic">
+                                Accediendo a la base de datos de Supabase... Consultando inventario en tiempo real para {{ seleccionada.label }}. Espere confirmación de stock.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <footer class="mt-20 opacity-30">
+            <p class="text-[8px] tracking-widest uppercase">Arquitectura por Gemini 3 Flash & Fabián</p>
+        </footer>
     </div>
 
     <script>
-        const SB_URL = "https://manaejtcurxbcsozqcsh.supabase.co";
-        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hbmFlanRjdXJ4YmNzb3pxY3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4OTM5NDYsImV4cCI6MjA5MjQ2OTk0Nn0.nVDc7qImK__HF730UbCpVckB_chN_DdEYYOOFdmDm3c";
-        const _supabase = supabase.createClient(SB_URL, SB_KEY);
-
-        async function conectarNave() {
-            const { data, error } = await _supabase.from('platos').select('*');
-            
-            if (error) {
-                document.getElementById('status-motor').innerText = "Error de Conexión";
-                return;
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    // AQUÍ VA TU URL DE SUPABASE. Ejemplo: 'https://vjrqp...supabase.co'
+                    // BUSCÁ TU URL EN EL PANEL DE CONFIGURACIÓN DE SUPABASE
+                    base_project_url: 'https://TU_PROYECTO_AQUI.supabase.co', 
+                    bucket_name: 'Nave-Pom-Pom',
+                    modal: false,
+                    seleccionada: null,
+                    assets: [
+                        { id: 'pollo', img: 'pollo-reactor.webp', label: 'Pollo Reactor' },
+                        { id: 'asado', img: 'asado-escolta.webp', label: 'Asado Escolta' },
+                        { id: 'milanga', img: 'milanga-soberana.webp', label: 'Milanga Soberana' },
+                        { id: 'empanada', img: 'empanada-escuadron.webp', label: 'Empanadas' },
+                        { id: 'pizza', img: 'pizza-core.webp', label: 'Pizza Core' },
+                        { id: 'rusa', img: 'rusa-caos.webp', label: 'Ensalada Rusa' },
+                        { id: 'flan', img: 'flan-casero-nexo.webp', label: 'Flan Nexo' },
+                        { id: 'birra', img: 'birra-cryo-amber.webp', label: 'Birra Cryo' },
+                        { id: 'vino', img: 'cava-tinto-premium.webp', label: 'Cava Tinto' },
+                        { id: 'soda', img: 'soda-soberana.webp', label: 'Soda Lima-Limón' }
+                    ]
+                }
+            },
+            methods: {
+                getURL(fileName) {
+                    // Genera la URL pública automáticamente
+                    return `${this.base_project_url}/storage/v1/object/public/${this.bucket_name}/${fileName}`;
+                },
+                abrirSistema(item) {
+                    this.seleccionada = item;
+                    this.modal = true;
+                }
             }
-
-            const lista = document.getElementById('contenedor-platos');
-            lista.innerHTML = "";
-            document.getElementById('status-motor').innerText = "Motor en Línea - Sistema Healthy";
-
-            data.forEach(plato => {
-                lista.innerHTML += `
-                    <div class="tarjeta-plato">
-                        <img src="${plato.imagen_url || 'https://via.placeholder.com/300'}" alt="Plato">
-                        <h3>${plato.nombre}</h3>
-                        <p class="precio">$${plato.precio}</p>
-                        <button style="width:100%; padding:10px; background:var(--cobalto); color:white; border:none; border-radius:5px;">
-                            SOLICITAR UNIDAD
-                        </button>
-                    </div>
-                `;
-            });
-        }
-        conectarNave();
+        }).mount('#app')
     </script>
 </body>
 </html>
