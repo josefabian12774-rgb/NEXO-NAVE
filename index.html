@@ -3,98 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Arquetipo | Flavor Reactor 3.0</title>
+    <title>Nexo Nave | Protocolo Activo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; margin: 0; }
+        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Efecto de Palpitación del Reactor */
-        @keyframes pulse-heat {
-            0% { box-shadow: 0 0 20px #ff6400; transform: scale(1); }
-            50% { box-shadow: 0 0 60px #ff3300; transform: scale(1.05); }
-            100% { box-shadow: 0 0 20px #ff6400; transform: scale(1); }
+        /* Glow de Energía del Reactor */
+        @keyframes power-glow {
+            0% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
+            50% { box-shadow: 0 0 60px #ff3300; filter: brightness(1.3); }
+            100% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
         }
-        .reactor-core { border: 3px solid #ff6400; animation: pulse-heat 2s infinite ease-in-out; background: #000; }
+        .active-core { animation: power-glow 2s infinite ease-in-out; border: 3px solid #ff6400; }
 
-        /* Botones de Órbita */
-        .orbit-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; overflow: hidden; cursor: pointer; }
-        .orbit-btn:hover { border-color: #ff6400; transform: scale(1.2); z-index: 60; box-shadow: 0 0 20px #ff6400; }
+        /* Botón de Activación Estilo UI Espacial */
+        .btn-active-trigger {
+            background: rgba(255, 100, 0, 0.2);
+            backdrop-filter: blur(8px);
+            border: 2px solid #ff6400;
+            color: #ff6400;
+            text-shadow: 0 0 10px #ff6400;
+            box-shadow: inset 0 0 20px rgba(255, 100, 0, 0.3);
+            transition: all 0.4s;
+        }
+        .btn-active-trigger:hover { background: #ff6400; color: #000; transform: scale(1.1); }
+
+        .orbit-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .orbit-item:hover { transform: scale(1.15); z-index: 100; border-color: #ff6400; }
         
-        /* Pantalla de Bienvenida (El "Puente") */
-        .welcome-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 1000;
-            display: flex; flex-col; justify-content: center; align-items: center;
-            border: 4px double #ff6400; margin: 10px;
-        }
-
-        .glow-text { text-shadow: 0 0 15px #ff6400; }
         [v-cloak] { display: none; }
-
-        /* Animación de escaneo */
-        .scanner { width: 100%; height: 2px; background: rgba(255, 100, 0, 0.3); position: absolute; animation: scan 3s infinite linear; }
-        @keyframes scan { from { top: 0; } to { top: 100%; } }
     </style>
 </head>
-<body>
-    <div id="app" v-cloak>
+<body class="flex justify-center items-center">
+    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <audio id="snd-ambient" loop src="https://www.soundjay.com/transportation/subway-train-hum-1.mp3"></audio>
-        <audio id="snd-click" src="https://www.soundjay.com/buttons/button-09.mp3"></audio>
+        <audio id="snd-ambient" loop src="https://cdn.pixabay.com/download/audio/2022/03/19/audio_10787e5a3f.mp3?filename=noisy-computer-hum-11444.mp3"></audio>
+        <audio id="snd-click" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a7a46d.mp3?filename=interface-124464.mp3"></audio>
 
-        <div v-if="!sistemaIniciado" class="welcome-overlay text-center p-6">
-            <div class="scanner"></div>
-            <h1 class="text-2xl font-black text-orange-500 glow-text mb-4">NEXO ARQUETIPO</h1>
-            <p class="text-zinc-400 text-[10px] tracking-[0.4em] mb-10 uppercase">Iniciando protocolo de sabor...</p>
-            <button @click="iniciarNave" class="px-8 py-4 border-2 border-orange-600 text-orange-500 font-bold tracking-widest hover:bg-orange-600 hover:text-black transition-all uppercase italic">
-                Aceder a la Nave
-            </button>
-        </div>
+        <header class="text-center mb-4 z-50">
+            <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic">NEXO NAVE</h1>
+            <div class="flex items-center justify-center gap-2 mt-1">
+                <div class="w-2 h-2 rounded-full" :class="sistemaIniciado ? 'bg-green-500 animate-ping' : 'bg-red-500'"></div>
+                <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor: {{ sistemaIniciado ? 'Online' : 'Offline' }}</p>
+            </div>
+        </header>
 
-        <div class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative mx-auto">
+        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-6">
+            <div class="absolute inset-0 border border-orange-500/5 rounded-full animate-[spin_50s_linear_infinite]"></div>
             
-            <header class="text-center mb-2 z-40">
-                <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic">FLAVOR REACTOR 3.0</h1>
-                <p class="text-[7px] text-zinc-500 uppercase">Rio Grande - Tierra del Fuego</p>
-            </header>
-
-            <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
-                <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_40s_linear_infinite]"></div>
+            <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-900 z-50"
+                 :class="{'active-core': sistemaIniciado}">
                 
-                <div @click="abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'})" class="w-32 h-32 rounded-full overflow-hidden reactor-core z-10 cursor-pointer">
-                    <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
-                </div>
-
-                <div v-for="(item, index) in platos" :key="item.id" 
-                     :style="getPos(index, platos.length, 125)"
-                     @click="abrir(item)"
-                     class="absolute w-16 h-16 rounded-xl orbit-btn z-20 shadow-2xl">
-                    <img :src="getURL(item.img)" class="w-full h-full object-cover">
-                    <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/80 py-1">{{item.label}}</p>
-                </div>
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-opacity duration-1000" 
+                     :class="sistemaIniciado ? 'opacity-100' : 'opacity-20'">
+                
+                <button v-if="!sistemaIniciado" @click="bootSystem" 
+                        class="absolute inset-4 rounded-full btn-active-trigger font-black text-[10px] tracking-tighter leading-tight uppercase">
+                    Sistema<br><span class="text-lg">Active</span>
+                </button>
             </div>
 
-            <div class="mt-auto mb-10 w-full max-w-xs space-y-4">
-                <div class="grid grid-cols-3 gap-3">
-                    <div v-for="bev in bebidas" :key="bev.id" @click="abrir(bev)" class="border border-zinc-800 aspect-[3/4] rounded-lg overflow-hidden relative cursor-pointer hover:border-orange-500 transition-all">
-                        <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-60">
-                        <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
-                            <span class="text-[7px] font-black uppercase text-orange-500 text-center">{{bev.label}}</span>
-                        </div>
+            <div v-for="(item, index) in platos" :key="item.id" 
+                 :style="getPos(index, platos.length, 130)"
+                 @click="confirmarSuministro(item)"
+                 class="absolute w-16 h-16 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm orbit-item overflow-hidden shadow-2xl">
+                <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <p class="absolute bottom-1 w-full text-center text-[5px] font-bold uppercase tracking-widest">{{item.label}}</p>
+            </div>
+        </div>
+
+        <div class="mt-auto mb-10 w-full max-w-xs space-y-3">
+            <p class="text-[7px] tracking-[0.4em] text-orange-500/40 text-center uppercase font-bold italic">Cryo-Storage Units</p>
+            <div class="grid grid-cols-3 gap-3">
+                <div v-for="bev in bebidas" :key="bev.id" @click="confirmarSuministro(bev)" 
+                     class="border border-zinc-800 aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer hover:border-orange-500 transition-all">
+                    <img :src="getURL(bev.img)" class="w-full h-full object-cover transition-all duration-700"
+                         :class="sistemaIniciado ? 'opacity-70 group-hover:opacity-100 group-hover:scale-110' : 'opacity-10 grayscale'">
+                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
+                        <span class="text-[7px] font-black uppercase text-orange-500 text-center tracking-tighter">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div v-if="modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[2000] flex items-center justify-center p-6">
-                <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl text-center">
-                    <h2 class="text-orange-500 text-xl font-black uppercase italic glow-text">{{seleccionada.label}}</h2>
-                    <div class="h-px bg-zinc-800 w-full my-4"></div>
-                    <button @click="enviarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black text-[11px] tracking-widest uppercase hover:bg-orange-400">
-                        Confirmar Pedido
-                    </button>
-                    <button @click="modal = false" class="text-zinc-600 text-[9px] uppercase tracking-widest mt-4">Cerrar</button>
+        <div v-if="modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[1000] flex items-center justify-center p-6">
+            <div class="bg-zinc-950 border-2 border-orange-600/30 p-8 w-full max-w-xs rounded-2xl text-center shadow-[0_0_80px_rgba(255,100,0,0.2)]">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full border border-orange-500/30 overflow-hidden">
+                    <img :src="getURL(seleccionada.img)" class="w-full h-full object-cover">
                 </div>
+                <h2 class="text-orange-500 text-xl font-black uppercase italic tracking-tighter mb-1">{{seleccionada.label}}</h2>
+                <p class="text-zinc-600 text-[8px] uppercase tracking-[0.3em] mb-6">Unidad lista para despacho</p>
+                
+                <button @click="lanzarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black text-[11px] uppercase tracking-[0.2em] hover:bg-orange-400 transition-colors">
+                    Confirmar Envío
+                </button>
+                <button @click="modal = false" class="text-zinc-500 text-[9px] uppercase mt-4 tracking-widest hover:text-white">Abortar</button>
             </div>
         </div>
     </div>
@@ -128,31 +134,30 @@
                 getURL(n) { return `${this.base}/${n}`; },
                 getPos(i, total, radius) {
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
-                    return `transform: translate(${x}px, ${y}px)`;
+                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                iniciarNave() {
+                bootSystem() {
                     this.sistemaIniciado = true;
                     const amb = document.getElementById('snd-ambient');
-                    amb.volume = 0.15;
-                    amb.play().catch(e => console.log("Error audio"));
-                    this.sonarClick();
+                    amb.volume = 0.2;
+                    amb.play().catch(() => console.log("Interacción requerida"));
+                    this.playTick();
                 },
-                abrir(item) {
+                confirmarSuministro(item) {
+                    if(!this.sistemaIniciado) return;
                     this.seleccionada = item;
                     this.modal = true;
-                    this.sonarClick();
+                    this.playTick();
                 },
-                sonarClick() {
-                    const click = document.getElementById('snd-click');
-                    click.currentTime = 0;
-                    click.play();
+                playTick() {
+                    const s = document.getElementById('snd-click');
+                    s.currentTime = 0;
+                    s.play();
                 },
-                enviarWhatsApp() {
-                    const num = "5492964123456"; // CAMBIÁ POR TU NÚMERO
-                    const text = `🚀 *NEXO NAVE* \n\nSolicito unidad de: *${this.seleccionada.label}*\nStatus: Hambre detectada.`;
-                    window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
+                lanzarWhatsApp() {
+                    const num = "5492964123456"; // CAMBIAR POR TU NÚMERO
+                    const txt = encodeURIComponent(`🚀 *NEXO NAVE ACTIVADA*\n━━━━━━━━━━━━━━\n📦 Solicitud: *${this.seleccionada.label}*\n📡 Status: Despacho Inmediato`);
+                    window.open(`https://wa.me/${num}?text=${txt}`);
                 }
             }
         }).mount('#app')
