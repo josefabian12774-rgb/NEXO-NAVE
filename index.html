@@ -3,36 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Nave | Protocolo Activo</title>
+    <title>Nexo Nave | Interfaz de Silicio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Efecto de energía del reactor */
-        @keyframes reactor-glow {
-            0% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
-            50% { box-shadow: 0 0 45px #ff3300; filter: brightness(1.2); }
-            100% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
+        /* Animación del Reactor */
+        @keyframes energy-pulse {
+            0% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
+            50% { box-shadow: 0 0 50px #ff3300; filter: brightness(1.3); }
+            100% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
         }
-        .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
+        .reactor-on { animation: energy-pulse 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
-        /* Botón de activación central */
-        .btn-active-trigger {
-            background: rgba(255, 100, 0, 0.4);
-            backdrop-filter: blur(8px);
-            border: 2px solid #ff6400;
-            color: #ff6400;
-            text-shadow: 0 0 10px #ff6400;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: inset 0 0 15px rgba(255,100,0,0.5);
+        /* Pantalla de Silicio Transparente */
+        .silicio-panel {
+            background: rgba(0, 20, 40, 0.85);
+            backdrop-filter: blur(15px);
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+            position: absolute;
+            inset: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            transform: scale(0);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
         }
-        .btn-active-trigger:hover { background: #ff6400; color: #000; }
+        .silicio-panel.active { transform: scale(1); opacity: 1; }
 
-        .orbit-item { transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
-        .orbit-item:hover { border-color: #ff6400; transform: scale(1.1); box-shadow: 0 0 20px #ff6400; }
+        /* Efecto Binario de Fondo */
+        .binary-bg {
+            position: absolute; inset: 0; font-size: 10px; color: rgba(0, 242, 255, 0.1);
+            overflow: hidden; pointer-events: none; line-height: 1;
+        }
+
+        .orbit-item { transition: 0.4s; cursor: pointer; }
+        .orbit-item:hover { border-color: #ff6400; transform: scale(1.2); z-index: 100; }
         
         [v-cloak] { display: none; }
     </style>
@@ -42,11 +55,7 @@
         
         <header class="text-center mb-4 z-50">
             <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic uppercase">NEXO NAVE</h1>
-            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor Status: 
-                <span :class="sistemaIniciado ? 'text-green-500 font-bold' : 'text-red-500'">
-                    {{ sistemaIniciado ? 'ACTIVE' : 'OFFLINE' }}
-                </span>
-            </p>
+            <p class="text-[8px] tracking-[0.3em] text-zinc-500">SYSTEM: {{ sistemaIniciado ? 'ACTIVE' : 'OFFLINE' }}</p>
         </header>
 
         <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-8">
@@ -55,26 +64,51 @@
             <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-950 z-50 shadow-2xl"
                  :class="{'reactor-on': sistemaIniciado}">
                 
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover"
                      :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
 
                 <button v-if="!sistemaIniciado" @click="activarNave" 
-                        class="absolute inset-4 rounded-full btn-active-trigger font-black text-[12px] uppercase">
-                    Reactor<br><span class="text-2xl">ACTIVE</span>
+                        class="absolute inset-4 rounded-full border-2 border-orange-500 bg-orange-500/20 text-orange-500 font-black text-[12px] uppercase hover:bg-orange-500 hover:text-black transition-all">
+                    START RECTOR
                 </button>
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
                  :style="getPos(index, platos.length, 130)"
-                 @click="seleccionar(item)"
-                 class="absolute w-16 h-16 rounded-xl bg-black/80 orbit-item overflow-hidden cursor-pointer shadow-2xl">
+                 @click="desplegarVariedad(item)"
+                 class="absolute w-16 h-16 rounded-xl bg-black/80 orbit-item overflow-hidden shadow-2xl border border-white/10">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/90 py-1">{{item.label}}</p>
             </div>
         </div>
 
+        <div class="silicio-panel" :class="{'active': panelActivo}">
+            <div class="binary-bg text-justify">
+                01010101001011010101010100101101010101010010110101010101001011010101010100101101010101010010110101010101001011010101010100101101010101010010110101010101001011010101010100101101010101010010110101010101001011
+            </div>
+            
+            <div v-if="seleccionado" class="relative z-10 w-full p-8 text-center">
+                <div class="w-24 h-24 mx-auto mb-4 rounded-full border-2 border-cyan-400 overflow-hidden shadow-[0_0_20px_cyan]">
+                    <img :src="getURL(seleccionado.img)" class="w-full h-full object-cover">
+                </div>
+                <h2 class="text-cyan-400 text-xl font-black uppercase mb-6 tracking-tighter">{{seleccionado.label}}</h2>
+                
+                <div class="grid grid-cols-1 gap-3 mb-8">
+                    <button v-for="v in seleccionado.variedades" 
+                            @click="enviarPedido(v)"
+                            class="py-3 px-6 border border-cyan-500/50 bg-cyan-500/10 hover:bg-cyan-500 hover:text-black transition-all uppercase text-[10px] font-bold">
+                        {{ v }}
+                    </button>
+                </div>
+
+                <button @click="panelActivo = false" class="text-red-500 text-[10px] uppercase font-bold mt-4 tracking-widest">
+                    [ ABORTAR SELECCIÓN ]
+                </button>
+            </div>
+        </div>
+
         <div class="mt-auto mb-10 w-full max-w-xs grid grid-cols-3 gap-3">
-            <div v-for="bev in bebidas" :key="bev.id" @click="seleccionar(bev)" 
+            <div v-for="bev in bebidas" :key="bev.id" @click="desplegarVariedad(bev)" 
                  class="border border-zinc-900 aspect-[3/4] rounded-lg overflow-hidden relative cursor-pointer hover:border-orange-500">
                 <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-60">
                 <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
@@ -91,21 +125,23 @@
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     sistemaIniciado: false,
+                    panelActivo: false,
+                    seleccionado: null,
                     audioMotor: null,
                     audioClick: null,
                     platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanada' },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' },
-                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada' }
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Costillar', 'Vacío', 'Chorizo'] },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanga', variedades: ['Frita', 'Al Horno', 'Napolitana'] },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo', 'JyQ'] },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizzas', variedades: ['Muzzarella', 'Fugazzeta', 'Especial'] },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Solo', 'Con Crema', 'Con Dulce'] },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Solas', 'Cheddar', 'Provenzal'] },
+                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada', variedades: ['Mixta', 'Rusa', 'Zanahoria'] }
                     ],
                     bebidas: [
-                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
-                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Cava' },
-                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa' }
+                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza', variedades: ['Lata 473ml', 'Litro'] },
+                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Cabernet'] },
+                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa', variedades: ['Coca-Cola', 'Sprite'] }
                     ]
                 }
             },
@@ -117,27 +153,26 @@
                 },
                 activarNave() {
                     this.sistemaIniciado = true;
-                    
-                    // Inicializar audios al momento del click para que el navegador los permita
                     this.audioMotor = new Audio(this.getURL('sonido-motor.mp3'));
                     this.audioMotor.loop = true;
-                    this.audioMotor.volume = 0.3;
+                    this.audioMotor.volume = 0.2;
                     this.audioMotor.play();
-
-                    this.audioClick = new Audio(this.getURL('click-reactor.mp3'));
-                    this.audioClick.play();
+                    this.sonarClick();
                 },
                 sonarClick() {
-                    if(this.audioClick) {
-                        this.audioClick.currentTime = 0;
-                        this.audioClick.play();
-                    }
+                    const s = new Audio(this.getURL('click-reactor.mp3'));
+                    s.play();
                 },
-                seleccionar(item) {
+                desplegarVariedad(item) {
                     if(!this.sistemaIniciado) return;
                     this.sonarClick();
-                    // Simulación de pedido
-                    console.log("Unidad seleccionada: " + item.label);
+                    this.seleccionado = item;
+                    this.panelActivo = true;
+                },
+                enviarPedido(variedad) {
+                    const num = "5492964123456"; 
+                    const texto = encodeURIComponent(`🚀 *SOLICITUD NEXO*\nUnidad: *${this.seleccionado.label}*\nVariedad: *${variedad}*`);
+                    window.open(`https://wa.me/${num}?text=${texto}`);
                 }
             }
         }).mount('#app')
