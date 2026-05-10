@@ -10,25 +10,25 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Efecto de energía cuando el reactor está ACTIVE */
+        /* Glow de Energía */
         @keyframes reactor-glow {
             0% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
             50% { box-shadow: 0 0 45px #ff3300; filter: brightness(1.2); }
             100% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
         }
-        .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 3px solid #ff6400; }
+        .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
-        /* Botón de activación integrado en el pollo (Triángulo del dibujo) */
+        /* Botón de Activación Central */
         .btn-active-trigger {
-            background: rgba(255, 100, 0, 0.25);
+            background: rgba(255, 100, 0, 0.3);
             backdrop-filter: blur(4px);
             border: 2px solid #ff6400;
             color: #ff6400;
             text-shadow: 0 0 8px #ff6400;
             cursor: pointer;
-            transition: all 0.4s;
+            z-index: 100;
         }
-        .btn-active-trigger:hover { background: #ff6400; color: #000; transform: scale(1.05); }
+        .btn-active-trigger:hover { background: #ff6400; color: #000; }
 
         .orbit-item { transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
         .orbit-item:hover { border-color: #ff6400; transform: scale(1.1); box-shadow: 0 0 20px #ff6400; }
@@ -39,13 +39,17 @@
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <audio id="snd-ambient" loop :src="getURL('sonido-motor.mp3')"></audio>
-        <audio id="snd-click" :src="getURL('click-reactor.mp3')"></audio>
+        <audio id="snd-ambient" loop preload="auto">
+            <source :src="getURL('sonido-motor.mp3')" type="audio/mpeg">
+        </audio>
+        <audio id="snd-click" preload="auto">
+            <source :src="getURL('click-reactor.mp3')" type="audio/mpeg">
+        </audio>
 
         <header class="text-center mb-4 z-50">
             <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic">NEXO NAVE</h1>
-            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor Status: 
-                <span :class="sistemaIniciado ? 'text-green-500' : 'text-red-500'">
+            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor: 
+                <span :class="sistemaIniciado ? 'text-green-500 font-bold' : 'text-red-500'">
                     {{ sistemaIniciado ? 'ACTIVE' : 'OFFLINE' }}
                 </span>
             </p>
@@ -61,7 +65,7 @@
                      :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
 
                 <button v-if="!sistemaIniciado" @click="activarNave" 
-                        class="absolute inset-6 rounded-full btn-active-trigger font-black text-[11px] uppercase tracking-tighter">
+                        class="absolute inset-6 rounded-full btn-active-trigger font-black text-[11px] uppercase">
                     Reactor<br><span class="text-xl">ACTIVE</span>
                 </button>
             </div>
@@ -69,7 +73,7 @@
             <div v-for="(item, index) in platos" :key="item.id" 
                  :style="getPos(index, platos.length, 130)"
                  @click="seleccionar(item)"
-                 class="absolute w-16 h-16 rounded-xl bg-black/60 orbit-item overflow-hidden cursor-pointer">
+                 class="absolute w-16 h-16 rounded-xl bg-black/60 orbit-item overflow-hidden cursor-pointer shadow-2xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/80 py-1">{{item.label}}</p>
             </div>
@@ -117,20 +121,20 @@
                 },
                 activarNave() {
                     this.sistemaIniciado = true;
+                    // Forzamos el play con una promesa para ver si hay error
                     const motor = document.getElementById('snd-ambient');
-                    motor.volume = 0.2;
-                    motor.play();
+                    motor.volume = 0.3;
+                    motor.play().catch(error => console.error("Error motor:", error));
                     this.sonarClick();
                 },
                 sonarClick() {
                     const s = document.getElementById('snd-click');
                     s.currentTime = 0;
-                    s.play();
+                    s.play().catch(error => console.error("Error click:", error));
                 },
                 seleccionar(item) {
                     if(!this.sistemaIniciado) return;
                     this.sonarClick();
-                    // Aquí irá el modal de WhatsApp en el siguiente paso
                     console.log("Seleccionado: " + item.label);
                 }
             }
