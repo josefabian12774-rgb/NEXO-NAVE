@@ -11,10 +11,10 @@
         body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
         .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.4); cursor: pointer; transition: all 0.3s; background: #000; }
         .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 100, 0, 0.7); }
-        .orbit-btn { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; }
+        .orbit-btn { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.05); background: #0a0a0a; }
         .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.5); z-index: 50; }
-        .fridge-unit { border: 1px solid #333; background: linear-gradient(180deg, #111 0%, #000 100%); transition: all 0.3s; }
-        .fridge-unit:hover { border-color: #ff6400; transform: translateY(-5px); }
+        .fridge-unit { border: 1px solid #222; background: linear-gradient(180deg, #111 0%, #000 100%); transition: all 0.3s; }
+        .fridge-unit:hover { border-color: #ff6400; transform: translateY(-3px); }
         .glow-text { text-shadow: 0 0 10px #ff6400; }
         [v-cloak] { display: none; }
     </style>
@@ -22,12 +22,12 @@
 <body class="flex flex-col items-center">
     <div id="app" v-cloak class="w-full max-w-lg flex flex-col items-center py-6 px-4">
         
-        <header class="text-center mb-4">
+        <header class="text-center mb-2 z-40">
             <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
             <p class="text-[7px] tracking-[0.4em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
         </header>
 
-        <div class="relative w-[280px] h-[280px] flex items-center justify-center mt-4">
+        <div class="relative w-[280px] h-[280px] flex items-center justify-center mt-6">
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
             
             <div @click="abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'})" 
@@ -39,7 +39,7 @@
                  :style="getPos(index, platos.length, 105)"
                  @click="abrir(item)"
                  class="absolute w-14 h-14 rounded-xl overflow-hidden orbit-btn z-20 shadow-xl">
-                <img :src="getURL(item.img)" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all">
+                <img :src="getURL(item.img)" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500">
                 <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
                 <p class="absolute bottom-1 w-full text-center text-[5px] font-bold uppercase tracking-tighter">{{item.label}}</p>
             </div>
@@ -60,11 +60,11 @@
         </div>
 
         <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
-            <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl">
+            <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl text-center">
                 <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
-                <div class="h-px bg-zinc-800 w-full mb-4"></div>
-                <p class="text-zinc-500 text-[9px] leading-relaxed mb-6 font-mono">STATUS: OPERATIONAL<br>REGION: RIO GRANDE</p>
-                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar Pedido</button>
+                <div class="h-px bg-zinc-800 w-full my-4"></div>
+                <p class="text-zinc-500 text-[9px] font-mono uppercase mb-6">Unidad lista para despacho en Río Grande.</p>
+                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar</button>
             </div>
         </div>
     </div>
@@ -74,8 +74,8 @@
         createApp({
             data() {
                 return {
-                    // LA CLAVE: Se agregó el segundo /public/ detectado en tu captura
-                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/public',
+                    // OPCIÓN A: LA RUTA QUE TE FUNCIONÓ
+                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     modal: false,
                     seleccionada: null,
                     platos: [
