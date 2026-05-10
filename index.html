@@ -8,51 +8,52 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; overflow-x: hidden; min-h-screen; }
-        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 25px rgba(255, 100, 0, 0.3); cursor: pointer; transition: all 0.3s; }
-        .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 100, 0, 0.6); }
+        body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; overflow-x: hidden; min-height: 100vh; }
+        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.4); cursor: pointer; transition: all 0.3s; }
+        .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 100, 0, 0.7); }
         .orbit-btn { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; }
-        .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.4); z-index: 50; }
-        .fridge-unit { border: 1px solid #333; background: linear-gradient(180deg, #111 0%, #000 100%); }
+        .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.5); z-index: 50; }
+        .fridge-unit { border: 1px solid #333; background: linear-gradient(180deg, #111 0%, #000 100%); transition: all 0.3s; }
+        .fridge-unit:hover { border-color: #ff6400; transform: translateY(-5px); }
         .glow-text { text-shadow: 0 0 10px #ff6400; }
         [v-cloak] { display: none; }
     </style>
 </head>
 <body class="flex flex-col items-center">
-    <div id="app" v-cloak class="w-full max-w-lg min-h-screen flex flex-col items-center py-10 relative">
+    <div id="app" v-cloak class="w-full max-w-lg min-h-screen flex flex-col items-center py-6 relative">
         
-        <header class="text-center mb-4 z-40">
-            <h1 class="text-xl font-black tracking-[0.3em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
-            <p class="text-[7px] tracking-[0.5em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
+        <header class="text-center mb-2 z-40">
+            <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
+            <p class="text-[7px] tracking-[0.4em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
         </header>
 
-        <div class="relative w-[320px] h-[320px] flex items-center justify-center mt-10">
+        <div class="relative w-[300px] h-[300px] flex items-center justify-center mt-6">
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_40s_linear_infinite]"></div>
             
-            <div @click="abrir({label: 'Nexo Core', desc: 'Reactor de Sabor Principal'})" 
-                 class="w-32 h-32 rounded-full overflow-hidden reactor-core z-10">
+            <div @click="abrir({label: 'Pollo Reactor', desc: 'Sabor Principal'})" 
+                 class="w-28 h-28 rounded-full overflow-hidden reactor-core z-10 bg-black">
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
-                 :style="getPos(index, platos.length, 125)"
+                 :style="getPos(index, platos.length, 115)"
                  @click="abrir(item)"
-                 class="absolute w-16 h-16 rounded-xl overflow-hidden orbit-btn z-20 shadow-xl">
+                 class="absolute w-14 h-14 rounded-xl overflow-hidden orbit-btn z-20 shadow-xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all">
                 <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                <p class="absolute bottom-1 w-full text-center text-[6px] font-bold uppercase tracking-tighter">{{item.label}}</p>
+                <p class="absolute bottom-1 w-full text-center text-[5px] font-bold uppercase tracking-tighter">{{item.label}}</p>
             </div>
         </div>
 
-        <div class="mt-24 w-full px-6 space-y-4">
-            <p class="text-[8px] tracking-[0.4em] text-orange-500/50 uppercase text-center font-bold mb-4">Unidades de Suministro Líquido</p>
+        <div class="mt-16 w-full px-8 space-y-3">
+            <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic underline decoration-orange-500/30">Unidades de Suministro Líquido</p>
             <div class="grid grid-cols-3 gap-3">
                 <div v-for="bev in bebidas" :key="bev.id" 
                      @click="abrir(bev)"
-                     class="fridge-unit aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/30">
-                    <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-50 group-hover:opacity-100 transition-opacity">
-                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black to-transparent">
-                        <span class="text-[7px] font-black uppercase text-orange-500 truncate">{{bev.label}}</span>
+                     class="fridge-unit aspect-[4/5] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40">
+                    <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 transition-opacity">
+                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black via-black/20 to-transparent">
+                        <span class="text-[6px] font-black uppercase text-orange-500 text-center tracking-tighter leading-none">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
@@ -60,10 +61,10 @@
 
         <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
             <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl">
-                <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic">> {{seleccionada.label}}</h2>
+                <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
                 <div class="h-px bg-zinc-800 w-full mb-4"></div>
-                <p class="text-zinc-500 text-[10px] leading-relaxed mb-6 font-mono">STATUS: ONLINE<br>SECTOR: RIO GRANDE</p>
-                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar Pedido</button>
+                <p class="text-zinc-500 text-[9px] leading-relaxed mb-6 font-mono">STATUS: READY<br>LOCATION: RIO GRANDE</p>
+                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar</button>
             </div>
         </div>
     </div>
@@ -73,17 +74,18 @@
         createApp({
             data() {
                 return {
-                    // TU SOSPECHA ERA CORRECTA: Faltaba /imagenes/
+                    // RUTA MAESTRA CORREGIDA: imagenes/public
                     base: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom/imagenes/public',
                     modal: false,
                     seleccionada: null,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanada' },
                         { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postres' },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' }
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' },
+                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada' }
                     ],
                     bebidas: [
                         { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
@@ -106,3 +108,4 @@
     </script>
 </body>
 </html>
+
