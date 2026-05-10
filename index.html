@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,7 +30,7 @@
         <div class="relative w-[280px] h-[280px] flex items-center justify-center mt-4">
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
             
-            <div @click="abrir({label: 'Nexo Core', img: 'pollo-reactor.webp'})" 
+            <div @click="abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'})" 
                  class="w-24 h-24 rounded-full overflow-hidden reactor-core z-10">
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
@@ -75,8 +74,8 @@
         createApp({
             data() {
                 return {
-                    // URL CORREGIDA SEGÚN TUS CAPTURAS (Bucket: imagenes, ID: qcsh)
-                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
+                    // LA CLAVE: Se agregó el segundo /public/ detectado en tu captura
+                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/public',
                     modal: false,
                     seleccionada: null,
                     platos: [
