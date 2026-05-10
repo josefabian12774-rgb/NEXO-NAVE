@@ -9,12 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
-        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 25px rgba(255, 100, 0, 0.5); cursor: pointer; transition: all 0.3s; background: #000; }
-        .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 100, 0, 0.8); }
+        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 30px rgba(255, 100, 0, 0.6); cursor: pointer; transition: all 0.3s; background: #000; }
+        .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 100, 0, 0.9); }
         .orbit-btn { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; overflow: hidden; }
-        .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.5); z-index: 50; transform: scale(1.1); }
+        .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.6); z-index: 50; transform: scale(1.15); }
         .fridge-unit { border: 1px solid #222; background: linear-gradient(180deg, #111 0%, #000 100%); transition: all 0.3s; }
-        .fridge-unit:hover { border-color: #ff6400; transform: translateY(-3px); }
+        .fridge-unit:hover { border-color: #ff6400; transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255, 100, 0, 0.3); }
         .glow-text { text-shadow: 0 0 10px #ff6400; }
         [v-cloak] { display: none; }
     </style>
@@ -23,38 +23,37 @@
     <div id="app" v-cloak class="w-full max-w-lg flex flex-col items-center py-6 px-4">
         
         <header class="text-center mb-2 z-40">
-            <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
-            <p class="text-[7px] tracking-[0.4em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
+            <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
+            <p class="text-[8px] tracking-[0.4em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
         </header>
 
-        <div class="relative w-[320px] h-[320px] flex items-center justify-center mt-6">
+        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-8">
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
-            <div class="absolute inset-4 border border-orange-500/5 rounded-full animate-[spin_40s_linear_infinite_reverse]"></div>
             
             <div @click="abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'})" 
-                 class="w-32 h-32 rounded-full overflow-hidden reactor-core z-10">
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity">
+                 class="w-36 h-36 rounded-full overflow-hidden reactor-core z-10">
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
-                 :style="getPos(index, platos.length, 120)"
+                 :style="getPos(index, platos.length, 125)"
                  @click="abrir(item)"
                  class="absolute w-16 h-16 rounded-xl orbit-btn z-20 shadow-xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
                 <p class="absolute bottom-1 w-full text-center text-[6px] font-bold uppercase tracking-tighter">{{item.label}}</p>
             </div>
         </div>
 
         <div class="mt-20 w-full max-w-xs space-y-4">
-            <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic">Unidades de Suministro Líquido</p>
+            <p class="text-[8px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic">Unidades de Suministro Líquido</p>
             <div class="grid grid-cols-3 gap-3">
                 <div v-for="bev in bebidas" :key="bev.id" 
                      @click="abrir(bev)"
-                     class="fridge-unit aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40 shadow-lg">
-                    <img :src="getURL(bev.img)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black to-transparent">
-                        <span class="text-[6px] font-black uppercase text-orange-500 text-center leading-none tracking-tighter">{{bev.label}}</span>
+                     class="fridge-unit aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40">
+                    <img :src="getURL(bev.img)" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black via-black/20 to-transparent">
+                        <span class="text-[7px] font-black uppercase text-orange-500 text-center leading-none tracking-tighter">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
@@ -64,8 +63,8 @@
             <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl text-center">
                 <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
                 <div class="h-px bg-zinc-800 w-full my-4"></div>
-                <p class="text-zinc-500 text-[9px] font-mono uppercase mb-6">Unidad de sabor lista para entrega inmediata.</p>
-                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase shadow-lg shadow-orange-600/20">Confirmar</button>
+                <p class="text-zinc-500 text-[10px] font-mono uppercase mb-6">Unidad lista para despacho inmediato.</p>
+                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar</button>
             </div>
         </div>
     </div>
@@ -85,7 +84,7 @@
                         { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
                         { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
                         { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' },
-                        { id: 11, img: 'cava-tinto-premium.webp', label: 'Vino' } // Imagen del vino agregada a la órbita
+                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada' }
                     ],
                     bebidas: [
                         { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
@@ -108,4 +107,5 @@
     </script>
 </body>
 </html>
+
 
