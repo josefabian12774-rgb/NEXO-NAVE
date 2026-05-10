@@ -3,20 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Nave | Central de Pedidos</title>
+    <title>Nexo Nave | Central de Pedidos Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Animación Reactor */
-        @keyframes glow-nave {
-            0% { filter: drop-shadow(0 0 10px #ff6400); transform: scale(1); }
-            50% { filter: drop-shadow(0 0 25px #ff3300); transform: scale(1.02); }
-            100% { filter: drop-shadow(0 0 10px #ff6400); transform: scale(1); }
+        /* Animación del Núcleo del Reactor (Energía Naranja) */
+        @keyframes pulse-reactor {
+            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
+            50% { box-shadow: 0 0 50px #ff3300; border-color: #ff3300; }
+            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
         }
-        .reactor-on { animation: glow-nave 2s infinite ease-in-out; }
+        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
+
+        /* Efecto de Holograma de Silicio (Pollo Flotante) */
+        @keyframes hologram-float {
+            0% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); filter: drop-shadow(0 0 25px rgba(0,242,255,0.8)) brightness(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
+        }
+        .pollo-holograma {
+            width: 130%; max-width: none; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: plus-lighter; /* Efecto de transparencia holográfica */
+            display: none; /* Oculto hasta activación */
+        }
+        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
+
+        /* Sombra de Energía Debajo del Pollo */
+        .pollo-shadow {
+            position: absolute; width: 60%; height: 20%; background: radial-gradient(ellipse at center, rgba(0,242,255,0.4) 0%, transparent 70%);
+            bottom: -10%; left: 20%; z-index: -1;
+            filter: blur(5px);
+        }
 
         /* Pantallas de Silicio */
         .silicio-modal {
@@ -34,10 +55,6 @@
             font-size: 10px; letter-spacing: 2px;
         }
         .btn-variedad:active { background: #00f2ff; color: #000; }
-
-        /* El Pollo "Fuera del círculo" */
-        .pollo-container { position: relative; width: 200px; height: 200px; z-index: 100; }
-        .pollo-img { width: 120%; max-width: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
         [v-cloak] { display: none; }
     </style>
@@ -59,21 +76,24 @@
 
         <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
             
-            <div class="absolute w-48 h-48 z-[1000] cursor-pointer rounded-full" @click="handlePollo">
-                <div v-if="!sistemaIniciado" class="w-full h-full flex flex-col items-center justify-center bg-orange-600/10 border border-orange-500/30 rounded-full">
+            <div class="relative w-48 h-48 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
+                 :class="{'reactor-core-active': sistemaIniciado}"
+                 @click="handlePollo">
+                
+                <div class="relative w-full h-full">
+                    <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
+                    <div v-if="sistemaIniciado" class="pollo-shadow"></div>
+                </div>
+
+                <div v-if="!sistemaIniciado" class="absolute inset-0 flex flex-col items-center justify-center bg-orange-600/10 border border-orange-500/30 rounded-full">
                     <span class="text-orange-500 text-3xl font-black italic animate-pulse">ACTIVA</span>
                 </div>
-            </div>
-
-            <div class="pollo-container" :class="{'reactor-on': sistemaIniciado}">
-                <img :src="getURL('pollo-reactor.webp')" class="pollo-img transition-all duration-1000"
-                     :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
             </div>
 
             <div v-for="(p, i) in platos" :key="p.id" 
                  :style="getPos(i, platos.length, 140)"
                  @click="abrirOpciones(p)"
-                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl">
+                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl hover:scale-110 hover:border-cyan-400 transition-transform">
                 <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
             </div>
@@ -113,7 +133,7 @@
 
         <div class="mt-auto mb-8 w-full max-w-xs grid grid-cols-3 gap-3">
             <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer">
+                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer hover:border-cyan-400">
                 <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 flex items-end justify-center p-3">
                     <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
