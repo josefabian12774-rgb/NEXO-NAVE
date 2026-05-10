@@ -10,7 +10,7 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Glow de Energía */
+        /* Efecto de energía del reactor */
         @keyframes reactor-glow {
             0% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
             50% { box-shadow: 0 0 45px #ff3300; filter: brightness(1.2); }
@@ -18,15 +18,16 @@
         }
         .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
-        /* Botón de Activación Central */
+        /* Botón de activación central */
         .btn-active-trigger {
-            background: rgba(255, 100, 0, 0.3);
-            backdrop-filter: blur(4px);
+            background: rgba(255, 100, 0, 0.4);
+            backdrop-filter: blur(8px);
             border: 2px solid #ff6400;
             color: #ff6400;
-            text-shadow: 0 0 8px #ff6400;
+            text-shadow: 0 0 10px #ff6400;
             cursor: pointer;
             z-index: 100;
+            box-shadow: inset 0 0 15px rgba(255,100,0,0.5);
         }
         .btn-active-trigger:hover { background: #ff6400; color: #000; }
 
@@ -39,16 +40,9 @@
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <audio id="snd-ambient" loop preload="auto">
-            <source :src="getURL('sonido-motor.mp3')" type="audio/mpeg">
-        </audio>
-        <audio id="snd-click" preload="auto">
-            <source :src="getURL('click-reactor.mp3')" type="audio/mpeg">
-        </audio>
-
         <header class="text-center mb-4 z-50">
-            <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic">NEXO NAVE</h1>
-            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor: 
+            <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic uppercase">NEXO NAVE</h1>
+            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor Status: 
                 <span :class="sistemaIniciado ? 'text-green-500 font-bold' : 'text-red-500'">
                     {{ sistemaIniciado ? 'ACTIVE' : 'OFFLINE' }}
                 </span>
@@ -58,24 +52,24 @@
         <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-8">
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
             
-            <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-950 z-50"
+            <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-950 z-50 shadow-2xl"
                  :class="{'reactor-on': sistemaIniciado}">
                 
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
                      :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
 
                 <button v-if="!sistemaIniciado" @click="activarNave" 
-                        class="absolute inset-6 rounded-full btn-active-trigger font-black text-[11px] uppercase">
-                    Reactor<br><span class="text-xl">ACTIVE</span>
+                        class="absolute inset-4 rounded-full btn-active-trigger font-black text-[12px] uppercase">
+                    Reactor<br><span class="text-2xl">ACTIVE</span>
                 </button>
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
                  :style="getPos(index, platos.length, 130)"
                  @click="seleccionar(item)"
-                 class="absolute w-16 h-16 rounded-xl bg-black/60 orbit-item overflow-hidden cursor-pointer shadow-2xl">
+                 class="absolute w-16 h-16 rounded-xl bg-black/80 orbit-item overflow-hidden cursor-pointer shadow-2xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
-                <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/80 py-1">{{item.label}}</p>
+                <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/90 py-1">{{item.label}}</p>
             </div>
         </div>
 
@@ -97,6 +91,8 @@
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     sistemaIniciado: false,
+                    audioMotor: null,
+                    audioClick: null,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
@@ -121,21 +117,27 @@
                 },
                 activarNave() {
                     this.sistemaIniciado = true;
-                    // Forzamos el play con una promesa para ver si hay error
-                    const motor = document.getElementById('snd-ambient');
-                    motor.volume = 0.3;
-                    motor.play().catch(error => console.error("Error motor:", error));
-                    this.sonarClick();
+                    
+                    // Inicializar audios al momento del click para que el navegador los permita
+                    this.audioMotor = new Audio(this.getURL('sonido-motor.mp3'));
+                    this.audioMotor.loop = true;
+                    this.audioMotor.volume = 0.3;
+                    this.audioMotor.play();
+
+                    this.audioClick = new Audio(this.getURL('click-reactor.mp3'));
+                    this.audioClick.play();
                 },
                 sonarClick() {
-                    const s = document.getElementById('snd-click');
-                    s.currentTime = 0;
-                    s.play().catch(error => console.error("Error click:", error));
+                    if(this.audioClick) {
+                        this.audioClick.currentTime = 0;
+                        this.audioClick.play();
+                    }
                 },
                 seleccionar(item) {
                     if(!this.sistemaIniciado) return;
                     this.sonarClick();
-                    console.log("Seleccionado: " + item.label);
+                    // Simulación de pedido
+                    console.log("Unidad seleccionada: " + item.label);
                 }
             }
         }).mount('#app')
