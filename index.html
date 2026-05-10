@@ -10,28 +10,28 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Glow de Energía del Reactor */
-        @keyframes power-glow {
-            0% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
-            50% { box-shadow: 0 0 60px #ff3300; filter: brightness(1.3); }
-            100% { box-shadow: 0 0 20px #ff6400; filter: brightness(1); }
+        /* Efecto de energía cuando el reactor está ACTIVE */
+        @keyframes reactor-glow {
+            0% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
+            50% { box-shadow: 0 0 45px #ff3300; filter: brightness(1.2); }
+            100% { box-shadow: 0 0 15px #ff6400; filter: brightness(1); }
         }
-        .active-core { animation: power-glow 2s infinite ease-in-out; border: 3px solid #ff6400; }
+        .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 3px solid #ff6400; }
 
-        /* Botón de Activación Estilo UI Espacial */
+        /* Botón de activación integrado en el pollo (Triángulo del dibujo) */
         .btn-active-trigger {
-            background: rgba(255, 100, 0, 0.2);
-            backdrop-filter: blur(8px);
+            background: rgba(255, 100, 0, 0.25);
+            backdrop-filter: blur(4px);
             border: 2px solid #ff6400;
             color: #ff6400;
-            text-shadow: 0 0 10px #ff6400;
-            box-shadow: inset 0 0 20px rgba(255, 100, 0, 0.3);
+            text-shadow: 0 0 8px #ff6400;
+            cursor: pointer;
             transition: all 0.4s;
         }
-        .btn-active-trigger:hover { background: #ff6400; color: #000; transform: scale(1.1); }
+        .btn-active-trigger:hover { background: #ff6400; color: #000; transform: scale(1.05); }
 
-        .orbit-item { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-        .orbit-item:hover { transform: scale(1.15); z-index: 100; border-color: #ff6400; }
+        .orbit-item { transition: 0.3s; border: 1px solid rgba(255,255,255,0.05); }
+        .orbit-item:hover { border-color: #ff6400; transform: scale(1.1); box-shadow: 0 0 20px #ff6400; }
         
         [v-cloak] { display: none; }
     </style>
@@ -39,68 +39,49 @@
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <audio id="snd-ambient" loop src="https://cdn.pixabay.com/download/audio/2022/03/19/audio_10787e5a3f.mp3?filename=noisy-computer-hum-11444.mp3"></audio>
-        <audio id="snd-click" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a7a46d.mp3?filename=interface-124464.mp3"></audio>
+        <audio id="snd-ambient" loop :src="getURL('sonido-motor.mp3')"></audio>
+        <audio id="snd-click" :src="getURL('click-reactor.mp3')"></audio>
 
         <header class="text-center mb-4 z-50">
             <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic">NEXO NAVE</h1>
-            <div class="flex items-center justify-center gap-2 mt-1">
-                <div class="w-2 h-2 rounded-full" :class="sistemaIniciado ? 'bg-green-500 animate-ping' : 'bg-red-500'"></div>
-                <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor: {{ sistemaIniciado ? 'Online' : 'Offline' }}</p>
-            </div>
+            <p class="text-[8px] tracking-[0.3em] text-zinc-500 uppercase">Reactor Status: 
+                <span :class="sistemaIniciado ? 'text-green-500' : 'text-red-500'">
+                    {{ sistemaIniciado ? 'ACTIVE' : 'OFFLINE' }}
+                </span>
+            </p>
         </header>
 
-        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-6">
-            <div class="absolute inset-0 border border-orange-500/5 rounded-full animate-[spin_50s_linear_infinite]"></div>
+        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-8">
+            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
             
-            <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-900 z-50"
-                 :class="{'active-core': sistemaIniciado}">
+            <div class="w-40 h-40 rounded-full overflow-hidden relative flex items-center justify-center bg-zinc-950 z-50"
+                 :class="{'reactor-on': sistemaIniciado}">
                 
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-opacity duration-1000" 
-                     :class="sistemaIniciado ? 'opacity-100' : 'opacity-20'">
-                
-                <button v-if="!sistemaIniciado" @click="bootSystem" 
-                        class="absolute inset-4 rounded-full btn-active-trigger font-black text-[10px] tracking-tighter leading-tight uppercase">
-                    Sistema<br><span class="text-lg">Active</span>
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
+                     :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
+
+                <button v-if="!sistemaIniciado" @click="activarNave" 
+                        class="absolute inset-6 rounded-full btn-active-trigger font-black text-[11px] uppercase tracking-tighter">
+                    Reactor<br><span class="text-xl">ACTIVE</span>
                 </button>
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
                  :style="getPos(index, platos.length, 130)"
-                 @click="confirmarSuministro(item)"
-                 class="absolute w-16 h-16 rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm orbit-item overflow-hidden shadow-2xl">
-                <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                <p class="absolute bottom-1 w-full text-center text-[5px] font-bold uppercase tracking-widest">{{item.label}}</p>
+                 @click="seleccionar(item)"
+                 class="absolute w-16 h-16 rounded-xl bg-black/60 orbit-item overflow-hidden cursor-pointer">
+                <img :src="getURL(item.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
+                <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/80 py-1">{{item.label}}</p>
             </div>
         </div>
 
-        <div class="mt-auto mb-10 w-full max-w-xs space-y-3">
-            <p class="text-[7px] tracking-[0.4em] text-orange-500/40 text-center uppercase font-bold italic">Cryo-Storage Units</p>
-            <div class="grid grid-cols-3 gap-3">
-                <div v-for="bev in bebidas" :key="bev.id" @click="confirmarSuministro(bev)" 
-                     class="border border-zinc-800 aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer hover:border-orange-500 transition-all">
-                    <img :src="getURL(bev.img)" class="w-full h-full object-cover transition-all duration-700"
-                         :class="sistemaIniciado ? 'opacity-70 group-hover:opacity-100 group-hover:scale-110' : 'opacity-10 grayscale'">
-                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
-                        <span class="text-[7px] font-black uppercase text-orange-500 text-center tracking-tighter">{{bev.label}}</span>
-                    </div>
+        <div class="mt-auto mb-10 w-full max-w-xs grid grid-cols-3 gap-3">
+            <div v-for="bev in bebidas" :key="bev.id" @click="seleccionar(bev)" 
+                 class="border border-zinc-900 aspect-[3/4] rounded-lg overflow-hidden relative cursor-pointer hover:border-orange-500">
+                <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-60">
+                <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
+                    <span class="text-[7px] font-black uppercase text-orange-500 text-center">{{bev.label}}</span>
                 </div>
-            </div>
-        </div>
-
-        <div v-if="modal" class="fixed inset-0 bg-black/90 backdrop-blur-xl z-[1000] flex items-center justify-center p-6">
-            <div class="bg-zinc-950 border-2 border-orange-600/30 p-8 w-full max-w-xs rounded-2xl text-center shadow-[0_0_80px_rgba(255,100,0,0.2)]">
-                <div class="w-20 h-20 mx-auto mb-4 rounded-full border border-orange-500/30 overflow-hidden">
-                    <img :src="getURL(seleccionada.img)" class="w-full h-full object-cover">
-                </div>
-                <h2 class="text-orange-500 text-xl font-black uppercase italic tracking-tighter mb-1">{{seleccionada.label}}</h2>
-                <p class="text-zinc-600 text-[8px] uppercase tracking-[0.3em] mb-6">Unidad lista para despacho</p>
-                
-                <button @click="lanzarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black text-[11px] uppercase tracking-[0.2em] hover:bg-orange-400 transition-colors">
-                    Confirmar Envío
-                </button>
-                <button @click="modal = false" class="text-zinc-500 text-[9px] uppercase mt-4 tracking-widest hover:text-white">Abortar</button>
             </div>
         </div>
     </div>
@@ -111,8 +92,6 @@
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    modal: false,
-                    seleccionada: null,
                     sistemaIniciado: false,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
@@ -136,28 +115,23 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                bootSystem() {
+                activarNave() {
                     this.sistemaIniciado = true;
-                    const amb = document.getElementById('snd-ambient');
-                    amb.volume = 0.2;
-                    amb.play().catch(() => console.log("Interacción requerida"));
-                    this.playTick();
+                    const motor = document.getElementById('snd-ambient');
+                    motor.volume = 0.2;
+                    motor.play();
+                    this.sonarClick();
                 },
-                confirmarSuministro(item) {
-                    if(!this.sistemaIniciado) return;
-                    this.seleccionada = item;
-                    this.modal = true;
-                    this.playTick();
-                },
-                playTick() {
+                sonarClick() {
                     const s = document.getElementById('snd-click');
                     s.currentTime = 0;
                     s.play();
                 },
-                lanzarWhatsApp() {
-                    const num = "5492964123456"; // CAMBIAR POR TU NÚMERO
-                    const txt = encodeURIComponent(`🚀 *NEXO NAVE ACTIVADA*\n━━━━━━━━━━━━━━\n📦 Solicitud: *${this.seleccionada.label}*\n📡 Status: Despacho Inmediato`);
-                    window.open(`https://wa.me/${num}?text=${txt}`);
+                seleccionar(item) {
+                    if(!this.sistemaIniciado) return;
+                    this.sonarClick();
+                    // Aquí irá el modal de WhatsApp en el siguiente paso
+                    console.log("Seleccionado: " + item.label);
                 }
             }
         }).mount('#app')
