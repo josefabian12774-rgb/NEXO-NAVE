@@ -3,91 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Arquetipo | Nave Pom-Pom</title>
+    <title>Nexo Arquetipo | Flavor Reactor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #06b6d4; }
-        body { 
-            background-color: #000; 
-            color: #fff; 
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-        .font-tech { font-family: 'Orbitron', sans-serif; }
-        .glow-border { border: 1px solid rgba(6, 182, 212, 0.2); transition: all 0.3s ease; }
-        .glow-border:hover { border-color: var(--neon); box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
-        .modal-blur { backdrop-filter: blur(12px); background-color: rgba(0,0,0,0.85); }
-        [v-cloak] { display: none; }
+        body { background-color: #050505; color: #fff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+        .reactor-core { box-shadow: 0 0 50px rgba(255, 100, 0, 0.2); border: 2px solid #ff6400; }
+        .orbit-item { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); }
+        .orbit-item:hover { transform: scale(1.1); border-color: #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.5); }
+        .glow-text { text-shadow: 0 0 10px #ff6400; }
     </style>
 </head>
 <body>
-    <div id="app" v-cloak class="min-h-screen flex flex-col items-center py-10 px-4">
+    <div id="app" class="h-screen w-screen flex flex-col items-center justify-center relative bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000_100%)]">
         
-        <header class="text-center mb-16 space-y-2">
-            <h1 class="font-tech text-4xl md:text-5xl font-black tracking-tighter text-cyan-500 uppercase italic">
-                Nexo Arquetipo
-            </h1>
-            <div class="h-px w-32 bg-cyan-500 mx-auto opacity-50"></div>
-            <p class="text-[10px] tracking-[0.5em] uppercase text-zinc-500 font-bold">Unidad de Negocio: Nave Pom-Pom</p>
-        </header>
+        <div class="absolute top-8 text-center">
+            <h1 class="text-2xl font-black tracking-[0.3em] text-orange-500 glow-text italic">FLAVOR REACTOR 2.0</h1>
+            <p class="text-[8px] tracking-[0.5em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
+        </div>
 
-        <main class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl w-full">
-            <div v-for="item in assets" :key="item.id" 
-                 @click="abrirSistema(item)"
-                 class="group relative aspect-square bg-zinc-900/50 rounded-xl overflow-hidden cursor-pointer glow-border">
-                
-                <img :src="getURL(item.img)" 
-                     :alt="item.label"
-                     class="object-cover w-full h-full opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-in-out grayscale group-hover:grayscale-0">
-                
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
-                
-                <div class="absolute bottom-4 left-0 right-0 px-2 text-center">
-                    <p class="font-tech text-[9px] md:text-[11px] font-bold tracking-widest uppercase text-white group-hover:text-cyan-400 transition-colors">
-                        {{ item.label }}
-                    </p>
-                </div>
+        <div class="relative w-[300px] h-[300px] md:w-[450px] md:h-[450px] flex items-center justify-center">
+            <div class="absolute inset-0 border border-orange-500/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
+            <div class="absolute inset-4 border border-orange-500/10 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+            
+            <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden reactor-core z-10 bg-black">
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover opacity-80">
             </div>
-        </main>
 
-        <transition name="fade">
-            <div v-if="modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-blur">
-                <div class="bg-zinc-950 border border-cyan-500/50 w-full max-w-lg rounded-2xl p-8 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-20 h-1 bg-cyan-500"></div>
-                    
-                    <button @click="modal = false" class="absolute top-4 right-4 text-zinc-600 hover:text-cyan-500 font-tech text-xs tracking-widest">
-                        [ ESC_SISTEMA ]
-                    </button>
-
-                    <h2 class="font-tech text-2xl font-black text-white uppercase italic mb-6">
-                        <span class="text-cyan-500 mr-2">></span>{{ seleccionada.label }}
-                    </h2>
-
-                    <div class="space-y-4 font-mono text-sm">
-                        <div class="flex justify-between border-b border-zinc-800 pb-2">
-                            <span class="text-zinc-500">ESTADO:</span>
-                            <span class="text-cyan-400 animate-pulse uppercase">Listo para Despliegue</span>
-                        </div>
-                        <div class="flex justify-between border-b border-zinc-800 pb-2">
-                            <span class="text-zinc-500">ORIGEN:</span>
-                            <span class="text-zinc-300 uppercase italic">Nexo Arquetipo Core</span>
-                        </div>
-                        
-                        <div class="mt-8 p-4 bg-zinc-900/50 rounded-lg border border-zinc-800">
-                            <p class="text-zinc-400 text-xs leading-relaxed italic">
-                                Accediendo a la base de datos de Supabase... Consultando inventario en tiempo real para {{ seleccionada.label }}. Espere confirmación de stock.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div v-for="(item, index) in assets" :key="item.id" 
+                 :style="getPos(index)"
+                 @click="abrir(item)"
+                 class="absolute w-16 h-16 md:w-24 md:h-24 rounded-lg overflow-hidden orbit-item cursor-pointer bg-zinc-900 shadow-2xl z-20">
+                <img :src="getURL(item.img)" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
+                <p class="absolute bottom-1 w-full text-center text-[6px] md:text-[8px] font-bold uppercase tracking-tighter">{{item.label}}</p>
             </div>
-        </transition>
+        </div>
 
-        <footer class="mt-20 opacity-30">
-            <p class="text-[8px] tracking-widest uppercase">Arquitectura por Gemini 3 Flash & Fabián</p>
-        </footer>
+        <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
+            <div class="bg-zinc-950 border-t-4 border-orange-600 p-8 max-w-sm w-full rounded-b-xl shadow-[0_0_100px_rgba(0,0,0,1)]">
+                <h2 class="text-orange-500 text-xl font-black mb-2 uppercase tracking-tighter italic">> {{seleccionada.label}}</h2>
+                <div class="h-px bg-zinc-800 w-full mb-4"></div>
+                <p class="text-zinc-500 text-[10px] leading-relaxed mb-6 font-mono">ESTADO: LISTO PARA DESPLIEGUE.<br>CATEGORÍA: UNIDAD_DE_CONSUMO.<br>SISTEMA: NEXO_ARQUETIPO.</p>
+                <button class="w-full py-3 bg-orange-600 text-black font-black text-xs tracking-widest hover:bg-orange-400 transition-colors uppercase">Ver Carta Real</button>
+            </div>
+        </div>
+
+        <div class="absolute bottom-4 opacity-20 text-[6px] tracking-widest uppercase italic">Sistema Híbrido Río Grande - 2024</div>
     </div>
 
     <script>
@@ -95,35 +58,33 @@
         createApp({
             data() {
                 return {
-                    // AQUÍ VA TU URL DE SUPABASE. Ejemplo: 'https://vjrqp...supabase.co'
-                    // BUSCÁ TU URL EN EL PANEL DE CONFIGURACIÓN DE SUPABASE
-                    base_project_url: 'https://TU_PROYECTO_AQUI.supabase.co', 
-                    bucket_name: 'Nave-Pom-Pom',
+                    // LA URL QUE SAQUÉ DE TU CAPTURA
+                    base: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom/public',
                     modal: false,
                     seleccionada: null,
                     assets: [
-                        { id: 'pollo', img: 'pollo-reactor.webp', label: 'Pollo Reactor' },
-                        { id: 'asado', img: 'asado-escolta.webp', label: 'Asado Escolta' },
-                        { id: 'milanga', img: 'milanga-soberana.webp', label: 'Milanga Soberana' },
-                        { id: 'empanada', img: 'empanada-escuadron.webp', label: 'Empanadas' },
-                        { id: 'pizza', img: 'pizza-core.webp', label: 'Pizza Core' },
-                        { id: 'rusa', img: 'rusa-caos.webp', label: 'Ensalada Rusa' },
-                        { id: 'flan', img: 'flan-casero-nexo.webp', label: 'Flan Nexo' },
-                        { id: 'birra', img: 'birra-cryo-amber.webp', label: 'Birra Cryo' },
-                        { id: 'vino', img: 'cava-tinto-premium.webp', label: 'Cava Tinto' },
-                        { id: 'soda', img: 'soda-soberana.webp', label: 'Soda Lima-Limón' }
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Flan' },
+                        { id: 6, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
+                        { id: 7, img: 'cava-tinto-premium.webp', label: 'Vinos' },
+                        { id: 8, img: 'soda-lemon-reactor.webp', label: 'Bebida' }
                     ]
                 }
             },
             methods: {
-                getURL(fileName) {
-                    // Genera la URL pública automáticamente
-                    return `${this.base_project_url}/storage/v1/object/public/${this.bucket_name}/${fileName}`;
+                getURL(n) { return `${this.base}/${n}`; },
+                getPos(i) {
+                    const total = this.assets.length;
+                    const angle = (i * (360 / total)) * (Math.PI / 180);
+                    const radius = window.innerWidth > 768 ? 220 : 160;
+                    const x = Math.cos(angle) * radius;
+                    const y = Math.sin(angle) * radius;
+                    return `transform: translate(${x}px, ${y}px)`;
                 },
-                abrirSistema(item) {
-                    this.seleccionada = item;
-                    this.modal = true;
-                }
+                abrir(item) { this.seleccionada = item; this.modal = true; }
             }
         }).mount('#app')
     </script>
