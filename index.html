@@ -31,12 +31,12 @@
             <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_40s_linear_infinite]"></div>
             
             <div @click="abrir({label: 'Pollo Reactor', desc: 'Sabor Principal'})" 
-                 class="w-28 h-28 rounded-full overflow-hidden reactor-core z-10 bg-black">
+                 class="w-24 h-24 rounded-full overflow-hidden reactor-core z-10 bg-black">
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
-                 :style="getPos(index, platos.length, 115)"
+                 :style="getPos(index, platos.length, 110)"
                  @click="abrir(item)"
                  class="absolute w-14 h-14 rounded-xl overflow-hidden orbit-btn z-20 shadow-xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all">
@@ -46,14 +46,14 @@
         </div>
 
         <div class="mt-16 w-full px-8 space-y-3">
-            <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic underline decoration-orange-500/30">Unidades de Suministro Líquido</p>
+            <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic">Unidades de Suministro Líquido</p>
             <div class="grid grid-cols-3 gap-3">
                 <div v-for="bev in bebidas" :key="bev.id" 
                      @click="abrir(bev)"
                      class="fridge-unit aspect-[4/5] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40">
                     <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 transition-opacity">
                     <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black via-black/20 to-transparent">
-                        <span class="text-[6px] font-black uppercase text-orange-500 text-center tracking-tighter leading-none">{{bev.label}}</span>
+                        <span class="text-[6px] font-black uppercase text-orange-500 text-center leading-none">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
@@ -62,9 +62,8 @@
         <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
             <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl">
                 <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
-                <div class="h-px bg-zinc-800 w-full mb-4"></div>
-                <p class="text-zinc-500 text-[9px] leading-relaxed mb-6 font-mono">STATUS: READY<br>LOCATION: RIO GRANDE</p>
-                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar</button>
+                <p class="text-zinc-500 text-[9px] font-mono">STATUS: READY<br>LOCATION: RIO GRANDE</p>
+                <button class="w-full mt-4 py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest uppercase">Confirmar</button>
             </div>
         </div>
     </div>
@@ -74,7 +73,7 @@
         createApp({
             data() {
                 return {
-                    // RUTA MAESTRA CORREGIDA: imagenes/public
+                    // LA RUTA MAESTRA CORREGIDA: Incluye el Bucket y el ID correcto (qpsh)
                     base: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom/imagenes/public',
                     modal: false,
                     seleccionada: null,
@@ -84,8 +83,7 @@
                         { id: 3, img: 'empanada-escuadron.webp', label: 'Empanada' },
                         { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
                         { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' },
-                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada' }
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' }
                     ],
                     bebidas: [
                         { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
@@ -108,4 +106,3 @@
     </script>
 </body>
 </html>
-
