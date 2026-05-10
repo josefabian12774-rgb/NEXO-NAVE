@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,8 +9,8 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; overflow-x: hidden; min-height: 100vh; }
-        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.4); cursor: pointer; transition: all 0.3s; }
+        body { background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%); color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; margin: 0; overflow-x: hidden; }
+        .reactor-core { border: 2px solid #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.4); cursor: pointer; transition: all 0.3s; background: #000; }
         .reactor-core:hover { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 100, 0, 0.7); }
         .orbit-btn { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; }
         .orbit-btn:hover { border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.5); z-index: 50; }
@@ -20,23 +21,23 @@
     </style>
 </head>
 <body class="flex flex-col items-center">
-    <div id="app" v-cloak class="w-full max-w-lg min-h-screen flex flex-col items-center py-6 relative">
+    <div id="app" v-cloak class="w-full max-w-lg flex flex-col items-center py-6 px-4">
         
-        <header class="text-center mb-2 z-40">
+        <header class="text-center mb-4">
             <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
             <p class="text-[7px] tracking-[0.4em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
         </header>
 
-        <div class="relative w-[300px] h-[300px] flex items-center justify-center mt-6">
-            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_40s_linear_infinite]"></div>
+        <div class="relative w-[280px] h-[280px] flex items-center justify-center mt-4">
+            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
             
-            <div @click="abrir({label: 'Pollo Reactor', desc: 'Sabor Principal'})" 
-                 class="w-24 h-24 rounded-full overflow-hidden reactor-core z-10 bg-black">
+            <div @click="abrir({label: 'Nexo Core', img: 'pollo-reactor.webp'})" 
+                 class="w-24 h-24 rounded-full overflow-hidden reactor-core z-10">
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
-                 :style="getPos(index, platos.length, 110)"
+                 :style="getPos(index, platos.length, 105)"
                  @click="abrir(item)"
                  class="absolute w-14 h-14 rounded-xl overflow-hidden orbit-btn z-20 shadow-xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all">
@@ -45,15 +46,15 @@
             </div>
         </div>
 
-        <div class="mt-16 w-full px-8 space-y-3">
+        <div class="mt-16 w-full max-w-xs space-y-4">
             <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic">Unidades de Suministro Líquido</p>
             <div class="grid grid-cols-3 gap-3">
                 <div v-for="bev in bebidas" :key="bev.id" 
                      @click="abrir(bev)"
-                     class="fridge-unit aspect-[4/5] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40">
+                     class="fridge-unit aspect-[3/4] rounded-lg overflow-hidden relative group cursor-pointer border-t-2 border-orange-600/40">
                     <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-40 group-hover:opacity-100 transition-opacity">
-                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black via-black/20 to-transparent">
-                        <span class="text-[6px] font-black uppercase text-orange-500 text-center leading-none">{{bev.label}}</span>
+                    <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-[6px] font-black uppercase text-orange-500 text-center leading-none tracking-tighter">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
@@ -62,8 +63,9 @@
         <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
             <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl shadow-2xl">
                 <h2 class="text-orange-500 text-lg font-black mb-1 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
-                <p class="text-zinc-500 text-[9px] font-mono">STATUS: READY<br>LOCATION: RIO GRANDE</p>
-                <button class="w-full mt-4 py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest uppercase">Confirmar</button>
+                <div class="h-px bg-zinc-800 w-full mb-4"></div>
+                <p class="text-zinc-500 text-[9px] leading-relaxed mb-6 font-mono">STATUS: OPERATIONAL<br>REGION: RIO GRANDE</p>
+                <button class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest hover:bg-orange-400 uppercase">Confirmar Pedido</button>
             </div>
         </div>
     </div>
@@ -73,8 +75,8 @@
         createApp({
             data() {
                 return {
-                    // LA RUTA MAESTRA CORREGIDA: Incluye el Bucket y el ID correcto (qpsh)
-                    base: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom/imagenes/public',
+                    // URL CORREGIDA SEGÚN TUS CAPTURAS (Bucket: imagenes, ID: qcsh)
+                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     modal: false,
                     seleccionada: null,
                     platos: [
