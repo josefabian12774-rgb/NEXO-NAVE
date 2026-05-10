@@ -3,54 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Arquetipo | Flavor Reactor</title>
+    <title>Nexo Arquetipo | Flavor Reactor 2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background-color: #050505; color: #fff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
-        .reactor-core { box-shadow: 0 0 50px rgba(255, 100, 0, 0.2); border: 2px solid #ff6400; }
-        .orbit-item { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); }
-        .orbit-item:hover { transform: scale(1.1); border-color: #ff6400; box-shadow: 0 0 20px rgba(255, 100, 0, 0.5); }
-        .glow-text { text-shadow: 0 0 10px #ff6400; }
+        .reactor-core { box-shadow: 0 0 30px rgba(255, 100, 0, 0.15); border: 2px solid #ff6400; }
+        .orbit-item { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.05); background: #0a0a0a; }
+        .orbit-item:hover { transform: scale(1.05); border-color: #ff6400; box-shadow: 0 0 15px rgba(255, 100, 0, 0.3); z-index: 30; }
+        .glow-text { text-shadow: 0 0 8px #ff6400; }
+        [v-cloak] { display: none; }
     </style>
 </head>
 <body>
-    <div id="app" class="h-screen w-screen flex flex-col items-center justify-center relative bg-[radial-gradient(circle_at_center,_#1a1a1a_0%,_#000_100%)]">
+    <div id="app" v-cloak class="h-screen w-screen flex flex-col items-center justify-center relative bg-[radial-gradient(circle_at_center,_#121212_0%,_#000_100%)]">
         
-        <div class="absolute top-8 text-center">
-            <h1 class="text-2xl font-black tracking-[0.3em] text-orange-500 glow-text italic">FLAVOR REACTOR 2.0</h1>
-            <p class="text-[8px] tracking-[0.5em] text-zinc-500 uppercase">Nexo Arquetipo Core</p>
+        <div class="absolute top-6 text-center z-40">
+            <h1 class="text-xl md:text-2xl font-black tracking-[0.25em] text-orange-500 glow-text italic uppercase">FLAVOR REACTOR 2.0</h1>
+            <p class="text-[7px] md:text-[8px] tracking-[0.4em] text-zinc-600 uppercase font-light">Nexo Arquetipo Core - Río Grande</p>
         </div>
 
-        <div class="relative w-[300px] h-[300px] md:w-[450px] md:h-[450px] flex items-center justify-center">
-            <div class="absolute inset-0 border border-orange-500/20 rounded-full animate-[spin_20s_linear_infinite]"></div>
-            <div class="absolute inset-4 border border-orange-500/10 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+        <div class="relative w-[280px] h-[280px] md:w-[380px] md:h-[380px] flex items-center justify-center">
+            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_30s_linear_infinite]"></div>
+            <div class="absolute inset-2 border border-orange-500/5 rounded-full animate-[spin_25s_linear_infinite_reverse]"></div>
             
-            <div class="w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden reactor-core z-10 bg-black">
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover opacity-80">
+            <div class="w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden reactor-core z-10 bg-black shadow-2xl">
+                <img :src="getURL('public/pollo-reactor.webp')" alt="Reactor Core" class="w-full h-full object-cover opacity-90 grayscale hover:grayscale-0 transition-all duration-500">
             </div>
 
             <div v-for="(item, index) in assets" :key="item.id" 
                  :style="getPos(index)"
-                 @click="abrir(item)"
-                 class="absolute w-16 h-16 md:w-24 md:h-24 rounded-lg overflow-hidden orbit-item cursor-pointer bg-zinc-900 shadow-2xl z-20">
-                <img :src="getURL(item.img)" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
-                <p class="absolute bottom-1 w-full text-center text-[6px] md:text-[8px] font-bold uppercase tracking-tighter">{{item.label}}</p>
+                 @click="abrirSistema(item)"
+                 class="absolute w-14 h-14 md:w-20 md:h-20 rounded-xl overflow-hidden orbit-item cursor-pointer z-20 shadow-lg">
+                
+                <img :src="getURL(`public/${item.img}`)" 
+                     :alt="item.label"
+                     class="w-full h-full object-cover grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition-all">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-50"></div>
+                
+                <div class="absolute bottom-0.5 left-0 right-0 px-1 text-center">
+                    <p class="text-[5px] md:text-[7px] font-bold tracking-tighter uppercase text-white truncate group-hover:text-orange-400">
+                        {{item.label}}
+                    </p>
+                </div>
             </div>
         </div>
 
-        <div v-if="modal" @click="modal = false" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
-            <div class="bg-zinc-950 border-t-4 border-orange-600 p-8 max-w-sm w-full rounded-b-xl shadow-[0_0_100px_rgba(0,0,0,1)]">
-                <h2 class="text-orange-500 text-xl font-black mb-2 uppercase tracking-tighter italic">> {{seleccionada.label}}</h2>
-                <div class="h-px bg-zinc-800 w-full mb-4"></div>
-                <p class="text-zinc-500 text-[10px] leading-relaxed mb-6 font-mono">ESTADO: LISTO PARA DESPLIEGUE.<br>CATEGORÍA: UNIDAD_DE_CONSUMO.<br>SISTEMA: NEXO_ARQUETIPO.</p>
-                <button class="w-full py-3 bg-orange-600 text-black font-black text-xs tracking-widest hover:bg-orange-400 transition-colors uppercase">Ver Carta Real</button>
+        <transition name="fade">
+            <div v-if="modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
+                <div class="bg-zinc-950 border-t-2 border-orange-600 w-full max-w-xs rounded-b-xl shadow-2xl relative overflow-hidden">
+                    <button @click="modal = false" class="absolute top-3 right-3 text-zinc-600 hover:text-white font-tech text-[8px] tracking-widest">
+                        [ X ] CERRAR
+                    </button>
+                    <div class="p-6">
+                        <h2 class="text-orange-500 text-lg font-black mb-3 uppercase tracking-tighter italic glow-text">> {{seleccionada.label}}</h2>
+                        <p class="text-zinc-600 text-[9px] leading-relaxed mb-6 font-mono border-l-2 border-zinc-800 pl-3">UNIDAD: DESPLEGADA.<br>ESTADO: ONLINE.<br>LOGÍSTICA: RÍO_GRANDE.</p>
+                        <button class="w-full py-2.5 bg-orange-600 text-black font-black text-xs tracking-widest hover:bg-orange-400 transition-colors uppercase">Ver Inventario Real</button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </transition>
 
-        <div class="absolute bottom-4 opacity-20 text-[6px] tracking-widest uppercase italic">Sistema Híbrido Río Grande - 2024</div>
+        <div class="absolute bottom-3 opacity-15 text-[5px] md:text-[6px] tracking-widest uppercase italic">Arquitectura Gemini 3 & Fabián | Nexo Híbrido</div>
     </div>
 
     <script>
@@ -58,8 +74,8 @@
         createApp({
             data() {
                 return {
-                    // LA URL QUE SAQUÉ DE TU CAPTURA
-                    base: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom/public',
+                    // TU URL DE PROYECTO (Guardada y Recordada)
+                    base_url: 'https://manaejtcurxbcsozqpsh.supabase.co/storage/v1/object/public/Nave-Pom-Pom',
                     modal: false,
                     seleccionada: null,
                     assets: [
@@ -67,24 +83,29 @@
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
                         { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
                         { id: 4, img: 'pizza-core.webp', label: 'Pizzas' },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Flan' },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postres' },
+                        // BEBIDAS (Añadidas)
                         { id: 6, img: 'birra-cryo-amber.webp', label: 'Cerveza' },
                         { id: 7, img: 'cava-tinto-premium.webp', label: 'Vinos' },
-                        { id: 8, img: 'soda-lemon-reactor.webp', label: 'Bebida' }
+                        { id: 8, img: 'soda-lemon-reactor.webp', label: 'Bebidas' }
                     ]
                 }
             },
             methods: {
-                getURL(n) { return `${this.base}/${n}`; },
+                getURL(filePath) {
+                    // Construye la URL completa
+                    return `${this.base_url}/${filePath}`;
+                },
                 getPos(i) {
                     const total = this.assets.length;
-                    const angle = (i * (360 / total)) * (Math.PI / 180);
-                    const radius = window.innerWidth > 768 ? 220 : 160;
+                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
+                    // Radio ajustado para el reactor más chico
+                    const radius = window.innerWidth > 768 ? 180 : 130; 
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
                     return `transform: translate(${x}px, ${y}px)`;
                 },
-                abrir(item) { this.seleccionada = item; this.modal = true; }
+                abrirSistema(item) { this.seleccionada = item; this.modal = true; }
             }
         }).mount('#app')
     </script>
