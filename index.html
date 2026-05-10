@@ -10,93 +10,96 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Animación de Reactor Activo */
-        @keyframes glow {
-            0% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; }
-            50% { box-shadow: 0 0 60px #ff3300; border-color: #ff3300; }
-            100% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; }
+        /* Efecto de Reactor Activo */
+        @keyframes reactor-glow {
+            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; transform: scale(1); }
+            50% { box-shadow: 0 0 40px #ff3300; border-color: #ff3300; transform: scale(1.05); }
+            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; transform: scale(1); }
         }
-        .active-glow { animation: glow 2s infinite ease-in-out; border: 4px solid #ff6400 !important; }
+        .reactor-on { animation: reactor-glow 2s infinite ease-in-out; border: 4px solid #ff6400 !important; }
 
-        /* Pantalla de Silicio */
-        .pantalla-silicio {
-            position: fixed; inset: 0; background: rgba(0, 15, 30, 0.98);
+        /* Pantalla de Silicio Transparente */
+        .silicio-overlay {
+            position: fixed; inset: 0; background: rgba(0, 10, 25, 0.98);
             backdrop-filter: blur(25px); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translateY(100%); transition: 0.5s ease;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .pantalla-silicio.show { transform: translateY(0); }
+        .silicio-overlay.active { transform: translateY(0); }
 
-        /* Botón de Variedad */
+        /* Botones de Variedad */
         .btn-variedad {
-            width: 85%; padding: 20px; margin: 10px;
+            width: 80%; padding: 18px; margin: 8px;
             background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff;
             color: #00f2ff; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 4px; transition: 0.3s;
+            letter-spacing: 3px; font-size: 11px; transition: 0.3s;
+        }
+        .btn-variedad:active { background: #00f2ff; color: #000; }
+
+        /* Capa de clic del Pollo (Sensor Maestro) */
+        .sensor-pollo {
+            position: absolute; width: 180px; height: 180px;
+            border-radius: 50%; z-index: 1000; cursor: pointer;
+            display: flex; items-center; justify-center;
         }
 
-        /* El Reactor como un todo */
-        .reactor-container {
-            position: relative; width: 220px; height: 220px;
-            cursor: pointer; z-index: 500; border-radius: 50%;
-        }
-        
         [v-cloak] { display: none; }
     </style>
 </head>
 <body class="flex justify-center items-center">
-    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-8 px-4 relative">
+    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <header class="text-center mb-6 z-10">
+        <header class="text-center mb-2 z-50">
             <h1 class="text-2xl font-black tracking-widest text-orange-500 italic">NEXO NAVE</h1>
-            <p class="text-[9px] text-zinc-500 uppercase tracking-[0.5em]">Energía: {{ sistemaIniciado ? 'Estable' : 'Cero' }}</p>
+            <p class="text-[9px] text-zinc-500 uppercase tracking-[0.4em]">Reactor: {{ iniciado ? 'ACTIVO' : 'OFFLINE' }}</p>
         </header>
 
-        <div class="relative w-[360px] h-[360px] flex items-center justify-center">
+        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
             
-            <div class="reactor-container flex items-center justify-center overflow-hidden bg-black border-2 border-zinc-800"
-                 :class="{'active-glow': sistemaIniciado}"
-                 @click="clickReactor">
-                
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
-                     :class="sistemaIniciado ? 'opacity-100 scale-110' : 'opacity-20 grayscale'">
-
-                <div v-if="!sistemaIniciado" class="absolute inset-0 flex items-center justify-center bg-orange-600/20">
-                    <span class="text-white font-black text-xs animate-pulse">IGNICIÓN</span>
+            <div class="sensor-pollo" @click="controlPollo">
+                <div v-if="!iniciado" class="w-full h-full rounded-full bg-orange-600/20 border-2 border-orange-500 flex flex-col items-center justify-center animate-pulse">
+                    <span class="text-[8px] font-bold">IGNICIÓN</span>
+                    <span class="text-xl font-black italic">ACTIVE</span>
                 </div>
             </div>
 
+            <div class="w-44 h-44 rounded-full overflow-hidden border-2 border-zinc-800 bg-black z-10"
+                 :class="{'reactor-on': iniciado}">
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
+                     :class="iniciado ? 'opacity-100 scale-110' : 'opacity-20 grayscale'">
+            </div>
+
             <div v-for="(p, i) in platos" :key="p.id" 
-                 :style="getPos(i, platos.length, 145)"
-                 @click.stop="abrirPanel(p)"
-                 class="absolute w-16 h-16 rounded-xl bg-black/90 border border-white/10 overflow-hidden z-20">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
+                 :style="getPos(i, platos.length, 135)"
+                 @click.stop="abrirMenu(p)"
+                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-20 shadow-2xl cursor-pointer">
+                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !iniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/95 py-1 text-orange-500">{{p.label}}</p>
             </div>
         </div>
 
-        <div class="pantalla-silicio" :class="{'show': panelVisible}">
-            <div v-if="seleccionado" class="w-full flex flex-col items-center p-8">
-                <div class="w-32 h-32 rounded-full border-4 border-cyan-400 overflow-hidden mb-6 shadow-[0_0_40px_cyan]">
-                    <img :src="getURL(seleccionado.img)" class="w-full h-full object-cover">
+        <div class="silicio-overlay" :class="{'active': verPanel}">
+            <div v-if="itemSel" class="w-full flex flex-col items-center p-8">
+                <div class="w-32 h-32 rounded-full border-4 border-cyan-400 overflow-hidden shadow-[0_0_40px_rgba(0,242,255,0.4)] mb-6">
+                    <img :src="getURL(itemSel.img)" class="w-full h-full object-cover">
                 </div>
-                <h2 class="text-cyan-400 text-3xl font-black uppercase tracking-tighter">{{seleccionado.label}}</h2>
+                <h2 class="text-cyan-400 text-3xl font-black uppercase tracking-tighter">{{itemSel.label}}</h2>
                 
                 <div class="w-full mt-8 flex flex-col items-center">
-                    <button v-for="v in seleccionado.variedades" @click="enviarPedido(v)" class="btn-variedad">
+                    <button v-for="v in itemSel.variedades" @click="whatsapp(v)" class="btn-variedad">
                         {{ v }}
                     </button>
                 </div>
 
-                <button @click="panelVisible = false" class="mt-12 text-red-500 text-[10px] font-black uppercase tracking-widest">
-                    [ CERRAR ]
+                <button @click="verPanel = false" class="mt-12 text-red-500 text-[10px] font-black uppercase tracking-widest">
+                    [ CERRAR INTERFAZ ]
                 </button>
             </div>
         </div>
 
         <div class="mt-auto mb-10 w-full max-w-xs grid grid-cols-3 gap-3">
-            <div v-for="b in bebidas" :key="b.id" @click="abrirPanel(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirMenu(b)" 
+                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer shadow-xl">
                 <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 bg-gradient-to-t from-black flex items-end justify-center p-3">
                     <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
@@ -111,24 +114,22 @@
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false,
-                    panelVisible: false,
-                    seleccionado: null,
+                    iniciado: false, verPanel: false, itemSel: null,
                     platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Costillar', 'Vacío', 'Entraña'] },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'A Caballo'] },
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío', 'Molleja'] },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
                         { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo', 'JyQ'] },
                         { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan', 'Budín'] },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan Mixto', 'Budín'] },
                         { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Cheddar', 'Provenzal'] },
                         { id: 10, img: 'mixta-organica.webp', label: 'Ensalada', variedades: ['Mixta', 'Rusa'] }
                     ],
                     bebidas: [
-                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza', variedades: ['Lata', 'Litro'] },
+                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza', variedades: ['IPA', 'Rubia'] },
                         { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Blanco'] },
                         { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa', variedades: ['Coca', 'Soda'] }
                     ],
-                    especialPollo: { img: 'pollo-reactor.webp', label: 'Pollo Reactor', variedades: ['Pollo Entero', 'Medio Pollo'] }
+                    dataPollo: { img: 'pollo-reactor.webp', label: 'Pollo Reactor', variedades: ['Entero', '1/2 Pollo', '1/4 Pollo'] }
                 }
             },
             methods: {
@@ -137,24 +138,24 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                clickReactor() {
-                    if (!this.sistemaIniciado) {
-                        this.sistemaIniciado = true;
+                controlPollo() {
+                    if (!this.iniciado) {
+                        this.iniciado = true;
                         new Audio(this.getURL('sonido-motor.mp3')).play();
                         new Audio(this.getURL('click-reactor.mp3')).play();
                     } else {
-                        this.abrirPanel(this.especialPollo);
+                        this.abrirMenu(this.dataPollo);
                     }
                 },
-                abrirPanel(item) {
-                    if (!this.sistemaIniciado) return;
+                abrirMenu(item) {
+                    if (!this.iniciado) return;
                     new Audio(this.getURL('click-reactor.mp3')).play();
-                    this.seleccionado = item;
-                    this.panelVisible = true;
+                    this.itemSel = item;
+                    this.verPanel = true;
                 },
-                enviarPedido(v) {
-                    const msg = encodeURIComponent(`🚀 *NEXO NAVE*\n\nUNIDAD: *${this.seleccionado.label}*\nVARIEDAD: *${v}*`);
-                    window.open(`https://wa.me/5492964123456?text=${msg}`);
+                whatsapp(v) {
+                    const texto = encodeURIComponent(`🚀 *NEXO NAVE*\n\nUNIDAD: *${this.itemSel.label}*\nVARIEDAD: *${v}*`);
+                    window.open(`https://wa.me/5492964123456?text=${texto}`);
                 }
             }
         }).mount('#app')
