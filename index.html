@@ -3,50 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Nave | Protocolo Silicio</title>
+    <title>Nexo Nave | Protocolo Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Animación del Reactor Activo */
-        @keyframes pulse-core {
-            0% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; }
-            50% { box-shadow: 0 0 60px #ff3300; border-color: #ff3300; }
-            100% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; }
+        /* Animación del Reactor */
+        @keyframes pulse-energy {
+            0% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; transform: scale(1); }
+            50% { box-shadow: 0 0 60px #ff3300; border-color: #ff3300; transform: scale(1.02); }
+            100% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; transform: scale(1); }
         }
-        .core-active { animation: pulse-core 2s infinite ease-in-out; border: 4px solid #ff6400 !important; }
+        .core-active { animation: pulse-energy 2s infinite ease-in-out; border: 4px solid #ff6400 !important; }
 
-        /* Pantalla de Silicio (Efecto Cristal) */
-        .panel-silicio {
-            position: fixed; inset: 0; background: rgba(0, 15, 30, 0.95);
-            backdrop-filter: blur(20px); z-index: 2000;
+        /* Pantalla de Silicio */
+        .silicio-panel {
+            position: fixed; inset: 0; background: rgba(0, 15, 30, 0.98);
+            backdrop-filter: blur(25px); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translateY(100%); transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            opacity: 0;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .panel-silicio.show { transform: translateY(0); opacity: 1; }
+        .silicio-panel.show { transform: translateY(0); }
 
-        /* Botón de Activación (Pollo) */
-        .trigger-area {
-            position: absolute; width: 180px; height: 180px;
-            border-radius: 50%; z-index: 1000; cursor: pointer;
+        /* EL POLLO: Área de contacto prioritaria */
+        .area-activacion {
+            position: absolute; width: 200px; height: 200px;
+            z-index: 5000; border-radius: 50%; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, rgba(255,100,0,0.2) 0%, transparent 70%);
         }
 
-        .orbit-button { transition: 0.4s ease; border: 1px solid rgba(255,255,255,0.1); }
-        .orbit-button:active { transform: scale(1.4); filter: brightness(1.5); }
-        
-        .btn-option {
-            width: 80%; padding: 18px; margin: 8px;
+        .btn-variedad {
+            width: 85%; padding: 20px; margin: 10px;
             background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff;
             color: #00f2ff; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 3px; font-size: 10px; transition: 0.3s;
+            letter-spacing: 4px; font-size: 12px; transition: 0.3s;
         }
-        .btn-option:hover { background: #00f2ff; color: #000; box-shadow: 0 0 20px #00f2ff; }
+        .btn-variedad:hover { background: #00f2ff; color: #000; box-shadow: 0 0 30px #00f2ff; }
 
+        .orbit-btn { transition: 0.4s; pointer-events: auto; }
+        
         [v-cloak] { display: none; }
     </style>
 </head>
@@ -55,56 +52,57 @@
         
         <header class="text-center mb-4 z-10">
             <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 italic uppercase">NEXO NAVE</h1>
-            <p class="text-[9px] text-zinc-500 tracking-widest">NUCLEO: {{ sistemaIniciado ? 'ESTABLE' : 'DETENIDO' }}</p>
+            <p class="text-[9px] text-zinc-500 tracking-[0.5em]">SISTEMA: {{ sistemaIniciado ? 'OPERATIVO' : 'STANDBY' }}</p>
         </header>
 
-        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
+        <div class="relative w-[360px] h-[360px] flex items-center justify-center mt-10">
             
-            <div class="trigger-area" @click="activarNexo">
-                <div v-if="!sistemaIniciado" class="text-orange-500 text-[10px] font-black animate-pulse text-center">
-                    TAP TO<br><span class="text-2xl">ACTIVE</span>
+            <div class="area-activacion" @click="iniciarNexo">
+                <div v-if="!sistemaIniciado" class="bg-orange-500/10 w-full h-full rounded-full flex flex-col items-center justify-center border border-orange-500/40">
+                    <span class="text-orange-500 text-[10px] font-black animate-pulse uppercase">Activar</span>
+                    <span class="text-orange-500 text-3xl font-black italic">NEXO</span>
                 </div>
             </div>
 
-            <div class="w-44 h-44 rounded-full overflow-hidden border-2 border-zinc-800 bg-black"
+            <div class="w-48 h-48 rounded-full overflow-hidden border-2 border-zinc-800 bg-black z-10"
                  :class="{'core-active': sistemaIniciado}">
-                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-opacity duration-1000"
-                     :class="sistemaIniciado ? 'opacity-100' : 'opacity-20 grayscale'">
+                <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover transition-all duration-1000"
+                     :class="sistemaIniciado ? 'opacity-100 scale-110' : 'opacity-20 grayscale'">
             </div>
 
             <div v-for="(p, i) in platos" :key="p.id" 
-                 :style="getPos(i, platos.length, 135)"
-                 @click="abrirMenu(p)"
-                 class="absolute w-16 h-16 rounded-xl bg-black/90 overflow-hidden orbit-button shadow-2xl">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
-                <p class="absolute bottom-0 w-full text-center text-[6px] font-black uppercase bg-black/80 py-1">{{p.label}}</p>
+                 :style="getPos(i, platos.length, 140)"
+                 @click="abrirSilicio(p)"
+                 class="absolute w-16 h-16 rounded-xl bg-black/90 overflow-hidden orbit-btn border border-white/5 z-20 shadow-2xl">
+                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
+                <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/95 py-1 text-orange-400">{{p.label}}</p>
             </div>
         </div>
 
-        <div class="panel-silicio" :class="{'show': panelVisible}">
-            <div v-if="seleccion" class="w-full flex flex-col items-center p-6">
-                <div class="w-32 h-32 rounded-full border-4 border-cyan-400 overflow-hidden shadow-[0_0_40px_rgba(0,242,255,0.4)] mb-6">
+        <div class="silicio-panel" :class="{'show': panelActivo}">
+            <div v-if="seleccion" class="w-full flex flex-col items-center p-8">
+                <div class="w-32 h-32 rounded-full border-4 border-cyan-400 overflow-hidden shadow-[0_0_50px_rgba(0,242,255,0.5)] mb-6">
                     <img :src="getURL(seleccion.img)" class="w-full h-full object-cover">
                 </div>
-                <h2 class="text-cyan-400 text-3xl font-black uppercase mb-2 tracking-tighter">{{seleccion.label}}</h2>
-                <div class="h-1 w-20 bg-cyan-400 mb-8"></div>
+                <h2 class="text-cyan-400 text-3xl font-black uppercase mb-1 tracking-tighter">{{seleccion.label}}</h2>
+                <p class="text-[8px] text-cyan-400/40 mb-10 tracking-[0.6em]">PROTOCOLO DE SELECCIÓN</p>
 
-                <button v-for="v in seleccion.variedades" @click="pedir(v)" class="btn-option">
+                <button v-for="v in seleccion.variedades" @click="enviarWhatsApp(v)" class="btn-variedad">
                     {{ v }}
                 </button>
 
-                <button @click="panelVisible = false" class="mt-12 text-red-500 text-[10px] font-bold tracking-[0.3em] uppercase">
-                    ✕ Cerrar Protocolo
+                <button @click="panelActivo = false" class="mt-16 text-red-500 text-[10px] font-black uppercase tracking-[0.4em]">
+                    [ ANULAR COMANDO ]
                 </button>
             </div>
         </div>
 
-        <div class="mt-auto mb-8 w-full max-w-xs grid grid-cols-3 gap-3">
-            <div v-for="b in bebidas" :key="b.id" @click="abrirMenu(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer shadow-lg">
-                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-50">
-                <div class="absolute inset-0 bg-gradient-to-t from-black flex items-end justify-center p-2">
-                    <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
+        <div class="mt-auto mb-10 w-full max-w-xs grid grid-cols-3 gap-3 z-10">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirSilicio(b)" 
+                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer shadow-xl">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 bg-gradient-to-t from-black flex items-end justify-center p-3">
+                    <span class="text-[8px] font-black text-orange-500 uppercase tracking-widest">{{b.label}}</span>
                 </div>
             </div>
         </div>
@@ -117,21 +115,21 @@
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     sistemaIniciado: false,
-                    panelVisible: false,
+                    panelActivo: false,
                     seleccion: null,
                     platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Costillar', 'Vacío', 'Mollejas'] },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanga', variedades: ['Napolitana', 'A Caballo', 'Sola'] },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne Salteña', 'Pollo', 'JyQ'] },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizzas', variedades: ['Especial', 'Fugazzeta', 'Muzza'] },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postres', variedades: ['Flan Mixto', 'Budín de Pan'] },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Con Cheddar', 'Provonzal'] },
-                        { id: 10, img: 'mixta-organica.webp', label: 'Ensaladas', variedades: ['Completa', 'Rusa'] }
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Costillar', 'Vacío', 'Entraña'] },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanga', variedades: ['Napolitana', 'Súper Completa'] },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo', 'JyQ'] },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzzarella', 'Fugazzeta'] },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan Casero', 'Budín de Pan'] },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Con Cheddar', 'Provenzal'] },
+                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada', variedades: ['Mixta', 'Rusa'] }
                     ],
                     bebidas: [
-                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA', 'Rubia', 'Negra'] },
-                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vinos', variedades: ['Malbec', 'Blanco'] },
-                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Sodas', variedades: ['Coca Cola', 'Soda 1L'] }
+                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Cerveza', variedades: ['Lata 473', 'Litro'] },
+                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Blanco'] },
+                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa', variedades: ['Coca-Cola', 'Soda'] }
                     ]
                 }
             },
@@ -141,24 +139,25 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                activarNexo() {
+                iniciarNexo() {
                     if(this.sistemaIniciado) return;
                     this.sistemaIniciado = true;
-                    // Iniciar Sonido de Ambiente
+                    // Sonido Ambiente
                     const motor = new Audio(this.getURL('sonido-motor.mp3'));
-                    motor.loop = true; motor.volume = 0.2; motor.play();
-                    // Sonido de Click
+                    motor.loop = true; motor.volume = 0.25; motor.play();
+                    // Sonido Click
                     new Audio(this.getURL('click-reactor.mp3')).play();
                 },
-                abrirMenu(item) {
+                abrirSilicio(item) {
                     if(!this.sistemaIniciado) return;
                     new Audio(this.getURL('click-reactor.mp3')).play();
                     this.seleccion = item;
-                    this.panelVisible = true;
+                    this.panelActivo = true;
                 },
-                pedir(variedad) {
-                    const mensaje = encodeURIComponent(`🛸 *NEXO NAVE: PEDIDO RECIBIDO*\n\n🔹 Unidad: *${this.seleccion.label}*\n🔹 Variedad: *${variedad}*\n\n_Esperando coordenadas de entrega..._`);
-                    window.open(`https://wa.me/5492964123456?text=${mensaje}`);
+                enviarWhatsApp(v) {
+                    const cel = "5492964123456"; // TU NÚMERO AQUÍ
+                    const msg = encodeURIComponent(`🛸 *NEXO NAVE: COMANDO RECIBIDO*\n\n✅ *UNIDAD:* ${this.seleccion.label}\n✅ *VARIEDAD:* ${v}\n\n_Esperando autorización de entrega..._`);
+                    window.open(`https://wa.me/${cel}?text=${msg}`);
                 }
             }
         }).mount('#app')
