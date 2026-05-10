@@ -10,77 +10,78 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* 1. Animación de Carga (Flicker) */
-        @keyframes scanline { 0% { opacity: 0; transform: scale(0.9); } 50% { opacity: 0.5; } 100% { opacity: 1; transform: scale(1); } }
-        .app-load { animation: scanline 0.8s ease-out; }
+        /* Animación de Carga */
+        @keyframes scanline { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .app-load { animation: scanline 1s ease-out; }
 
-        /* 2. Glow Dinámico del Núcleo */
+        /* Glow Dinámico del Núcleo (Palpitación) */
         @keyframes pulse-heat {
             0% { box-shadow: 0 0 20px #ff6400; transform: scale(1); }
-            50% { box-shadow: 0 0 50px #ff3300; transform: scale(1.02); }
+            50% { box-shadow: 0 0 60px #ff3300; transform: scale(1.05); }
             100% { box-shadow: 0 0 20px #ff6400; transform: scale(1); }
         }
-        .reactor-core { border: 2px solid #ff6400; animation: pulse-heat 3s infinite ease-in-out; background: #000; cursor: pointer; }
+        .reactor-core { border: 3px solid #ff6400; animation: pulse-heat 2s infinite ease-in-out; background: #000; cursor: pointer; z-index: 50; }
 
-        .orbit-btn { transition: all 0.3s; border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; overflow: hidden; }
-        .orbit-btn:hover { border-color: #ff6400; transform: scale(1.2); z-index: 50; }
+        .orbit-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1); background: #0a0a0a; overflow: hidden; cursor: pointer; }
+        .orbit-btn:hover { border-color: #ff6400; transform: scale(1.2); z-index: 60; box-shadow: 0 0 20px #ff6400; }
         
         .fridge-unit { border: 1px solid #222; background: linear-gradient(180deg, #111 0%, #000 100%); transition: all 0.3s; cursor: pointer; }
         .fridge-unit:hover { border-color: #ff6400; transform: translateY(-5px); }
 
-        .glow-text { text-shadow: 0 0 10px #ff6400; }
+        .glow-text { text-shadow: 0 0 15px #ff6400; }
         [v-cloak] { display: none; }
     </style>
 </head>
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="app-load w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <audio id="snd-ambient" loop src="https://www.soundjay.com/transportation/subway-train-hum-1.mp3" volume="0.2"></audio>
-        <audio id="snd-click" src="https://www.soundjay.com/buttons/button-29.mp3"></audio>
+        <audio id="snd-ambient" loop src="https://assets.mixkit.co/sfx/preview/mixkit-mechanical-hum-of-a-large-machine-2503.mp3"></audio>
+        <audio id="snd-click" src="https://assets.mixkit.co/sfx/preview/mixkit-modern-technology-select-3124.mp3"></audio>
 
         <header class="text-center mb-2 z-40">
-            <h1 class="text-xl font-black tracking-[0.2em] text-orange-500 glow-text italic">NEXO NAVE</h1>
-            <p class="text-[7px] tracking-[0.4em] text-zinc-500 uppercase">Status: Operational</p>
+            <h1 class="text-2xl font-black tracking-[0.2em] text-orange-500 glow-text italic">NEXO NAVE</h1>
+            <p class="text-[8px] tracking-[0.4em] text-zinc-500 uppercase">Reactor Status: <span class="text-green-500">Active</span></p>
         </header>
 
         <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
-            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_60s_linear_infinite]"></div>
+            <div class="absolute inset-0 border border-orange-500/10 rounded-full animate-[spin_30s_linear_infinite]"></div>
             
-            <div @click="abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'})" class="w-32 h-32 rounded-full overflow-hidden reactor-core z-10">
+            <div @click="activarSistema" class="w-36 h-36 rounded-full overflow-hidden reactor-core flex items-center justify-center">
                 <img :src="getURL('pollo-reactor.webp')" class="w-full h-full object-cover">
             </div>
 
             <div v-for="(item, index) in platos" :key="item.id" 
-                 :style="getPos(index, platos.length, 120)"
+                 :style="getPos(index, platos.length, 130)"
                  @click="abrir(item)"
-                 class="absolute w-16 h-16 rounded-xl orbit-btn z-20 shadow-2xl">
+                 class="absolute w-16 h-16 rounded-xl orbit-btn shadow-2xl">
                 <img :src="getURL(item.img)" class="w-full h-full object-cover">
-                <p class="absolute bottom-1 w-full text-center text-[5px] font-bold uppercase tracking-tighter bg-black/60">{{item.label}}</p>
+                <p class="absolute bottom-0 w-full text-center text-[5px] font-bold uppercase bg-black/80 py-1">{{item.label}}</p>
             </div>
         </div>
 
         <div class="mt-auto mb-10 w-full max-w-xs space-y-4">
+            <p class="text-[7px] tracking-[0.3em] text-orange-500/60 uppercase text-center font-bold italic">Cryo-Storage Units</p>
             <div class="grid grid-cols-3 gap-3">
                 <div v-for="bev in bebidas" :key="bev.id" @click="abrir(bev)" class="fridge-unit aspect-[3/4] rounded-lg overflow-hidden relative group border-t-2 border-orange-600/40">
-                    <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-60">
+                    <img :src="getURL(bev.img)" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity">
                     <div class="absolute inset-0 flex flex-col justify-end p-2 bg-gradient-to-t from-black">
-                        <span class="text-[6px] font-black uppercase text-orange-500 text-center">{{bev.label}}</span>
+                        <span class="text-[7px] font-black uppercase text-orange-500 text-center">{{bev.label}}</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div v-if="modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center p-6">
-            <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl text-center shadow-[0_0_50px_rgba(255,100,0,0.2)]">
-                <h2 class="text-orange-500 text-lg font-black uppercase italic glow-text">{{seleccionada.label}}</h2>
+        <div v-if="modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] flex items-center justify-center p-6">
+            <div class="bg-zinc-950 border border-orange-600/40 p-8 w-full max-w-xs rounded-xl text-center shadow-[0_0_50px_rgba(255,100,0,0.3)]">
+                <h2 class="text-orange-500 text-xl font-black uppercase italic glow-text">{{seleccionada.label}}</h2>
                 <div class="h-px bg-zinc-800 w-full my-4"></div>
-                <p class="text-zinc-500 text-[10px] mb-6 font-mono uppercase">Unidad lista para despacho.</p>
+                <p class="text-zinc-500 text-[10px] mb-6 font-mono uppercase">Unidad lista para transferencia.</p>
                 
-                <div class="flex flex-col gap-2">
-                    <button @click="pedirWhatsApp" class="w-full py-3 bg-orange-600 text-black font-black text-[10px] tracking-widest uppercase hover:bg-orange-400">
-                        Confirmar Pedido (WhatsApp)
+                <div class="flex flex-col gap-3">
+                    <button @click="enviarPedido" class="w-full py-4 bg-orange-600 text-black font-black text-[11px] tracking-widest uppercase hover:bg-orange-400 transition-colors">
+                        Confirmar Pedido
                     </button>
-                    <button @click="modal = false" class="text-zinc-600 text-[8px] uppercase tracking-widest mt-2">Abortar</button>
+                    <button @click="modal = false" class="text-zinc-600 text-[9px] uppercase tracking-[0.3em] mt-2">Abortar Misión</button>
                 </div>
             </div>
         </div>
@@ -94,7 +95,7 @@
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     modal: false,
                     seleccionada: null,
-                    ambientStarted: false,
+                    sistemaIniciado: false,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanga' },
@@ -119,23 +120,25 @@
                     const y = Math.sin(angle) * radius;
                     return `transform: translate(${x}px, ${y}px)`;
                 },
+                activarSistema() {
+                    if(!this.sistemaIniciado) {
+                        const amb = document.getElementById('snd-ambient');
+                        amb.volume = 0.2;
+                        amb.play().catch(e => console.log("Audio bloqueado"));
+                        this.sistemaIniciado = true;
+                    }
+                    this.abrir({label: 'Pollo Reactor', img: 'pollo-reactor.webp'});
+                },
                 abrir(item) {
                     this.seleccionada = item;
                     this.modal = true;
-                    this.playClick();
-                    if(!this.ambientStarted) this.startAmbient();
+                    document.getElementById('snd-click').currentTime = 0;
+                    document.getElementById('snd-click').play();
                 },
-                playClick() { document.getElementById('snd-click').play(); },
-                startAmbient() {
-                    const amb = document.getElementById('snd-ambient');
-                    amb.volume = 0.1;
-                    amb.play();
-                    this.ambientStarted = true;
-                },
-                pedirWhatsApp() {
-                    const num = "5491123456789"; // CAMBIÁ ESTO POR TU NÚMERO REAL
-                    const msg = encodeURIComponent(`🚀 ¡Hola Nexo Nave! Quiero pedir una unidad de: ${this.seleccionada.label}. ¡Espero coordenadas!`);
-                    window.open(`https://wa.me/${num}?text=${msg}`, '_blank');
+                enviarPedido() {
+                    const num = "5491123456789"; // PONÉ TU NÚMERO AQUÍ
+                    const text = `🚀 *NEXO NAVE INCOMING* \n\nSolicito unidad de: *${this.seleccionada.label}*\nStatus: Hambre detectada.`;
+                    window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
                 }
             }
         }).mount('#app')
