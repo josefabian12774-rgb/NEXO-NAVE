@@ -3,130 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EL BODEGÓN - Río Grande</title>
-    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
+    <title>NEXO NAVE - El Bodegón</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body {
-            background-color: #1a1a1a;
-            background-image: url('https://www.transparenttextures.com/patterns/black-chalk.png');
-            color: #f1c40f;
-            font-family: 'Special Elite', cursive;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-
-        .header {
-            border: 4px double #f1c40f;
-            padding: 20px;
-            margin-bottom: 30px;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        h1 {
-            font-family: 'Permanent Marker', cursive;
-            font-size: 3rem;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 2px 2px #000;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            margin-top: 10px;
-            color: #fff;
-        }
-
-        .menu-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 5px solid #f1c40f;
-            padding: 15px;
-            margin: 15px 0;
-            width: 90%;
-            max-width: 500px;
-            border-radius: 0 10px 10px 0;
-        }
-
-        .menu-item h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #f1c40f;
-        }
-
-        .menu-item p {
-            margin: 5px 0;
-            color: #ddd;
-        }
-
-        .price {
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: #fff;
-        }
-
-        .btn-whatsapp {
-            background-color: #25d366;
-            color: white;
-            text-decoration: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            margin-top: 20px;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.2s;
-        }
-
-        .btn-whatsapp:active {
-            transform: scale(0.95);
-        }
-
-        .footer {
-            margin-top: 50px;
-            font-size: 0.8rem;
-            color: #777;
-        }
+        body { background-color: #0f172a; color: #f8fafc; }
+        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body>
+<body class="p-4 pb-24">
+    <header class="text-center py-6">
+        <h1 class="text-3xl font-bold text-blue-400 tracking-tighter">NEXO NAVE</h1>
+        <p class="text-slate-400 text-sm">Sistema de Pedidos Online - El Bodegón</p>
+    </header>
 
-    <div class="header">
-        <h1>EL BODEGÓN</h1>
-        <div class="subtitle">Lo de Fabian - Río Grande</div>
+    <main class="max-w-md mx-auto space-y-4">
+        <div class="card p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-lg">🦖 Lomosaurio</h3>
+                <p class="text-slate-400 text-sm">El más grande de Río Grande</p>
+                <p class="text-blue-400 font-bold mt-1">$8.500</p>
+            </div>
+            <button class="bg-blue-600 p-3 rounded-xl">🛒</button>
+        </div>
+
+        <div class="card p-4 rounded-2xl flex justify-between items-center">
+            <div>
+                <h3 class="font-bold text-lg">🍳 Milagruesa</h3>
+                <p class="text-slate-400 text-sm">Con papas y dos huevos</p>
+                <p class="text-blue-400 font-bold mt-1">$7.200</p>
+            </div>
+            <button class="bg-blue-600 p-3 rounded-xl">🛒</button>
+        </div>
+    </main>
+
+    <div class="fixed bottom-6 left-0 right-0 px-4">
+        <a href="https://wa.me/5492964000000?text=Hola!%20Vengo%20desde%20la%20App%20Nexo%20Nave" 
+           class="bg-green-500 w-full py-4 rounded-2xl flex justify-center items-center gap-2 font-bold text-white shadow-lg shadow-green-900/20">
+            <span>PEDIR POR WHATSAPP</span>
+        </a>
     </div>
 
-    <div class="menu-item">
-        <h2>🦖 LOMOSAURIO</h2>
-        <p>El clásico lomo gigante para compartir (o no).</p>
-        <span class="price">$ 8.500</span>
-    </div>
-
-    <div class="menu-item">
-        <h2>🍳 MILAGRUESA</h2>
-        <p>Milanesa de ternera XL con papas fritas.</p>
-        <span class="price">$ 7.200</span>
-    </div>
-
-    <div class="menu-item">
-        <h2>🍔 BURGER BODEGÓN</h2>
-        <p>Triple carne, mucho cheddar y bacon.</p>
-        <span class="price">$ 6.500</span>
-    </div>
-
-    <a href="https://wa.me/5492964000000?text=Hola!%20Quiero%20hacer%20un%20pedido" class="btn-whatsapp">
-        📱 PEDIR POR WHATSAPP
-    </a>
-
-    <div class="footer">
-        Desarrollado con ❤️ para El Bodegón - 2026
-    </div>
-
+    <footer class="text-center mt-10 text-slate-500 text-xs">
+        Powered by Nexo Nave & GitHub Pages
+    </footer>
 </body>
 </html>
