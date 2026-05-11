@@ -3,206 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Nave | Central de Pedidos Elite</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <title>EL BODEGÓN - Río Grande</title>
+    <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
-        
-        /* Animación del Núcleo del Reactor (Energía Naranja) */
-        @keyframes pulse-reactor {
-            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
-            50% { box-shadow: 0 0 50px #ff3300; border-color: #ff3300; }
-            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
-        }
-        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
-
-        /* Efecto de Holograma de Silicio (Pollo Flotante) */
-        @keyframes hologram-float {
-            0% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); filter: drop-shadow(0 0 25px rgba(0,242,255,0.8)) brightness(1.2); }
-            100% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
-        }
-        .pollo-holograma {
-            width: 130%; max-width: none; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: plus-lighter; /* Efecto de transparencia holográfica */
-            display: none; /* Oculto hasta activación */
-        }
-        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
-
-        /* Sombra de Energía Debajo del Pollo */
-        .pollo-shadow {
-            position: absolute; width: 60%; height: 20%; background: radial-gradient(ellipse at center, rgba(0,242,255,0.4) 0%, transparent 70%);
-            bottom: -10%; left: 20%; z-index: -1;
-            filter: blur(5px);
+        body {
+            background-color: #1a1a1a;
+            background-image: url('https://www.transparenttextures.com/patterns/black-chalk.png');
+            color: #f1c40f;
+            font-family: 'Special Elite', cursive;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
-        /* Pantallas de Silicio */
-        .silicio-modal {
-            position: fixed; inset: 0; background: rgba(0, 10, 20, 0.98);
-            backdrop-filter: blur(20px); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translateY(100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .header {
+            border: 4px double #f1c40f;
+            padding: 20px;
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 500px;
         }
-        .silicio-modal.active { transform: translateY(0); }
 
-        .btn-variedad {
-            width: 85%; padding: 15px; margin: 5px;
-            background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff;
-            color: #00f2ff; font-weight: 900; text-transform: uppercase;
-            font-size: 10px; letter-spacing: 2px;
+        h1 {
+            font-family: 'Permanent Marker', cursive;
+            font-size: 3rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px #000;
         }
-        .btn-variedad:active { background: #00f2ff; color: #000; }
 
-        [v-cloak] { display: none; }
+        .subtitle {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: #fff;
+        }
+
+        .menu-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 5px solid #f1c40f;
+            padding: 15px;
+            margin: 15px 0;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .menu-item h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #f1c40f;
+        }
+
+        .menu-item p {
+            margin: 5px 0;
+            color: #ddd;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-whatsapp:active {
+            transform: scale(0.95);
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #777;
+        }
     </style>
 </head>
-<body class="flex justify-center items-center">
-    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
-        
-        <header class="text-center z-50">
-            <h1 class="text-2xl font-black tracking-widest text-orange-500 italic">NEXO NAVE</h1>
-            <div class="flex justify-center gap-4 mt-1">
-                <span class="text-[8px] uppercase tracking-widest" :class="sistemaIniciado ? 'text-green-500' : 'text-red-600'">
-                    ● {{ sistemaIniciado ? 'Online' : 'Standby' }}
-                </span>
-                <button v-if="pedido.length > 0" @click="verResumen = true" class="text-[8px] text-cyan-400 border border-cyan-400 px-2 animate-pulse">
-                    LISTA DE CARGA: {{ pedido.length }}
-                </button>
-            </div>
-        </header>
+<body>
 
-        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
-            
-            <div class="relative w-48 h-48 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
-                 :class="{'reactor-core-active': sistemaIniciado}"
-                 @click="handlePollo">
-                
-                <div class="relative w-full h-full">
-                    <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
-                    <div v-if="sistemaIniciado" class="pollo-shadow"></div>
-                </div>
-
-                <div v-if="!sistemaIniciado" class="absolute inset-0 flex flex-col items-center justify-center bg-orange-600/10 border border-orange-500/30 rounded-full">
-                    <span class="text-orange-500 text-3xl font-black italic animate-pulse">ACTIVA</span>
-                </div>
-            </div>
-
-            <div v-for="(p, i) in platos" :key="p.id" 
-                 :style="getPos(i, platos.length, 140)"
-                 @click="abrirOpciones(p)"
-                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl hover:scale-110 hover:border-cyan-400 transition-transform">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
-                <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
-            </div>
-        </div>
-
-        <div class="silicio-modal" :class="{'active': panelOpciones}">
-            <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
-                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-8 tracking-tighter">{{itemActual.label}}</h2>
-                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-variedad">
-                    + AGREGAR {{ v }}
-                </button>
-                <button @click="panelOpciones = false" class="mt-12 text-zinc-500 text-[10px] font-bold uppercase">Volver</button>
-            </div>
-        </div>
-
-        <div class="silicio-modal" :class="{'active': verResumen}">
-            <div class="w-full flex flex-col items-center p-8 max-h-screen overflow-y-auto">
-                <h2 class="text-orange-500 text-xl font-black uppercase mb-6 tracking-widest italic">LISTA DE CARGA</h2>
-                
-                <div class="w-full space-y-3 mb-8">
-                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-2">
-                        <div>
-                            <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}}</p>
-                            <p class="text-white text-[12px]">{{it.variedad}}</p>
-                        </div>
-                        <button @click="pedido.splice(idx, 1)" class="text-red-500 text-[10px] font-bold">X</button>
-                    </div>
-                </div>
-
-                <button v-if="pedido.length > 0" @click="enviarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black uppercase tracking-widest shadow-[0_0_20px_#ff6400]">
-                    ENVIAR COMANDO WHATSAPP
-                </button>
-
-                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold uppercase">Seguir Sumando</button>
-            </div>
-        </div>
-
-        <div class="mt-auto mb-8 w-full max-w-xs grid grid-cols-3 gap-3">
-            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer hover:border-cyan-400">
-                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
-                <div class="absolute inset-0 flex items-end justify-center p-3">
-                    <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
-                </div>
-            </div>
-        </div>
+    <div class="header">
+        <h1>EL BODEGÓN</h1>
+        <div class="subtitle">Lo de Fabian - Río Grande</div>
     </div>
 
-    <script>
-        const { createApp } = Vue;
-        createApp({
-            data() {
-                return {
-                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false,
-                    panelOpciones: false,
-                    verResumen: false,
-                    itemActual: null,
-                    pedido: [],
-                    platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío', 'Molleja'] },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo', 'JyQ'] },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan Mixto', 'Budín'] },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Cheddar', 'Provenzal'] },
-                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada', variedades: ['Mixta', 'Rusa'] }
-                    ],
-                    bebidas: [
-                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA', 'Rubia'] },
-                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Blanco'] },
-                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa', variedades: ['Coca', 'Soda'] }
-                    ],
-                    especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio Pollo', 'Cuarto'] }
-                }
-            },
-            methods: {
-                getURL(n) { return `${this.base}/${n}`; },
-                getPos(i, total, radius) {
-                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
-                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
-                },
-                handlePollo() {
-                    if (!this.sistemaIniciado) {
-                        this.sistemaIniciado = true;
-                        new Audio(this.getURL('sonido-motor.mp3')).play();
-                        new Audio(this.getURL('click-reactor.mp3')).play();
-                    } else {
-                        this.abrirOpciones(this.especialPollo);
-                    }
-                },
-                abrirOpciones(item) {
-                    if (!this.sistemaIniciado) return;
-                    new Audio(this.getURL('click-reactor.mp3')).play();
-                    this.itemActual = item;
-                    this.panelOpciones = true;
-                },
-                agregarAlPedido(v) {
-                    this.pedido.push({ nombre: this.itemActual.label, variedad: v });
-                    this.panelOpciones = false;
-                    new Audio(this.getURL('click-reactor.mp3')).play();
-                },
-                enviarWhatsApp() {
-                    let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
-                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n_Esperando coordenadas de entrega..._`);
-                    window.open(`https://wa.me/5492964616053?text=${texto}`);
-                }
-            }
-        }).mount('#app')
-    </script>
+    <div class="menu-item">
+        <h2>🦖 LOMOSAURIO</h2>
+        <p>El clásico lomo gigante para compartir (o no).</p>
+        <span class="price">$ 8.500</span>
+    </div>
+
+    <div class="menu-item">
+        <h2>🍳 MILAGRUESA</h2>
+        <p>Milanesa de ternera XL con papas fritas.</p>
+        <span class="price">$ 7.200</span>
+    </div>
+
+    <div class="menu-item">
+        <h2>🍔 BURGER BODEGÓN</h2>
+        <p>Triple carne, mucho cheddar y bacon.</p>
+        <span class="price">$ 6.500</span>
+    </div>
+
+    <a href="https://wa.me/5492964000000?text=Hola!%20Quiero%20hacer%20un%20pedido" class="btn-whatsapp">
+        📱 PEDIR POR WHATSAPP
+    </a>
+
+    <div class="footer">
+        Desarrollado con ❤️ para El Bodegón - 2026
+    </div>
+
 </body>
 </html>
