@@ -3,48 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXO NAVE - El Bodegón</title>
+    <title>NEXO NAVE - SISTEMA OPERATIVO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; }
-        .card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root { --nexo-blue: #00d2ff; --nexo-dark: #0a0b10; }
+        body { background-color: var(--nexo-dark); color: white; font-family: 'Inter', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
+        .nexo-gradient { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
     </style>
 </head>
-<body class="p-4 pb-24">
-    <header class="text-center py-6">
-        <h1 class="text-3xl font-bold text-blue-400 tracking-tighter">NEXO NAVE</h1>
-        <p class="text-slate-400 text-sm">Sistema de Pedidos Online - El Bodegón</p>
+<body class="min-h-screen p-4">
+    <header class="flex justify-between items-center mb-8 pt-4">
+        <div>
+            <h1 class="text-2xl font-black tracking-tighter text-transparent bg-clip-text nexo-gradient">NEXO NAVE</h1>
+            <p class="text-[10px] text-slate-500 uppercase tracking-widest">Arquetipo v1.0</p>
+        </div>
+        <div class="h-10 w-10 glass-card flex items-center justify-center">
+            <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
+        </div>
     </header>
 
-    <main class="max-w-md mx-auto space-y-4">
-        <div class="card p-4 rounded-2xl flex justify-between items-center">
+    <div class="space-y-4">
+        <div class="glass-card p-5 flex items-center justify-between">
             <div>
-                <h3 class="font-bold text-lg">🦖 Lomosaurio</h3>
-                <p class="text-slate-400 text-sm">El más grande de Río Grande</p>
-                <p class="text-blue-400 font-bold mt-1">$8.500</p>
+                <h3 class="font-bold text-lg text-slate-200">Panel Operativo</h3>
+                <p class="text-xs text-slate-400">Conectado a Google Sheets</p>
             </div>
-            <button class="bg-blue-600 p-3 rounded-xl">🛒</button>
+            <span class="text-cyan-400 font-mono text-sm">ONLINE</span>
         </div>
 
-        <div class="card p-4 rounded-2xl flex justify-between items-center">
-            <div>
-                <h3 class="font-bold text-lg">🍳 Milagruesa</h3>
-                <p class="text-slate-400 text-sm">Con papas y dos huevos</p>
-                <p class="text-blue-400 font-bold mt-1">$7.200</p>
+        <div id="contenedor-nexo" class="grid gap-4">
+            <div class="glass-card p-4 flex gap-4 items-center">
+                <div class="h-16 w-16 bg-slate-800 rounded-xl"></div>
+                <div class="flex-1">
+                    <div class="h-4 w-24 bg-slate-800 rounded mb-2"></div>
+                    <div class="h-3 w-16 bg-slate-700 rounded"></div>
+                </div>
             </div>
-            <button class="bg-blue-600 p-3 rounded-xl">🛒</button>
         </div>
-    </main>
-
-    <div class="fixed bottom-6 left-0 right-0 px-4">
-        <a href="https://wa.me/5492964000000?text=Hola!%20Vengo%20desde%20la%20App%20Nexo%20Nave" 
-           class="bg-green-500 w-full py-4 rounded-2xl flex justify-center items-center gap-2 font-bold text-white shadow-lg shadow-green-900/20">
-            <span>PEDIR POR WHATSAPP</span>
-        </a>
     </div>
 
-    <footer class="text-center mt-10 text-slate-500 text-xs">
-        Powered by Nexo Nave & GitHub Pages
-    </footer>
+    <div class="fixed bottom-6 left-4 right-4">
+        <a href="https://wa.me/5492964000000?text=Sistema%20Nexo%20Iniciado" 
+           class="nexo-gradient w-full py-4 rounded-2xl flex justify-center items-center gap-3 font-bold text-white shadow-lg shadow-cyan-900/40">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.48 5.228 3.48 8.404c0 6.556-5.332 11.888-11.888 11.888-2.012 0-3.986-.511-5.741-1.483l-6.242 1.708zm6.402-4.148l.359.213c1.554.921 3.35 1.408 5.195 1.408 5.524 0 10.021-4.497 10.021-10.021 0-2.677-1.042-5.193-2.934-7.086-1.892-1.892-4.408-2.934-7.086-2.934-5.525 0-10.022 4.497-10.022 10.021 0 1.767.463 3.488 1.339 5.004l.233.404-1.107 4.043 4.144-1.134z"/></svg>
+            ENVIAR PEDIDO
+        </a>
+    </div>
 </body>
 </html>
