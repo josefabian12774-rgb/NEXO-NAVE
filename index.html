@@ -3,52 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXO NAVE - SISTEMA OPERATIVO</title>
+    <title>NEXO NAVE - El Bodegón</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --nexo-blue: #00d2ff; --nexo-dark: #0a0b10; }
-        body { background-color: var(--nexo-dark); color: white; font-family: 'Inter', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; }
-        .nexo-gradient { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
+        body { background-color: #0d1117; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .nexo-card { background: #161b22; border: 1px solid #30363d; border-radius: 1.5rem; transition: transform 0.2s; }
+        .nexo-card:active { transform: scale(0.98); }
+        .price-tag { color: #58a6ff; font-weight: 800; }
+        .btn-whatsapp { background-color: #23c55e; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4); }
     </style>
 </head>
-<body class="min-h-screen p-4">
-    <header class="flex justify-between items-center mb-8 pt-4">
-        <div>
-            <h1 class="text-2xl font-black tracking-tighter text-transparent bg-clip-text nexo-gradient">NEXO NAVE</h1>
-            <p class="text-[10px] text-slate-500 uppercase tracking-widest">Arquetipo v1.0</p>
-        </div>
-        <div class="h-10 w-10 glass-card flex items-center justify-center">
-            <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
-        </div>
+<body class="p-6 flex flex-col min-h-screen">
+    
+    <header class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-blue-500 tracking-tight">NEXO NAVE</h1>
+        <p class="text-slate-400 text-sm mt-1">Sistema de Pedidos Online - El Bodegón</p>
     </header>
 
-    <div class="space-y-4">
-        <div class="glass-card p-5 flex items-center justify-between">
-            <div>
-                <h3 class="font-bold text-lg text-slate-200">Panel Operativo</h3>
-                <p class="text-xs text-slate-400">Conectado a Google Sheets</p>
+    <div class="flex-grow space-y-6 max-w-md mx-auto w-full">
+        <div class="nexo-card p-5 flex justify-between items-center">
+            <div class="flex-1">
+                <h3 class="text-xl font-bold">🦖 Lomosaurio</h3>
+                <p class="text-slate-400 text-sm">El más grande de Río Grande</p>
+                <p class="price-tag text-lg mt-2">$8.500</p>
             </div>
-            <span class="text-cyan-400 font-mono text-sm">ONLINE</span>
+            <div class="bg-blue-600/20 p-4 rounded-2xl border border-blue-500/30">
+                <span class="text-2xl">🛒</span>
+            </div>
         </div>
 
-        <div id="contenedor-nexo" class="grid gap-4">
-            <div class="glass-card p-4 flex gap-4 items-center">
-                <div class="h-16 w-16 bg-slate-800 rounded-xl"></div>
-                <div class="flex-1">
-                    <div class="h-4 w-24 bg-slate-800 rounded mb-2"></div>
-                    <div class="h-3 w-16 bg-slate-700 rounded"></div>
-                </div>
+        <div class="nexo-card p-5 flex justify-between items-center">
+            <div class="flex-1">
+                <h3 class="text-xl font-bold">🍳 Milagruesa</h3>
+                <p class="text-slate-400 text-sm">Con papas y dos huevos</p>
+                <p class="price-tag text-lg mt-2">$7.200</p>
+            </div>
+            <div class="bg-blue-600/20 p-4 rounded-2xl border border-blue-500/30">
+                <span class="text-2xl">🛒</span>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-6 left-4 right-4">
-        <a href="https://wa.me/5492964000000?text=Sistema%20Nexo%20Iniciado" 
-           class="nexo-gradient w-full py-4 rounded-2xl flex justify-center items-center gap-3 font-bold text-white shadow-lg shadow-cyan-900/40">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.588-5.946 0-6.556 5.332-11.888 11.888-11.888 3.176 0 6.161 1.237 8.404 3.48s3.48 5.228 3.48 8.404c0 6.556-5.332 11.888-11.888 11.888-2.012 0-3.986-.511-5.741-1.483l-6.242 1.708zm6.402-4.148l.359.213c1.554.921 3.35 1.408 5.195 1.408 5.524 0 10.021-4.497 10.021-10.021 0-2.677-1.042-5.193-2.934-7.086-1.892-1.892-4.408-2.934-7.086-2.934-5.525 0-10.022 4.497-10.022 10.021 0 1.767.463 3.488 1.339 5.004l.233.404-1.107 4.043 4.144-1.134z"/></svg>
-            ENVIAR PEDIDO
+    <footer class="text-center py-10 text-slate-500 text-xs italic">
+        Powered by Nexo Nave & GitHub Pages
+    </footer>
+
+    <div class="fixed bottom-8 left-6 right-6">
+        <a href="https://wa.me/5492964000000" class="btn-whatsapp w-full py-5 rounded-3xl flex justify-center items-center text-xl font-black text-white uppercase tracking-widest">
+            PEDIR POR WHATSAPP
         </a>
     </div>
+
 </body>
 </html>
