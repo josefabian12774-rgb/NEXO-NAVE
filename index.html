@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NEXO NAVE | MATRIZ ARQUETIPO</title>
+    <title>NEXO-NAVE | ORIGINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
@@ -11,111 +11,79 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { 
             height: 100dvh; width: 100vw; margin: 0; padding: 0; 
-            overflow: hidden; background: #222; color: white;
+            overflow: hidden; background: #000; color: white;
             font-family: 'Oswald', sans-serif;
         }
-        /* Estética Street Tech de Nexo Arquetipo */
-        .bg-nexo {
-            background-color: #222;
-            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://www.transparenttextures.com/patterns/concrete-wall.png');
+        /* Volvemos al fondo original de la Nave */
+        .bg-nave {
+            background-color: #000;
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
             background-size: cover; height: 100dvh; display: flex; flex-direction: column;
         }
-        .font-marker { font-family: 'Permanent Marker', cursive; color: #39FF14; [span_1](start_span)} /* Verde Aerosol Flúor[span_1](end_span) */
+        .font-marker { font-family: 'Permanent Marker', cursive; color: #facc15; }
         
-        /* NEXO RADAR (Video carril derecho) */
-        #nexo-radar {
+        /* NEXOSTATICAD: Integración en el carril derecho sin romper lo anterior */
+        #nexo-video-carril {
             position: fixed;
             bottom: 20px; 
             right: 12px; 
-            width: 25vw;
+            width: 26vw;
             max-width: 95px;
             aspect-ratio: 9/16;
             background: #000;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(57, 255, 20, 0.4);
-            box-shadow: 0 0 20px rgba(0,0,0,0.9);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
             z-index: 100;
             display: none;
         }
 
-        .footer-controls { width: 70%; display: flex; flex-direction: column; gap: 8px; }
+        /* Tus controles originales recortados al 70% */
+        .footer-controls { width: 68%; display: flex; flex-direction: column; gap: 8px; }
 
-        .btn-nexo {
-            background: #2e7d32; [span_2](start_span)/* Verde Mate Suministros[span_2](end_span) */
+        .btn-original {
+            background: #facc15; color: black;
             border-radius: 12px; padding: 12px 4px; text-align: center;
-            transition: all 0.3s ease; cursor: pointer; flex: 1; border: 1px solid transparent;
-            box-shadow: 0 4px 0 #1b5e20;
+            font-weight: 900; text-transform: uppercase; cursor: pointer; flex: 1;
         }
-        .btn-nexo p { font-size: 9px; font-weight: 900; text-transform: uppercase; line-height: 1; color: white; }
-
+        
         [v-cloak] { display: none; }
     </style>
 </head>
-<body class="bg-nexo">
+<body class="bg-nave">
     <div id="app" v-cloak class="flex flex-col h-full p-4 pt-2">
         
-        <div id="nexo-radar" @click="toggleAudio">
+        <div id="nexo-video-carril" @click="toggleAudio">
             <video id="adVideo" loop muted playsinline autoplay style="width: 100%; height: 100%; object-fit: cover;">
                 <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
             </video>
-            <div class="absolute top-1 left-1 text-[5px] bg-[#39FF14] text-black px-1 rounded font-black uppercase tracking-tighter">Radar On</div>
         </div>
 
         <header class="flex justify-between items-center h-[10%]">
-            <div class="bg-zinc-800 border border-zinc-700 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">📡</div>
-            <div class="text-center">
-                <h1 class="font-marker text-2xl italic tracking-tighter uppercase leading-none">NEXO NAVE</h1>
-                <p class="text-[7px] text-zinc-500 font-bold tracking-[0.4em] uppercase">Río Grande - TDF</p>
-            </div>
-            <div class="bg-zinc-800 border border-zinc-700 w-10 h-10 rounded-xl flex items-center justify-center relative">
-                🛠️ <span class="absolute -top-1 -right-1 bg-[#39FF14] text-black text-[9px] font-black px-1 rounded-full shadow-lg">0</span>
+            <div class="bg-zinc-900 w-10 h-10 rounded-xl flex items-center justify-center text-lg">🛰️</div>
+            <h1 class="font-marker text-2xl italic uppercase tracking-tighter">NEXO NAVE</h1>
+            <div class="bg-zinc-900 w-10 h-10 rounded-xl flex items-center justify-center text-yellow-500">
+                🚀
             </div>
         </header>
 
-        <nav class="flex justify-between border-b border-zinc-800 text-[10px] font-bold uppercase text-zinc-500 mt-2 h-[5%]">
-            <button v-for="t in tabs" @click="tabActiva = t" :class="{'text-[#39FF14] border-b-2 border-[#39FF14]': tabActiva === t}" class="pb-1 px-1 transition-all">{{ t }}</button>
-        </nav>
-
-        <div class="flex-1 overflow-y-auto mt-4 pr-1">
-            <div v-if="tabActiva === 'SISTEMAS'" class="flex flex-col items-center">
-                <div class="bg-zinc-900/60 border border-zinc-800 rounded-[2rem] p-6 w-full shadow-2xl text-center">
-                    <h2 class="font-marker text-3xl text-[#39FF14] uppercase mb-4">Protocolo Alpha</h2>
-                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-black border-l-2 border-[#39FF14] pl-2 inline-block">Nave Maestra Activa</p>
-                    <div class="grid grid-cols-2 gap-4 mt-6">
-                        <div class="bg-zinc-800/80 p-4 rounded-2xl border border-zinc-700 shadow-md">
-                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Carga</p>
-                            <p class="text-xl font-mono text-white">Full</p>
-                        </div>
-                        <div class="bg-zinc-800/80 p-4 rounded-2xl border border-zinc-700 shadow-md">
-                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Enlace</p>
-                            <p class="text-xl font-mono text-white">OK</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div v-if="tabActiva === 'PROTOCOLO'" class="space-y-4">
-                <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl shadow-lg">
-                    <p class="text-xs text-white leading-relaxed font-bold">
-                        [span_3](start_span)"No vendemos páginas; armamos estructuras virtuales de alto rendimiento"[span_3](end_span).
-                    </p>
-                </div>
+        <div class="flex-1 overflow-y-auto mt-6">
+            <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-[2rem] text-center">
+                <p class="text-yellow-400 font-bold uppercase tracking-widest text-xs mb-2">Estado de la Misión</p>
+                <h2 class="text-3xl font-black uppercase leading-none">OPERATIVA</h2>
+                <div class="h-1 w-20 bg-yellow-400 mx-auto mt-4 rounded-full"></div>
             </div>
         </div>
 
-        <footer class="flex items-end pb-4 h-[22%]">
+        <footer class="flex items-end pb-6 h-[25%]">
             <div class="footer-controls">
                 <div class="flex gap-2">
-                    <div @click="sucSel = 'CANAL-1'" :class="sucSel === 'CANAL-1' ? 'scale-105 border-white' : 'border-transparent'" class="btn-nexo">
-                        <p>CANAL 1</p>
-                    </div>
-                    <div @click="sucSel = 'CANAL-2'" :class="sucSel === 'CANAL-2' ? 'scale-105 border-white' : 'border-transparent'" class="btn-nexo">
-                        <p>CANAL 2</p>
-                    </div>
+                    <div class="btn-original text-[10px]">COMANDO A</div>
+                    <div class="btn-original text-[10px]">COMANDO B</div>
                 </div>
-                <button class="w-full bg-black/40 border border-zinc-800 text-zinc-600 py-3.5 rounded-2xl font-black uppercase text-[9px] tracking-widest shadow-inner">
-                    [span_4](start_span)AGENTE DE ENLACE TÁCTICO[span_4](end_span)
+                <button class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-2xl font-black uppercase text-[9px] tracking-widest mt-2">
+                    NEXO ARQUETIPO SISTEMAS
                 </button>
             </div>
         </footer>
@@ -126,20 +94,15 @@
         createApp({
             data() {
                 return {
-                    tabActiva: 'SISTEMAS',
-                    sucSel: null,
-                    tabs: ['SISTEMAS', 'PROTOCOLO', 'ENLACE'],
-                    pedido: []
+                    tabActiva: 'INICIO'
                 }
             },
             methods: {
-                toggleAudio() { 
-                    const v = document.getElementById('adVideo');
-                    v.muted = !v.muted;
-                }
+                toggleAudio() { document.getElementById('adVideo').muted = !document.getElementById('adVideo').muted; }
             },
             mounted() {
-                setTimeout(() => { document.getElementById('nexo-radar').style.display = 'block'; }, 2000);
+                // El video aparece sutilmente a los 2 segundos
+                setTimeout(() => { document.getElementById('nexo-video-carril').style.display = 'block'; }, 2000);
             }
         }).mount('#app')
     </script>
