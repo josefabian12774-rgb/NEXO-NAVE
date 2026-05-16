@@ -10,7 +10,6 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Animación del Núcleo del Reactor */
         @keyframes pulse-reactor {
             0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
             50% { box-shadow: 0 0 40px #ff3300; border-color: #ff3300; }
@@ -18,7 +17,6 @@
         }
         .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
-        /* Botón Estilo Vidrio Cian */
         .btn-vidrio-cian {
             background: rgba(0, 242, 255, 0.1); 
             color: #00f2ff; 
@@ -32,7 +30,6 @@
         }
         .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
 
-        /* Holograma del Pollo */
         .pollo-holograma {
             width: 130%; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); mix-blend-mode: plus-lighter; display: none;
@@ -43,7 +40,6 @@
             50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
         }
 
-        /* Monitor de Video */
         .monitor-video {
             width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
             border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;
@@ -66,7 +62,7 @@
         <header class="text-center z-50 w-full relative">
             <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
                 <span class="text-[5px] text-cyan-400 uppercase font-black">Ciclos</span>
-                <span id="visit-count" class="text-[10px] font-mono text-white">0000</span>
+                <span id="visit-count" class="text-[10px] font-mono text-white">----</span>
             </div>
 
             <h1 class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2">NEXO NAVE</h1>
@@ -120,6 +116,7 @@
                         <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
                     </video>
                     <div v-if="videoMuted" class="absolute top-0 right-0 bg-black/60 px-1 text-[6px]">🔇</div>
+                    <div v-else class="absolute top-0 right-0 bg-cyan-600 px-1 text-[6px]">🔊</div>
                 </div>
                 <div v-else class="w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-lg flex items-center justify-center">
                     <span class="text-zinc-800 text-[6px] font-black uppercase">Radar</span>
@@ -157,13 +154,12 @@
     </div>
 
     <script>
-        // Lógica del contador de visitas externa
         async function loadVisits() {
             try {
-                const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-fabian/visits');
+                const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-v1-fabian-unique/visits');
                 const data = await resp.json();
                 document.getElementById('visit-count').innerText = data.value.toString().padStart(4, '0');
-            } catch (e) { document.getElementById('visit-count').innerText = "0824"; }
+            } catch (e) { document.getElementById('visit-count').innerText = "0001"; }
         }
         loadVisits();
 
@@ -204,9 +200,9 @@
                 },
                 playSnd(s, loop = false) { 
                     const audio = new Audio(this.getURL(s));
-                    audio.volume = 0.3; // Volumen moderado
+                    audio.volume = 0.1; // SUTIL: Volumen al 10%
                     if(loop) { audio.loop = true; this.motorAudio = audio; }
-                    audio.play().catch(e => console.log("Esperando interacción...")); 
+                    audio.play().catch(e => {}); 
                 },
                 handlePollo() {
                     if (!this.sistemaIniciado) {
@@ -219,12 +215,13 @@
                 },
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
-                    this.playSnd('click-reactor.mp3');
+                    const click = new Audio(this.getURL('click-reactor.mp3'));
+                    click.volume = 0.2;
+                    click.play();
                     this.itemActual = item;
                     this.panelOpciones = true;
                 },
                 agregarAlPedido(v) {
-                    this.playSnd('click-reactor.mp3');
                     this.pedido.push({ nombre: this.itemActual.label, variedad: v });
                     this.panelOpciones = false;
                 },
@@ -233,22 +230,24 @@
                     if (video) {
                         video.muted = !video.muted;
                         this.videoMuted = video.muted;
+                        
                         if(!video.muted) {
+                            // SI EL VIDEO TIENE SONIDO: Pausar Reactor
+                            if(this.motorAudio) this.motorAudio.pause();
                             this.clicsVideo++;
-                            video.volume = 0.4;
-                            console.log("Radar Clicks: " + this.clicsVideo);
+                            video.volume = 0.5;
+                        } else {
+                            // SI EL VIDEO SE CALLA: Volver a sonar Reactor
+                            if(this.motorAudio) this.motorAudio.play();
                         }
                     }
                 },
                 enviarWhatsApp() {
-                    // APAGAR REACTOR Y SONIDO
                     if(this.motorAudio) { this.motorAudio.pause(); this.motorAudio = null; }
                     this.sistemaIniciado = false;
-
                     let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
                     const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
                     window.open(`https://wa.me/5492964616053?text=${texto}`);
-                    
                     this.pedido = [];
                     this.verResumen = false;
                 }
