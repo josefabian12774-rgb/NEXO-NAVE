@@ -18,13 +18,19 @@
         }
         .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
-        /* Botón de Confirmación Potenciado */
-        .btn-confirmar {
-            background: #ff6400; color: #000; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 2px;
-            box-shadow: 0 0 25px rgba(255, 100, 0, 0.7);
+        /* Botón Estilo Vidrio Cian */
+        .btn-vidrio-cian {
+            background: rgba(0, 242, 255, 0.1); 
+            color: #00f2ff; 
+            font-weight: 900;
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            border: 1px solid #00f2ff;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
             transition: all 0.3s ease;
         }
+        .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
 
         /* Holograma del Pollo */
         .pollo-holograma {
@@ -37,11 +43,10 @@
             50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
         }
 
-        /* Monitor de Video en Extremo Derecho */
+        /* Monitor de Video */
         .monitor-video {
-            width: 100%; height: 100%; border: 1px solid rgba(255, 100, 0, 0.5);
+            width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
             border-radius: 8px; overflow: hidden; background: #000;
-            position: relative;
         }
 
         .silicio-modal {
@@ -63,7 +68,7 @@
             
             <div class="h-14 flex items-center justify-center">
                 <button v-if="pedido.length > 0" @click="verResumen = true" 
-                    class="btn-confirmar w-full max-w-xs py-3 rounded-xl text-xs animate-pulse border-2 border-white/20">
+                    class="btn-vidrio-cian w-full max-w-xs py-3 rounded-xl text-xs animate-pulse">
                     CONFIRMAR PEDIDO ({{ pedido.length }})
                 </button>
                 <span v-else class="text-[8px] uppercase tracking-[0.5em] text-zinc-600 font-bold">
@@ -94,25 +99,11 @@
         </div>
 
         <div class="mt-auto mb-6 w-full grid grid-cols-4 gap-2 h-24">
-            
-            <div @click="abrirOpciones(bebidas[0])" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
-                <img :src="getURL(bebidas[0].img)" class="w-full h-full object-cover opacity-40">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
+                 class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 flex items-end justify-center p-1">
-                    <span class="text-[7px] font-black text-orange-500 uppercase">{{bebidas[0].label}}</span>
-                </div>
-            </div>
-
-            <div @click="abrirOpciones(bebidas[1])" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
-                <img :src="getURL(bebidas[1].img)" class="w-full h-full object-cover opacity-40">
-                <div class="absolute inset-0 flex items-end justify-center p-1">
-                    <span class="text-[7px] font-black text-orange-500 uppercase">{{bebidas[1].label}}</span>
-                </div>
-            </div>
-
-            <div @click="abrirOpciones(bebidas[2])" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
-                <img :src="getURL(bebidas[2].img)" class="w-full h-full object-cover opacity-40">
-                <div class="absolute inset-0 flex items-end justify-center p-1">
-                    <span class="text-[7px] font-black text-orange-500 uppercase">{{bebidas[2].label}}</span>
+                    <span class="text-[7px] font-black text-orange-500 uppercase">{{b.label}}</span>
                 </div>
             </div>
             
@@ -132,24 +123,24 @@
             <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
                 <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
                 <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" 
-                    class="w-full max-w-xs py-4 mb-3 bg-zinc-900 border border-cyan-400/50 text-cyan-400 text-xs font-black uppercase">
+                    class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">
                     + {{ v }}
                 </button>
-                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Cerrar</button>
+                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': verResumen}">
             <div class="w-full flex flex-col items-center p-8 overflow-y-auto">
-                <h2 class="text-orange-500 text-xl font-black mb-6 italic tracking-widest uppercase">Lista de Comando</h2>
+                <h2 class="text-orange-500 text-xl font-black mb-6 italic uppercase">Lista de Comando</h2>
                 <div class="w-full space-y-3 mb-8 max-h-64 overflow-y-auto pr-2">
                     <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-3">
-                        <p class="text-cyan-400 text-[10px] font-black uppercase tracking-tighter">{{it.nombre}} - {{it.variedad}}</p>
+                        <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}} - {{it.variedad}}</p>
                         <button @click="pedido.splice(idx, 1)" class="text-red-600 font-bold px-2">X</button>
                     </div>
                 </div>
                 <button v-if="pedido.length > 0" @click="enviarWhatsApp" 
-                    class="w-full py-5 bg-orange-600 text-black font-black uppercase tracking-widest shadow-[0_0_30px_#ff6400]">
+                    class="btn-vidrio-cian w-full py-5 text-sm shadow-[0_0_30px_rgba(0,242,255,0.4)]">
                     ENVIAR PEDIDO A CENTRAL
                 </button>
                 <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold">SEGUIR SUMANDO</button>
@@ -190,19 +181,24 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
+                playSnd(s) { new Audio(this.getURL(s)).play(); },
                 handlePollo() {
                     if (!this.sistemaIniciado) {
                         this.sistemaIniciado = true;
+                        this.playSnd('sonido-motor.mp3');
+                        this.playSnd('click-reactor.mp3');
                     } else {
                         this.abrirOpciones(this.especialPollo);
                     }
                 },
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
+                    this.playSnd('click-reactor.mp3');
                     this.itemActual = item;
                     this.panelOpciones = true;
                 },
                 agregarAlPedido(v) {
+                    this.playSnd('click-reactor.mp3');
                     this.pedido.push({ nombre: this.itemActual.label, variedad: v });
                     this.panelOpciones = false;
                 },
