@@ -2,91 +2,150 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NEXO-NAVE | ORIGINAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexo Nave | Central de Pedidos Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { 
-            height: 100dvh; width: 100vw; margin: 0; padding: 0; 
-            overflow: hidden; background: #000; color: white;
-            font-family: 'Oswald', sans-serif;
-        }
-        /* Volvemos al fondo original de la Nave */
-        .bg-nave {
-            background-color: #000;
-            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            background-size: cover; height: 100dvh; display: flex; flex-direction: column;
-        }
-        .font-marker { font-family: 'Permanent Marker', cursive; color: #facc15; }
+        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* NEXOSTATICAD: Integración en el carril derecho sin romper lo anterior */
-        #nexo-video-carril {
+        /* NEXO RADAR: El video integrado a la derecha */
+        #nexo-radar {
             position: fixed;
             bottom: 20px; 
             right: 12px; 
-            width: 26vw;
-            max-width: 95px;
+            width: 25vw;
+            max-width: 90px;
             aspect-ratio: 9/16;
             background: #000;
             border-radius: 12px;
             overflow: hidden;
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            box-shadow: 0 0 15px rgba(0,0,0,0.8);
-            z-index: 100;
+            border: 1px solid rgba(255, 100, 0, 0.4); /* Naranja como el reactor */
+            box-shadow: 0 0 20px rgba(255, 100, 0, 0.2);
+            z-index: 1000;
             display: none;
         }
 
-        /* Tus controles originales recortados al 70% */
-        .footer-controls { width: 68%; display: flex; flex-direction: column; gap: 8px; }
-
-        .btn-original {
-            background: #facc15; color: black;
-            border-radius: 12px; padding: 12px 4px; text-align: center;
-            font-weight: 900; text-transform: uppercase; cursor: pointer; flex: 1;
+        /* Animación del Núcleo del Reactor (Energía Naranja) */
+        @keyframes pulse-reactor {
+            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
+            50% { box-shadow: 0 0 50px #ff3300; border-color: #ff3300; }
+            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
         }
-        
+        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
+
+        /* Holograma (Pollo) */
+        @keyframes hologram-float {
+            0% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)); }
+            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); filter: drop-shadow(0 0 25px rgba(0,242,255,0.8)); }
+            100% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)); }
+        }
+        .pollo-holograma {
+            width: 130%; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); mix-blend-mode: plus-lighter; display: none;
+        }
+        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
+
+        /* Modales */
+        .silicio-modal {
+            position: fixed; inset: 0; background: rgba(0, 10, 20, 0.98);
+            backdrop-filter: blur(20px); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform: translateY(100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .silicio-modal.active { transform: translateY(0); }
+
+        .btn-variedad {
+            width: 85%; padding: 15px; margin: 5px;
+            background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff;
+            color: #00f2ff; font-weight: 900; text-transform: uppercase; font-size: 10px;
+        }
+
         [v-cloak] { display: none; }
     </style>
 </head>
-<body class="bg-nave">
-    <div id="app" v-cloak class="flex flex-col h-full p-4 pt-2">
+<body class="flex justify-center items-center">
+    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
         
-        <div id="nexo-video-carril" @click="toggleAudio">
+        <div id="nexo-radar" @click="toggleAudio">
             <video id="adVideo" loop muted playsinline autoplay style="width: 100%; height: 100%; object-fit: cover;">
                 <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
             </video>
+            <div class="absolute top-1 left-1 text-[5px] bg-orange-600 text-white px-1 rounded font-black uppercase">Radar</div>
         </div>
 
-        <header class="flex justify-between items-center h-[10%]">
-            <div class="bg-zinc-900 w-10 h-10 rounded-xl flex items-center justify-center text-lg">🛰️</div>
-            <h1 class="font-marker text-2xl italic uppercase tracking-tighter">NEXO NAVE</h1>
-            <div class="bg-zinc-900 w-10 h-10 rounded-xl flex items-center justify-center text-yellow-500">
-                🚀
+        <header class="text-center z-50">
+            <h1 class="text-2xl font-black tracking-widest text-orange-500 italic">NEXO NAVE</h1>
+            <div class="flex justify-center gap-4 mt-1">
+                <span class="text-[8px] uppercase tracking-widest" :class="sistemaIniciado ? 'text-green-500' : 'text-red-600'">
+                    ● {{ sistemaIniciado ? 'Online' : 'Standby' }}
+                </span>
+                <button v-if="pedido.length > 0" @click="verResumen = true" class="text-[8px] text-cyan-400 border border-cyan-400 px-2 animate-pulse">
+                    CARGA: {{ pedido.length }}
+                </button>
             </div>
         </header>
 
-        <div class="flex-1 overflow-y-auto mt-6">
-            <div class="bg-zinc-900/80 border border-zinc-800 p-6 rounded-[2rem] text-center">
-                <p class="text-yellow-400 font-bold uppercase tracking-widest text-xs mb-2">Estado de la Misión</p>
-                <h2 class="text-3xl font-black uppercase leading-none">OPERATIVA</h2>
-                <div class="h-1 w-20 bg-yellow-400 mx-auto mt-4 rounded-full"></div>
+        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
+            
+            <div class="relative w-48 h-48 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
+                 :class="{'reactor-core-active': sistemaIniciado}"
+                 @click="handlePollo">
+                
+                <div class="relative w-full h-full">
+                    <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
+                </div>
+
+                <div v-if="!sistemaIniciado" class="absolute inset-0 flex flex-col items-center justify-center bg-orange-600/10 border border-orange-500/30 rounded-full">
+                    <span class="text-orange-500 text-3xl font-black italic animate-pulse">ACTIVA</span>
+                </div>
+            </div>
+
+            <div v-for="(p, i) in platos" :key="p.id" 
+                 :style="getPos(i, platos.length, 130)"
+                 @click="abrirOpciones(p)"
+                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl hover:border-cyan-400 transition-all">
+                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
+                <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
             </div>
         </div>
 
-        <footer class="flex items-end pb-6 h-[25%]">
-            <div class="footer-controls">
-                <div class="flex gap-2">
-                    <div class="btn-original text-[10px]">COMANDO A</div>
-                    <div class="btn-original text-[10px]">COMANDO B</div>
-                </div>
-                <button class="w-full bg-zinc-800 text-zinc-500 py-4 rounded-2xl font-black uppercase text-[9px] tracking-widest mt-2">
-                    NEXO ARQUETIPO SISTEMAS
+        <div class="silicio-modal" :class="{'active': panelOpciones}">
+            <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
+                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-8">{{itemActual.label}}</h2>
+                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-variedad">
+                    + {{ v }}
                 </button>
+                <button @click="panelOpciones = false" class="mt-12 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
             </div>
-        </footer>
+        </div>
+
+        <div class="silicio-modal" :class="{'active': verResumen}">
+            <div class="w-full flex flex-col items-center p-8 overflow-y-auto">
+                <h2 class="text-orange-500 text-xl font-black mb-6 italic">LISTA DE CARGA</h2>
+                <div class="w-full space-y-3 mb-8">
+                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between border-b border-zinc-800 py-2">
+                        <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}} - {{it.variedad}}</p>
+                        <button @click="pedido.splice(idx, 1)" class="text-red-500 text-[10px]">X</button>
+                    </div>
+                </div>
+                <button v-if="pedido.length > 0" @click="enviarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black uppercase shadow-[0_0_20px_#ff6400]">
+                    ENVIAR COMANDO
+                </button>
+                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px]">Cerrar</button>
+            </div>
+        </div>
+
+        <div class="mt-auto mb-8 w-full max-w-xs grid grid-cols-3 gap-3">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
+                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer hover:border-cyan-400">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 flex items-end justify-center p-2">
+                    <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -94,15 +153,60 @@
         createApp({
             data() {
                 return {
-                    tabActiva: 'INICIO'
+                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
+                    sistemaIniciado: false,
+                    panelOpciones: false,
+                    verResumen: false,
+                    itemActual: null,
+                    pedido: [],
+                    platos: [
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo'] },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan', 'Budín'] },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Cheddar', 'Provenzal'] }
+                    ],
+                    bebidas: [
+                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA', 'Rubia'] },
+                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Blanco'] },
+                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Soda', variedades: ['Coca', 'Soda'] }
+                    ],
+                    especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio', 'Cuarto'] }
                 }
             },
             methods: {
-                toggleAudio() { document.getElementById('adVideo').muted = !document.getElementById('adVideo').muted; }
-            },
-            mounted() {
-                // El video aparece sutilmente a los 2 segundos
-                setTimeout(() => { document.getElementById('nexo-video-carril').style.display = 'block'; }, 2000);
+                getURL(n) { return `${this.base}/${n}`; },
+                getPos(i, total, radius) {
+                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
+                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
+                },
+                handlePollo() {
+                    if (!this.sistemaIniciado) {
+                        this.sistemaIniciado = true;
+                        document.getElementById('nexo-radar').style.display = 'block';
+                    } else {
+                        this.abrirOpciones(this.especialPollo);
+                    }
+                },
+                abrirOpciones(item) {
+                    if (!this.sistemaIniciado) return;
+                    this.itemActual = item;
+                    this.panelOpciones = true;
+                },
+                agregarAlPedido(v) {
+                    this.pedido.push({ nombre: this.itemActual.label, variedad: v });
+                    this.panelOpciones = false;
+                },
+                toggleAudio() {
+                    const v = document.getElementById('adVideo');
+                    v.muted = !v.muted;
+                },
+                enviarWhatsApp() {
+                    let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
+                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}`);
+                    window.open(`https://wa.me/5492964616053?text=${texto}`);
+                }
             }
         }).mount('#app')
     </script>
