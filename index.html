@@ -2,144 +2,123 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexo Nave | Central de Pedidos Elite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>NEXO NAVE | MATRIZ ARQUETIPO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Permanent+Marker&display=swap" rel="stylesheet">
     <style>
-        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { 
+            height: 100dvh; width: 100vw; margin: 0; padding: 0; 
+            overflow: hidden; background: #222; color: white;
+            font-family: 'Oswald', sans-serif;
+        }
+        /* Estética Street Tech de Nexo Arquetipo */
+        .bg-nexo {
+            background-color: #222;
+            background-image: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://www.transparenttextures.com/patterns/concrete-wall.png');
+            background-size: cover; height: 100dvh; display: flex; flex-direction: column;
+        }
+        .font-marker { font-family: 'Permanent Marker', cursive; color: #39FF14; [span_1](start_span)} /* Verde Aerosol Flúor[span_1](end_span) */
         
-        /* Animación del Núcleo del Reactor (Energía Naranja) */
-        @keyframes pulse-reactor {
-            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
-            50% { box-shadow: 0 0 50px #ff3300; border-color: #ff3300; }
-            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
-        }
-        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
-
-        /* Efecto de Holograma de Silicio (Pollo Flotante) */
-        @keyframes hologram-float {
-            0% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); filter: drop-shadow(0 0 25px rgba(0,242,255,0.8)) brightness(1.2); }
-            100% { transform: translate(-50%, -50%) scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(0,242,255,0.5)) brightness(1); }
-        }
-        .pollo-holograma {
-            width: 130%; max-width: none; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: plus-lighter; /* Efecto de transparencia holográfica */
-            display: none; /* Oculto hasta activación */
-        }
-        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
-
-        /* Sombra de Energía Debajo del Pollo */
-        .pollo-shadow {
-            position: absolute; width: 60%; height: 20%; background: radial-gradient(ellipse at center, rgba(0,242,255,0.4) 0%, transparent 70%);
-            bottom: -10%; left: 20%; z-index: -1;
-            filter: blur(5px);
+        /* NEXO RADAR (Video carril derecho) */
+        #nexo-radar {
+            position: fixed;
+            bottom: 20px; 
+            right: 12px; 
+            width: 25vw;
+            max-width: 95px;
+            aspect-ratio: 9/16;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 20px rgba(0,0,0,0.9);
+            z-index: 100;
+            display: none;
         }
 
-        /* Pantallas de Silicio */
-        .silicio-modal {
-            position: fixed; inset: 0; background: rgba(0, 10, 20, 0.98);
-            backdrop-filter: blur(20px); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translateY(100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .silicio-modal.active { transform: translateY(0); }
+        .footer-controls { width: 70%; display: flex; flex-direction: column; gap: 8px; }
 
-        .btn-variedad {
-            width: 85%; padding: 15px; margin: 5px;
-            background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff;
-            color: #00f2ff; font-weight: 900; text-transform: uppercase;
-            font-size: 10px; letter-spacing: 2px;
+        .btn-nexo {
+            background: #2e7d32; [span_2](start_span)/* Verde Mate Suministros[span_2](end_span) */
+            border-radius: 12px; padding: 12px 4px; text-align: center;
+            transition: all 0.3s ease; cursor: pointer; flex: 1; border: 1px solid transparent;
+            box-shadow: 0 4px 0 #1b5e20;
         }
-        .btn-variedad:active { background: #00f2ff; color: #000; }
+        .btn-nexo p { font-size: 9px; font-weight: 900; text-transform: uppercase; line-height: 1; color: white; }
 
         [v-cloak] { display: none; }
     </style>
 </head>
-<body class="flex justify-center items-center">
-    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 relative">
+<body class="bg-nexo">
+    <div id="app" v-cloak class="flex flex-col h-full p-4 pt-2">
         
-        <header class="text-center z-50">
-            <h1 class="text-2xl font-black tracking-widest text-orange-500 italic">NEXO NAVE</h1>
-            <div class="flex justify-center gap-4 mt-1">
-                <span class="text-[8px] uppercase tracking-widest" :class="sistemaIniciado ? 'text-green-500' : 'text-red-600'">
-                    ● {{ sistemaIniciado ? 'Online' : 'Standby' }}
-                </span>
-                <button v-if="pedido.length > 0" @click="verResumen = true" class="text-[8px] text-cyan-400 border border-cyan-400 px-2 animate-pulse">
-                    LISTA DE CARGA: {{ pedido.length }}
-                </button>
+        <div id="nexo-radar" @click="toggleAudio">
+            <video id="adVideo" loop muted playsinline autoplay style="width: 100%; height: 100%; object-fit: cover;">
+                <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
+            </video>
+            <div class="absolute top-1 left-1 text-[5px] bg-[#39FF14] text-black px-1 rounded font-black uppercase tracking-tighter">Radar On</div>
+        </div>
+
+        <header class="flex justify-between items-center h-[10%]">
+            <div class="bg-zinc-800 border border-zinc-700 w-10 h-10 rounded-xl flex items-center justify-center text-lg shadow-inner">📡</div>
+            <div class="text-center">
+                <h1 class="font-marker text-2xl italic tracking-tighter uppercase leading-none">NEXO NAVE</h1>
+                <p class="text-[7px] text-zinc-500 font-bold tracking-[0.4em] uppercase">Río Grande - TDF</p>
+            </div>
+            <div class="bg-zinc-800 border border-zinc-700 w-10 h-10 rounded-xl flex items-center justify-center relative">
+                🛠️ <span class="absolute -top-1 -right-1 bg-[#39FF14] text-black text-[9px] font-black px-1 rounded-full shadow-lg">0</span>
             </div>
         </header>
 
-        <div class="relative w-[340px] h-[340px] flex items-center justify-center mt-10">
-            
-            <div class="relative w-48 h-48 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
-                 :class="{'reactor-core-active': sistemaIniciado}"
-                 @click="handlePollo">
-                
-                <div class="relative w-full h-full">
-                    <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
-                    <div v-if="sistemaIniciado" class="pollo-shadow"></div>
-                </div>
+        <nav class="flex justify-between border-b border-zinc-800 text-[10px] font-bold uppercase text-zinc-500 mt-2 h-[5%]">
+            <button v-for="t in tabs" @click="tabActiva = t" :class="{'text-[#39FF14] border-b-2 border-[#39FF14]': tabActiva === t}" class="pb-1 px-1 transition-all">{{ t }}</button>
+        </nav>
 
-                <div v-if="!sistemaIniciado" class="absolute inset-0 flex flex-col items-center justify-center bg-orange-600/10 border border-orange-500/30 rounded-full">
-                    <span class="text-orange-500 text-3xl font-black italic animate-pulse">ACTIVA</span>
-                </div>
-            </div>
-
-            <div v-for="(p, i) in platos" :key="p.id" 
-                 :style="getPos(i, platos.length, 140)"
-                 @click="abrirOpciones(p)"
-                 class="absolute w-16 h-16 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl hover:scale-110 hover:border-cyan-400 transition-transform">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
-                <p class="absolute bottom-0 w-full text-center text-[6px] font-bold uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
-            </div>
-        </div>
-
-        <div class="silicio-modal" :class="{'active': panelOpciones}">
-            <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
-                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-8 tracking-tighter">{{itemActual.label}}</h2>
-                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-variedad">
-                    + AGREGAR {{ v }}
-                </button>
-                <button @click="panelOpciones = false" class="mt-12 text-zinc-500 text-[10px] font-bold uppercase">Volver</button>
-            </div>
-        </div>
-
-        <div class="silicio-modal" :class="{'active': verResumen}">
-            <div class="w-full flex flex-col items-center p-8 max-h-screen overflow-y-auto">
-                <h2 class="text-orange-500 text-xl font-black uppercase mb-6 tracking-widest italic">LISTA DE CARGA</h2>
-                
-                <div class="w-full space-y-3 mb-8">
-                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-2">
-                        <div>
-                            <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}}</p>
-                            <p class="text-white text-[12px]">{{it.variedad}}</p>
+        <div class="flex-1 overflow-y-auto mt-4 pr-1">
+            <div v-if="tabActiva === 'SISTEMAS'" class="flex flex-col items-center">
+                <div class="bg-zinc-900/60 border border-zinc-800 rounded-[2rem] p-6 w-full shadow-2xl text-center">
+                    <h2 class="font-marker text-3xl text-[#39FF14] uppercase mb-4">Protocolo Alpha</h2>
+                    <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-black border-l-2 border-[#39FF14] pl-2 inline-block">Nave Maestra Activa</p>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <div class="bg-zinc-800/80 p-4 rounded-2xl border border-zinc-700 shadow-md">
+                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Carga</p>
+                            <p class="text-xl font-mono text-white">Full</p>
                         </div>
-                        <button @click="pedido.splice(idx, 1)" class="text-red-500 text-[10px] font-bold">X</button>
+                        <div class="bg-zinc-800/80 p-4 rounded-2xl border border-zinc-700 shadow-md">
+                            <p class="text-[8px] text-zinc-500 uppercase font-black mb-1">Enlace</p>
+                            <p class="text-xl font-mono text-white">OK</p>
+                        </div>
                     </div>
                 </div>
-
-                <button v-if="pedido.length > 0" @click="enviarWhatsApp" class="w-full py-4 bg-orange-600 text-black font-black uppercase tracking-widest shadow-[0_0_20px_#ff6400]">
-                    ENVIAR COMANDO WHATSAPP
-                </button>
-
-                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold uppercase">Seguir Sumando</button>
             </div>
-        </div>
 
-        <div class="mt-auto mb-8 w-full max-w-xs grid grid-cols-3 gap-3">
-            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden aspect-[3/4] relative cursor-pointer hover:border-cyan-400">
-                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
-                <div class="absolute inset-0 flex items-end justify-center p-3">
-                    <span class="text-[8px] font-black text-orange-500 uppercase">{{b.label}}</span>
+            <div v-if="tabActiva === 'PROTOCOLO'" class="space-y-4">
+                <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-2xl shadow-lg">
+                    <p class="text-xs text-white leading-relaxed font-bold">
+                        [span_3](start_span)"No vendemos páginas; armamos estructuras virtuales de alto rendimiento"[span_3](end_span).
+                    </p>
                 </div>
             </div>
         </div>
+
+        <footer class="flex items-end pb-4 h-[22%]">
+            <div class="footer-controls">
+                <div class="flex gap-2">
+                    <div @click="sucSel = 'CANAL-1'" :class="sucSel === 'CANAL-1' ? 'scale-105 border-white' : 'border-transparent'" class="btn-nexo">
+                        <p>CANAL 1</p>
+                    </div>
+                    <div @click="sucSel = 'CANAL-2'" :class="sucSel === 'CANAL-2' ? 'scale-105 border-white' : 'border-transparent'" class="btn-nexo">
+                        <p>CANAL 2</p>
+                    </div>
+                </div>
+                <button class="w-full bg-black/40 border border-zinc-800 text-zinc-600 py-3.5 rounded-2xl font-black uppercase text-[9px] tracking-widest shadow-inner">
+                    [span_4](start_span)AGENTE DE ENLACE TÁCTICO[span_4](end_span)
+                </button>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -147,60 +126,20 @@
         createApp({
             data() {
                 return {
-                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false,
-                    panelOpciones: false,
-                    verResumen: false,
-                    itemActual: null,
-                    pedido: [],
-                    platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío', 'Molleja'] },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo', 'JyQ'] },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan Mixto', 'Budín'] },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Cheddar', 'Provenzal'] },
-                        { id: 10, img: 'mixta-organica.webp', label: 'Ensalada', variedades: ['Mixta', 'Rusa'] }
-                    ],
-                    bebidas: [
-                        { id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA', 'Rubia'] },
-                        { id: 8, img: 'cava-tinto-premium.webp', label: 'Vino', variedades: ['Malbec', 'Blanco'] },
-                        { id: 9, img: 'soda-lemon-reactor.webp', label: 'Gaseosa', variedades: ['Coca', 'Soda'] }
-                    ],
-                    especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio Pollo', 'Cuarto'] }
+                    tabActiva: 'SISTEMAS',
+                    sucSel: null,
+                    tabs: ['SISTEMAS', 'PROTOCOLO', 'ENLACE'],
+                    pedido: []
                 }
             },
             methods: {
-                getURL(n) { return `${this.base}/${n}`; },
-                getPos(i, total, radius) {
-                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
-                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
-                },
-                handlePollo() {
-                    if (!this.sistemaIniciado) {
-                        this.sistemaIniciado = true;
-                        new Audio(this.getURL('sonido-motor.mp3')).play();
-                        new Audio(this.getURL('click-reactor.mp3')).play();
-                    } else {
-                        this.abrirOpciones(this.especialPollo);
-                    }
-                },
-                abrirOpciones(item) {
-                    if (!this.sistemaIniciado) return;
-                    new Audio(this.getURL('click-reactor.mp3')).play();
-                    this.itemActual = item;
-                    this.panelOpciones = true;
-                },
-                agregarAlPedido(v) {
-                    this.pedido.push({ nombre: this.itemActual.label, variedad: v });
-                    this.panelOpciones = false;
-                    new Audio(this.getURL('click-reactor.mp3')).play();
-                },
-                enviarWhatsApp() {
-                    let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
-                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n_Esperando coordenadas de entrega..._`);
-                    window.open(`https://wa.me/5492964616053?text=${texto}`);
+                toggleAudio() { 
+                    const v = document.getElementById('adVideo');
+                    v.muted = !v.muted;
                 }
+            },
+            mounted() {
+                setTimeout(() => { document.getElementById('nexo-radar').style.display = 'block'; }, 2000);
             }
         }).mount('#app')
     </script>
