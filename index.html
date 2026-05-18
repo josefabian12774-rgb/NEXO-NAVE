@@ -29,82 +29,79 @@
         }
         .silicio-modal.active { transform: translateY(0); }
 
-        input { background: rgba(255,255,255,0.05); border: 1px solid var(--main-color); padding: 12px; color: #fff; text-align: center; width: 100%; outline: none; }
+        .file-input { display: none; }
+        .upload-label { border: 1px dashed var(--main-color); padding: 10px; cursor: pointer; display: block; font-size: 8px; text-align: center; }
+        
         [v-cloak] { display: none; }
     </style>
 </head>
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center p-4 relative">
         
-        <header class="w-full flex justify-between items-start z-50">
-            <button @click="abrirSala" class="nexo-border nexo-bg px-3 py-2 rounded-br-xl text-[10px] font-black uppercase tracking-tighter">
-                SALA DE CONTROL
-            </button>
+        <header class="w-full flex justify-between items-center z-50 h-16">
+            <button @click="abrirSala" class="nexo-border nexo-bg px-3 py-2 rounded-br-xl text-[8px] font-black uppercase">SALA DE CONTROL</button>
 
-            <div class="text-center">
-                <h1 @click="masterKey" class="text-xl font-black italic nexo-text tracking-widest cursor-pointer">{{ config.nombre }}</h1>
-                <p class="text-[6px] text-zinc-500 uppercase tracking-[0.5em]">{{ statusMsg }}</p>
+            <div class="flex-1 flex justify-center px-4" @click="masterKey">
+                <img v-if="config.logo" :src="config.logo" class="h-12 w-auto object-contain filter drop-shadow-[0_0_8px_var(--main-color)]">
+                <h1 v-else class="text-xl font-black italic nexo-text tracking-widest">{{ config.nombre }}</h1>
             </div>
 
-            <div class="nexo-border bg-black/80 p-1 rounded min-w-[60px] text-center">
-                <span class="text-[5px] block text-cyan-400 font-bold uppercase">Ciclo Activo</span>
+            <div class="nexo-border bg-black/80 p-1 rounded text-center min-w-[50px]">
+                <span class="text-[5px] block text-cyan-400 font-bold uppercase">Ciclo</span>
                 <span class="text-[10px] font-mono">{{ sessionTipo }}</span>
             </div>
         </header>
 
-        <div class="relative w-[320px] h-[320px] flex items-center justify-center my-auto">
-            <div class="w-44 h-44 rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center z-[100] cursor-pointer overflow-hidden"
+        <div class="relative w-[300px] h-[300px] flex items-center justify-center my-auto">
+            <div class="w-40 h-40 rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center z-[100] cursor-pointer overflow-hidden"
                  :class="{'core-active': sistemaIniciado}" @click="handleReactor">
                 <img v-if="sistemaIniciado" :src="getURL('pollo-reactor.webp')" class="w-[130%] opacity-80">
-                <div v-else class="text-center">
-                    <span class="nexo-text font-black italic animate-pulse block">STANDBY</span>
-                    <span class="text-[6px] text-zinc-600 uppercase">Click para Activar</span>
-                </div>
+                <span v-else class="nexo-text font-black italic animate-pulse">ACTIVA</span>
             </div>
 
-            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 130)" @click="abrirOpciones(p)"
-                 class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
+            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 120)"
+                 class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 shadow-2xl">
+                <img :src="p.customImg || getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-[5px] font-black uppercase bg-black/90 py-1 text-center" :style="{color: config.color}">{{p.label}}</p>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': panelControl}">
-            <div v-if="paso === 0" class="w-full max-w-xs space-y-4 p-6">
-                <h2 class="nexo-text text-center font-black mb-8 uppercase italic">Protocolos Nexo</h2>
-                <button @click="paso = 'fantasma'" class="w-full p-4 border border-zinc-700 bg-zinc-900/40 text-left">
-                    <p class="text-orange-500 font-black text-xs uppercase">1. Modo Fantasma</p>
-                    <p class="text-[7px] text-zinc-500 uppercase">24 Horas de personalización</p>
-                </button>
-                <button @click="paso = 'contrato'" class="w-full p-4 nexo-border nexo-bg text-left">
-                    <p class="nexo-text font-black text-xs uppercase">2. Ciclo de Prueba (20 Días)</p>
-                    <p class="text-[7px] text-zinc-400 uppercase">Vinculación ADN Obligatoria</p>
-                </button>
-                <button @click="panelControl = false" class="w-full text-[8px] text-zinc-600 font-black uppercase pt-4">Cerrar</button>
-            </div>
-
-            <div v-if="paso === 'fantasma'" class="w-full max-w-xs space-y-6 text-center p-6">
-                <h2 class="nexo-text font-black uppercase">Personalización Fantasma</h2>
-                <input v-model="temp.nombre" placeholder="NOMBRE NAVE">
-                <input type="color" v-model="temp.color" class="h-12 cursor-pointer p-0">
-                <button @click="aplicarFantasma" class="w-full py-4 font-black text-xs nexo-border" :style="{background: temp.color, color:'#000'}">INICIAR CICLO</button>
-            </div>
-
-            <div v-if="paso === 'adn'" class="w-full max-w-xs space-y-4 p-6">
-                <h2 class="nexo-text text-center font-black mb-6 uppercase">Registrar ADN</h2>
-                <input v-model="formADN.wa" placeholder="WHATSAPP">
-                <input v-model="formADN.dni" placeholder="DNI / CUIT">
-                <button @click="consolidarADN" class="w-full py-4 nexo-bg nexo-text font-black text-xs nexo-border">SINCRONIZAR ADN</button>
-            </div>
-
-            <div v-if="paso === 'contrato'" class="w-full max-w-sm p-8">
-                <h2 class="nexo-text text-center font-black mb-6 uppercase">Contrato de Acero</h2>
-                <div class="text-[8px] text-zinc-400 space-y-3 mb-8 uppercase leading-loose">
-                    <p v-for="p in pilares">🔹 {{p}}</p>
+            <div v-if="paso === 0" class="w-full max-w-xs space-y-4 p-6 overflow-y-auto max-h-full">
+                <h2 class="nexo-text text-center font-black mb-4 uppercase italic">Configuración de Nave</h2>
+                
+                <div class="space-y-2">
+                    <p class="text-[7px] text-zinc-500 uppercase">Cargar Identidad (Logo)</p>
+                    <label class="upload-label nexo-text">
+                        {{ config.logo ? 'CAMBIAR LOGO' : 'SUBIR LOGO PNG/JPG' }}
+                        <input type="file" class="file-input" @change="subirLogo" accept="image/*">
+                    </label>
                 </div>
-                <button @click="paso = 'adn'" class="w-full py-4 nexo-border nexo-text font-black text-xs">ACEPTAR</button>
+
+                <div class="space-y-2">
+                    <p class="text-[7px] text-zinc-500 uppercase">Frecuencia de Energía</p>
+                    <input type="color" v-model="config.color" @input="updateStyles" class="h-10 p-0 cursor-pointer">
+                </div>
+
+                <div class="space-y-2 pt-4">
+                    <p class="text-[7px] text-zinc-500 uppercase font-black">Fotos del Menú</p>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div v-for="p in platos" :key="p.id" class="relative group">
+                            <label class="block h-10 w-full border border-zinc-800 rounded overflow-hidden cursor-pointer">
+                                <img :src="p.customImg || getURL(p.img)" class="object-cover w-full h-full">
+                                <input type="file" class="file-input" @change="subirFotoPlato($event, p)" accept="image/*">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-zinc-800">
+                
+                <button @click="guardarTodo" class="w-full py-4 nexo-border nexo-bg nexo-text font-black text-xs uppercase">Consolidar Cambios</button>
+                <button @click="panelControl = false" class="w-full text-[8px] text-zinc-600 font-black uppercase">Cerrar</button>
             </div>
         </div>
+
     </div>
 
     <script>
@@ -114,24 +111,21 @@
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     panelControl: false, paso: 0, sistemaIniciado: false,
-                    config: { nombre: 'NEXO NAVE', color: '#ff6400' },
-                    temp: { nombre: '', color: '#ff6400' },
-                    formADN: { wa: '', dni: '' },
-                    sessionTipo: 'NULL', statusMsg: 'PROTOCOLO EXTERNO',
-                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad vinculada ADN", "Jurisdicción TDF"],
+                    config: { nombre: 'NEXO NAVE', color: '#ff6400', logo: null },
+                    sessionTipo: 'NULL',
                     platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa' },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizza' },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' }
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', customImg: null },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', customImg: null },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', customImg: null },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', customImg: null },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', customImg: null },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', customImg: null }
                     ]
                 }
             },
             mounted() {
-                this.validarCiclos();
                 this.cargarConfig();
+                this.sessionTipo = localStorage.getItem('nexo_adn') ? 'ADN' : (localStorage.getItem('nexo_h_fantasma') ? 'GHOST' : 'NULL');
             },
             methods: {
                 getURL(n) { return `${this.base}/${n}`; },
@@ -139,46 +133,48 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                abrirSala() { this.paso = 0; this.panelControl = true; },
-                validarCiclos() {
-                    const h = localStorage.getItem('nexo_h_fantasma');
-                    const adn = localStorage.getItem('nexo_adn');
-                    if (adn) { 
-                        this.sessionTipo = 'ADN'; this.statusMsg = 'IDENTIDAD CONSOLIDADA';
-                    } else if (h) {
-                        this.sessionTipo = 'GHOST'; this.statusMsg = 'CICLO FANTASMA ACTIVO';
-                        if (((new Date() - new Date(h)) / 36e5) >= 24) { localStorage.clear(); location.reload(); }
+                abrirSala() { this.panelControl = true; },
+                subirLogo(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (f) => { this.config.logo = f.target.result; };
+                        reader.readAsDataURL(file);
                     }
                 },
-                cargarConfig() {
-                    const saved = localStorage.getItem('nexo_config');
-                    if(saved) { this.config = JSON.parse(saved); this.updateStyles(); }
+                subirFotoPlato(e, plato) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (f) => { plato.customImg = f.target.result; };
+                        reader.readAsDataURL(file);
+                    }
                 },
                 updateStyles() {
                     document.documentElement.style.setProperty('--main-color', this.config.color);
                     document.documentElement.style.setProperty('--glow', this.config.color + '44');
                 },
-                aplicarFantasma() {
-                    this.config.nombre = this.temp.nombre.toUpperCase() || 'NAVE';
-                    this.config.color = this.temp.color;
-                    localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                guardarTodo() {
                     localStorage.setItem('nexo_config', JSON.stringify(this.config));
-                    this.updateStyles(); this.panelControl = false; location.reload();
+                    localStorage.setItem('nexo_platos', JSON.stringify(this.platos));
+                    localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                    this.panelControl = false;
+                    alert("SISTEMA ACTUALIZADO");
                 },
-                consolidarADN() {
-                    localStorage.setItem('nexo_adn', JSON.stringify(this.formADN));
-                    localStorage.setItem('nexo_inicio_adn', new Date().toISOString());
-                    location.reload();
+                cargarConfig() {
+                    const conf = localStorage.getItem('nexo_config');
+                    if(conf) this.config = JSON.parse(conf);
+                    const plats = localStorage.getItem('nexo_platos');
+                    if(plats) this.platos = JSON.parse(plats);
+                    this.updateStyles();
                 },
-                handleReactor() { 
-                    if(this.sessionTipo === 'NULL') { 
-                        this.abrirSala(); 
-                    } else { this.sistemaIniciado = !this.sistemaIniciado; }
+                handleReactor() {
+                    if(this.sessionTipo === 'NULL') this.abrirSala();
+                    else this.sistemaIniciado = !this.sistemaIniciado;
                 },
                 masterKey() {
                     if(prompt("MASTER KEY") === "051112182129jsm13818") {
                         localStorage.setItem('nexo_adn', 'MASTER');
-                        localStorage.setItem('nexo_config', JSON.stringify({nombre:'CENTRAL COMMAND', color:'#00f2ff'}));
                         location.reload();
                     }
                 }
