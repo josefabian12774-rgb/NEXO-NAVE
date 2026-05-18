@@ -10,10 +10,10 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
+        /* TU ESTILO ORIGINAL */
         @keyframes pulse-reactor {
-            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
+            0%, 100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
             50% { box-shadow: 0 0 40px #ff3300; border-color: #ff3300; }
-            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
         }
         .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
 
@@ -23,22 +23,11 @@
             backdrop-filter: blur(5px); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
             transition: all 0.3s ease;
         }
-        .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
 
-        .pollo-holograma {
-            width: 130%; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); mix-blend-mode: plus-lighter; display: none;
-        }
-        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
-        @keyframes hologram-float {
-            0%, 100% { transform: translate(-50%, -50%) scale(1) translateY(0); }
-            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
-        }
-
-        .monitor-video {
-            width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;
-        }
+        /* CAPA DE LLUVIA */
+        #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
+        .rain-char { position: absolute; color: #00f2ff; font-family: monospace; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
 
         .silicio-modal {
             position: fixed; inset: 0; background: rgba(0, 5, 10, 0.98);
@@ -48,10 +37,6 @@
         }
         .silicio-modal.active { transform: translateY(0); }
 
-        #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
-        .rain-char { position: absolute; color: #00f2ff; font-family: monospace; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
-
         [v-cloak] { display: none; }
     </style>
 </head>
@@ -59,10 +44,15 @@
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
         <div id="data-rain"></div>
         
+        <div v-if="!sessionActiva" class="w-full flex justify-between items-center px-2 mb-2 bg-orange-600/10 border border-orange-500/20 rounded-md py-1">
+            <span class="text-[6px] text-orange-500 font-black uppercase italic">Nave en Modo Fantasma (24h)</span>
+            <button @click="panelRegistro = true" class="text-[6px] bg-orange-500 text-black px-2 py-0.5 rounded font-bold uppercase">Consolidar / Login</button>
+        </div>
+
         <header class="text-center z-50 w-full relative">
             <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
                 <span class="text-[5px] text-cyan-400 uppercase font-black">Ciclos</span>
-                <span id="visit-count" class="text-[10px] font-mono text-white">0842</span>
+                <span class="text-[10px] font-mono text-white">0842</span>
             </div>
 
             <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer">NEXO NAVE</h1>
@@ -73,9 +63,6 @@
                     CONFIRMAR PEDIDO ({{ pedido.length }})
                 </button>
                 <div v-else class="flex flex-col items-center">
-                    <button v-if="!sessionActiva" @click="panelRegistro = true" class="text-[7px] border border-orange-500/50 px-3 py-1 text-orange-400 animate-pulse uppercase font-black rounded-full mb-1">
-                        Modo Fantasma (24h) - Activar Prueba Gratis
-                    </button>
                     <span class="text-[8px] uppercase tracking-[0.5em] text-zinc-600 font-bold">
                         ESTADO: {{ sistemaIniciado ? 'OPERATIVO' : 'EN ESPERA' }}
                     </span>
@@ -85,9 +72,8 @@
 
         <div class="relative w-[320px] h-[320px] flex items-center justify-center mt-4">
             <div class="relative w-44 h-44 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
-                 :class="{'reactor-core-active': sistemaIniciado}"
-                 @click="handlePollo">
-                <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
+                 :class="{'reactor-core-active': sistemaIniciado}" @click="handlePollo">
+                <img :src="base + '/pollo-reactor.webp'" class="w-[130%] absolute mix-blend-plus-lighter" v-if="sistemaIniciado">
                 <div v-if="!sistemaIniciado" class="absolute inset-0 flex items-center justify-center bg-orange-600/10">
                     <span class="text-orange-500 text-2xl font-black italic animate-pulse uppercase">Activa</span>
                 </div>
@@ -95,14 +81,14 @@
 
             <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 125)" @click="abrirOpciones(p)"
                  class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl transition-all">
-                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
+                <img :src="base + '/' + p.img" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[5px] font-black uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
             </div>
         </div>
 
         <div class="mt-auto mb-6 w-full grid grid-cols-4 gap-2 h-24">
             <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
-                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+                <img :src="base + '/' + b.img" class="w-full h-full object-cover opacity-40">
                 <div class="absolute inset-0 flex items-end justify-center p-1">
                     <span class="text-[7px] font-black text-orange-500 uppercase">{{b.label}}</span>
                 </div>
@@ -116,25 +102,40 @@
 
         <div class="silicio-modal" :class="{'active': panelRegistro}">
             <div class="w-full max-w-sm p-8 text-center" v-if="!aceptoPilares">
-                <h2 class="text-orange-500 text-xl font-black italic mb-6 uppercase">6 Pilares de Acero</h2>
+                <h2 class="text-orange-500 text-xl font-black italic mb-6">CONTRATO NEXO</h2>
                 <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
                     <p v-for="p in pilares">🔹 {{p}}</p>
                 </div>
-                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">Aceptar Contrato de Vuelo</button>
+                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR Y REGISTRAR</button>
+                <button @click="panelRegistro = false" class="mt-4 text-[8px] text-zinc-600 block w-full uppercase">Volver</button>
             </div>
             <div class="w-full max-w-sm p-8 text-center" v-else>
-                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase">Vincular ADN</h2>
-                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs">
+                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar ADN</h2>
+                <input v-model="formADN.wa" type="tel" placeholder="TU WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs">
                 <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs">
-                <button @click="consolidarVuelo" class="btn-vidrio-cian w-full py-4">Iniciar Prueba 20 Días</button>
+                <button @click="consolidarVuelo" class="btn-vidrio-cian w-full py-4">Sincronizar Unidad</button>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': panelOpciones}">
             <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
-                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
+                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6 text-center">{{itemActual.label}}</h2>
                 <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">+ {{ v }}</button>
-                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
+                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Cerrar</button>
+            </div>
+        </div>
+
+        <div class="silicio-modal" :class="{'active': verResumen}">
+            <div class="w-full flex flex-col items-center p-8 overflow-y-auto">
+                <h2 class="text-orange-500 text-xl font-black mb-6 italic uppercase">Lista de Comando</h2>
+                <div class="w-full space-y-3 mb-8 max-h-64 overflow-y-auto pr-2">
+                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-3">
+                        <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}} - {{it.variedad}}</p>
+                        <button @click="pedido.splice(idx, 1)" class="text-red-600 font-bold px-2">X</button>
+                    </div>
+                </div>
+                <button v-if="pedido.length > 0" @click="enviarWhatsApp" class="btn-vidrio-cian w-full py-5 text-sm">ENVIAR PEDIDO</button>
+                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold">SEGUIR SUMANDO</button>
             </div>
         </div>
     </div>
@@ -145,22 +146,23 @@
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false, panelOpciones: false, panelRegistro: false, aceptoPilares: false, verResumen: false,
-                    sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
-                    pedido: [], itemActual: null, motorAudio: null, formADN: { wa: '', dni: '' },
-                    pilares: ["Propiedad: Nexo es dueño de la estructura.", "Continuidad: Ciclo de 30 días renovables.", "Identidad: Vínculo por WA y DNI/CUIT.", "Responsabilidad: El cliente responde por ventas.", "Protocolo Anchored: Suspensión por impago.", "Jurisdicción: Rio Grande, TDF."],
+                    sistemaIniciado: false, panelOpciones: false, panelRegistro: false, verResumen: false,
+                    aceptoPilares: false, sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
+                    pedido: [], itemActual: null, formADN: { wa: '', dni: '' },
+                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
                         { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo'] },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] }
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', variedades: ['Flan'] },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', variedades: ['Cheddar'] }
                     ],
-                    bebidas: [{ id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA'] }]
+                    bebidas: [{ id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['Rubia'] }]
                 }
             },
             mounted() { this.checkCicloFantasma(); },
             methods: {
-                getURL(n) { return `${this.base}/${n}`; },
                 getPos(i, total, radius) {
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
@@ -173,16 +175,16 @@
                 handlePollo() {
                     if (!this.sistemaIniciado) {
                         this.sistemaIniciado = true;
-                        const a = new Audio(this.getURL('sonido-motor.mp3')); a.loop = true; a.volume = 0.1; a.play().catch(e=>{}); this.motorAudio = a;
-                    } else { this.itemActual = { label: 'Pollo Reactor', variedades: ['Entero'] }; this.panelOpciones = true; }
+                        const a = new Audio(this.base+'/sonido-motor.mp3'); a.loop = true; a.volume = 0.1; a.play().catch(e=>{});
+                    } else { this.itemActual = { label: 'Pollo Reactor', variedades: ['Entero', 'Medio'] }; this.panelOpciones = true; }
                 },
                 abrirOpciones(item) { if(this.sistemaIniciado){ this.itemActual = item; this.panelOpciones = true; } },
-                agregarAlPedido(v) { this.pedido.push({ n: this.itemActual.label, v }); this.panelOpciones = false; },
+                agregarAlPedido(v) { this.pedido.push({ nombre: this.itemActual.label, variedad: v }); this.panelOpciones = false; },
                 consolidarVuelo() {
-                    if(this.formADN.wa && this.formADN.dni) { this.lluvia('#00f2ff'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 3000); }
+                    if(this.formADN.wa && this.formADN.dni) { this.lluvia('#00f2ff'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 2500); }
                 },
                 almiranteCheck() {
-                    if(prompt("PASS ALMIRANTE") === "051112182129jsm13818") { this.lluvia('#ffcc00'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 3000); }
+                    if(prompt("PASSWORD ALMIRANTE") === "051112182129jsm13818") { this.lluvia('#ffcc00'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 2500); }
                 },
                 lluvia(color) {
                     const r = document.getElementById('data-rain'); r.style.display = 'block';
@@ -191,7 +193,11 @@
                         c.style.left = Math.random()*100+'vw'; c.style.color = color; c.style.animationDuration = (Math.random()*2+1)+'s'; r.appendChild(c);
                     }
                 },
-                toggleVideoAudio() { const v = document.getElementById('adVideo'); if(v) v.muted = !v.muted; }
+                toggleVideoAudio() { const v = document.getElementById('adVideo'); if(v) v.muted = !v.muted; },
+                enviarWhatsApp() {
+                    let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
+                    window.open(`https://wa.me/5492964616053?text=${encodeURIComponent(lista)}`);
+                }
             }
         }).mount('#app')
     </script>
