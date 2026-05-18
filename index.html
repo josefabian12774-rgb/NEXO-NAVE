@@ -30,6 +30,18 @@
         }
         .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
 
+        /* ESTILO BOTÓN SALA DE CONTROL (ÁMBAR) */
+        .btn-sala-control {
+            background: rgba(255, 100, 0, 0.15);
+            color: #ff6400;
+            border: 1px solid #ff6400;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 100, 0, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
         .pollo-holograma {
             width: 130%; position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%); mix-blend-mode: plus-lighter; display: none;
@@ -60,9 +72,9 @@
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
         
         <header class="text-center z-50 w-full relative">
-            <div v-if="!sessionActiva" class="absolute top-0 left-0 bg-black/40 border border-orange-500/30 px-2 py-1 rounded flex flex-col items-start">
-                <span class="text-[5px] text-orange-500 uppercase font-black italic">Ciclo Fantasma (24h)</span>
-                <button @click="panelRegistro = true" class="text-[7px] text-white underline font-bold uppercase">CONSOLIDAR</button>
+            <div v-if="!sessionActiva" class="absolute top-0 left-0 flex flex-col items-start">
+                <button @click="panelRegistro = true" class="btn-sala-control px-3 py-1.5 rounded-br-lg text-[8px]">SALA DE CONTROL</button>
+                <span class="text-[5px] text-orange-500 mt-1 uppercase font-bold px-1">Protocolo Externo</span>
             </div>
 
             <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
@@ -130,17 +142,36 @@
         </div>
 
         <div class="silicio-modal" :class="{'active': panelRegistro}">
-            <div class="w-full max-w-sm p-8 text-center" v-if="!aceptoPilares">
-                <h2 class="text-orange-500 text-xl font-black italic mb-6">CONTRATO NEXO</h2>
+            <div v-if="pasoRegistro === 0" class="w-full max-w-sm p-8 text-center">
+                <h2 class="text-orange-500 text-xl font-black mb-8 italic uppercase tracking-widest">SALA DE CONTROL</h2>
+                <div class="space-y-3">
+                    <button @click="seleccionarPlan('fantasma')" class="w-full p-4 border border-zinc-700 bg-zinc-900/50 text-left">
+                        <p class="text-orange-500 font-black text-[10px] uppercase">Modo Fantasma</p>
+                        <p class="text-[6px] text-zinc-500 uppercase">Acceso 24hs / Sin Registro</p>
+                    </button>
+                    <button @click="seleccionarPlan('prueba')" class="w-full p-4 border border-cyan-500/50 bg-cyan-950/20 text-left">
+                        <p class="text-cyan-400 font-black text-[10px] uppercase">Prueba 20 Días</p>
+                        <p class="text-[6px] text-zinc-400 uppercase">Requiere Vinculación ADN</p>
+                    </button>
+                    <button @click="seleccionarPlan('premium')" class="w-full p-4 border border-yellow-600/50 bg-yellow-900/10 text-left opacity-50">
+                        <p class="text-yellow-500 font-black text-[10px] uppercase">Adquirir Plan Comando</p>
+                        <p class="text-[6px] text-zinc-500 uppercase">Próximamente</p>
+                    </button>
+                </div>
+                <button @click="panelRegistro = false" class="mt-8 text-[8px] text-zinc-600 font-black uppercase">Cerrar</button>
+            </div>
+
+            <div v-if="pasoRegistro === 1" class="w-full max-w-sm p-8 text-center">
+                <h2 class="text-orange-500 text-xl font-black mb-6 italic uppercase">Contrato Nexo</h2>
                 <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
                     <p v-for="p in pilares">🔹 {{p}}</p>
                 </div>
-                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR Y REGISTRAR ADN</button>
-                <button @click="panelRegistro = false" class="mt-4 text-[8px] text-zinc-600 block w-full uppercase font-black">Cerrar</button>
+                <button @click="pasoRegistro = 2" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR CONDICIONES</button>
             </div>
-            <div class="w-full max-w-sm p-8 text-center" v-else>
-                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar Unidad</h2>
-                <input v-model="formADN.wa" type="tel" placeholder="NÚMERO WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs font-black">
+
+            <div v-if="pasoRegistro === 2" class="w-full max-w-sm p-8 text-center">
+                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar ADN</h2>
+                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs font-black">
                 <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs font-black">
                 <button @click="consolidarUnidad" class="btn-vidrio-cian w-full py-4">VINCULAR IDENTIDAD</button>
             </div>
@@ -194,10 +225,11 @@
                     panelOpciones: false,
                     verResumen: false,
                     panelRegistro: false,
-                    aceptoPilares: false,
+                    pasoRegistro: 0,
+                    planSeleccionado: '',
                     sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
                     formADN: { wa: '', dni: '' },
-                    pilares: ["Propiedad Intelectual Nexo", "Ciclo de uso: 30 días", "Identidad vinculada WA/DNI", "Responsabilidad de comando", "Protocolo de datos Anchored", "Jurisdicción TDF"],
+                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
                     itemActual: null,
                     pedido: [],
                     videoMuted: true,
@@ -230,27 +262,31 @@
                 },
                 checkCicloFantasma() {
                     const h = localStorage.getItem('nexo_h_fantasma');
-                    if(!h) {
-                        localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
-                    } else if(!this.sessionActiva) {
+                    if(!this.sessionActiva && h) {
                         const horas = (new Date() - new Date(h)) / 36e5;
-                        if(horas >= 24) {
-                            localStorage.clear();
-                            location.reload();
-                        }
+                        if(horas >= 24) { localStorage.clear(); location.reload(); }
                     }
                 },
-                almiranteCheck() {
-                    const key = prompt("CÓDIGO ALMIRANTE");
-                    if(key === "051112182129jsm13818") {
-                        localStorage.setItem('nexo_consolidado', 'true');
-                        location.reload();
+                seleccionarPlan(tipo) {
+                    this.planSeleccionado = tipo;
+                    if(tipo === 'fantasma') {
+                        localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                        this.panelRegistro = false;
+                        alert("ACCESO FANTASMA ACTIVADO POR 24HS.");
+                    } else if(tipo === 'prueba') {
+                        this.pasoRegistro = 1;
                     }
                 },
                 consolidarUnidad() {
                     if(this.formADN.wa && this.formADN.dni) {
                         localStorage.setItem('nexo_consolidado', 'true');
                         localStorage.setItem('nexo_adn', JSON.stringify(this.formADN));
+                        location.reload();
+                    }
+                },
+                almiranteCheck() {
+                    if(prompt("CÓDIGO ALMIRANTE") === "051112182129jsm13818") {
+                        localStorage.setItem('nexo_consolidado', 'true');
                         location.reload();
                     }
                 },
@@ -272,8 +308,7 @@
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
                     const click = new Audio(this.getURL('click-reactor.mp3'));
-                    click.volume = 0.2;
-                    click.play();
+                    click.volume = 0.2; click.play();
                     this.itemActual = item;
                     this.panelOpciones = true;
                 },
@@ -288,8 +323,7 @@
                         this.videoMuted = video.muted;
                         if(!video.muted) {
                             if(this.motorAudio) this.motorAudio.pause();
-                            this.clicsVideo++;
-                            video.volume = 0.5;
+                            this.clicsVideo++; video.volume = 0.5;
                         } else {
                             if(this.motorAudio) this.motorAudio.play();
                         }
@@ -299,10 +333,10 @@
                     if(this.motorAudio) { this.motorAudio.pause(); this.motorAudio = null; }
                     this.sistemaIniciado = false;
                     let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
-                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
+                    const adn = localStorage.getItem('nexo_adn') ? JSON.parse(localStorage.getItem('nexo_adn')) : {wa:'FANTASMA'};
+                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n👤 *CLIENTE:* ${adn.wa}\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
                     window.open(`https://wa.me/5492964616053?text=${texto}`);
-                    this.pedido = [];
-                    this.verResumen = false;
+                    this.pedido = []; this.verResumen = false;
                 }
             }
         }).mount('#app')
