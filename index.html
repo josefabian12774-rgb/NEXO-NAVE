@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --main-color: #ff6400; --glow: rgba(255, 100, 0, 0.3); }
+        :root { --main-color: #00f2ff; --glow: rgba(0, 242, 255, 0.3); }
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; height: 100vh; overflow: hidden; }
         
         .nexo-border { border: 1px solid var(--main-color); box-shadow: 0 0 15px var(--glow); }
@@ -29,8 +29,7 @@
         }
         .silicio-modal.active { transform: translateY(0); }
 
-        .file-input { display: none; }
-        .upload-label { border: 1px dashed var(--main-color); padding: 10px; cursor: pointer; display: block; font-size: 8px; text-align: center; }
+        .monitor-video { width: 100%; height: 100%; border: 1px solid var(--main-color); border-radius: 8px; overflow: hidden; background: #000; }
         
         [v-cloak] { display: none; }
     </style>
@@ -39,66 +38,95 @@
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center p-4 relative">
         
         <header class="w-full flex justify-between items-center z-50 h-16">
-            <button @click="abrirSala" class="nexo-border nexo-bg px-3 py-2 rounded-br-xl text-[8px] font-black uppercase">SALA DE CONTROL</button>
+            <button @click="abrirSala" class="nexo-border nexo-bg px-3 py-2 rounded-br-xl text-[8px] font-black uppercase tracking-tighter">SALA DE CONTROL</button>
 
             <div class="flex-1 flex justify-center px-4" @click="masterKey">
                 <img v-if="config.logo" :src="config.logo" class="h-12 w-auto object-contain filter drop-shadow-[0_0_8px_var(--main-color)]">
-                <h1 v-else class="text-xl font-black italic nexo-text tracking-widest">{{ config.nombre }}</h1>
+                <h1 v-else class="text-xl font-black italic nexo-text tracking-widest">NEXO NAVE</h1>
             </div>
 
-            <div class="nexo-border bg-black/80 p-1 rounded text-center min-w-[50px]">
+            <div class="nexo-border bg-black/80 p-1 rounded text-center min-w-[60px]">
                 <span class="text-[5px] block text-cyan-400 font-bold uppercase">Ciclo</span>
                 <span class="text-[10px] font-mono">{{ sessionTipo }}</span>
             </div>
         </header>
 
-        <div class="relative w-[300px] h-[300px] flex items-center justify-center my-auto">
-            <div class="w-40 h-40 rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center z-[100] cursor-pointer overflow-hidden"
+        <div class="relative w-[320px] h-[320px] flex items-center justify-center my-auto">
+            <div class="w-44 h-44 rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center z-[100] cursor-pointer overflow-hidden"
                  :class="{'core-active': sistemaIniciado}" @click="handleReactor">
                 <img v-if="sistemaIniciado" :src="getURL('pollo-reactor.webp')" class="w-[130%] opacity-80">
                 <span v-else class="nexo-text font-black italic animate-pulse">ACTIVA</span>
             </div>
 
-            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 120)"
-                 class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 shadow-2xl">
+            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 130)" @click="abrirOpciones(p)"
+                 class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl">
                 <img :src="p.customImg || getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-20': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-[5px] font-black uppercase bg-black/90 py-1 text-center" :style="{color: config.color}">{{p.label}}</p>
             </div>
         </div>
 
+        <div class="mt-auto w-full grid grid-cols-4 gap-2 h-24 mb-4">
+            <div v-for="b in bebidas" :key="b.id" class="border border-zinc-900 rounded-lg overflow-hidden relative bg-zinc-900/50">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+            </div>
+            
+            <div class="relative">
+                <div v-if="sistemaIniciado" class="monitor-video">
+                    <video id="adVideo" loop muted playsinline autoplay class="w-full h-full object-cover">
+                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div v-else class="w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-lg flex items-center justify-center">
+                    <span class="text-zinc-800 text-[6px] font-black uppercase">Radar Off</span>
+                </div>
+            </div>
+        </div>
+
         <div class="silicio-modal" :class="{'active': panelControl}">
-            <div v-if="paso === 0" class="w-full max-w-xs space-y-4 p-6 overflow-y-auto max-h-full">
-                <h2 class="nexo-text text-center font-black mb-4 uppercase italic">Configuración de Nave</h2>
+            <div v-if="paso === 0" class="w-full max-w-xs space-y-4 p-6">
+                <h2 class="nexo-text text-center font-black mb-6 uppercase italic">Protocolos de Comando</h2>
                 
-                <div class="space-y-2">
-                    <p class="text-[7px] text-zinc-500 uppercase">Cargar Identidad (Logo)</p>
-                    <label class="upload-label nexo-text">
-                        {{ config.logo ? 'CAMBIAR LOGO' : 'SUBIR LOGO PNG/JPG' }}
-                        <input type="file" class="file-input" @change="subirLogo" accept="image/*">
+                <button @click="paso = 'fantasma'" class="w-full p-4 border border-zinc-700 bg-zinc-900/40 text-left">
+                    <p class="text-orange-500 font-black text-xs uppercase">1. Modo Fantasma</p>
+                    <p class="text-[7px] text-zinc-500 uppercase">24 Horas / Personalización Libre</p>
+                </button>
+
+                <button @click="paso = 'contrato'" class="w-full p-4 nexo-border nexo-bg text-left">
+                    <p class="nexo-text font-black text-xs uppercase">2. Ciclo de Prueba (20 Días)</p>
+                    <p class="text-[7px] text-zinc-400 uppercase">Login ADN / Acceso Total</p>
+                </button>
+
+                <button class="w-full p-4 border border-yellow-600/30 bg-yellow-600/5 text-left opacity-50">
+                    <p class="text-yellow-500 font-black text-xs uppercase">3. Upgrade Plan</p>
+                    <p class="text-[7px] text-zinc-500 uppercase">Persistencia Ilimitada</p>
+                </button>
+
+                <button @click="panelControl = false" class="w-full text-[8px] text-zinc-600 font-black uppercase pt-4">Abortar</button>
+            </div>
+
+            <div v-if="paso === 'fantasma'" class="w-full max-w-xs space-y-6 text-center p-6">
+                <h2 class="nexo-text font-black uppercase">Identidad de Nave</h2>
+                <div class="space-y-4">
+                    <label class="block p-4 border-2 border-dashed border-zinc-800 rounded cursor-pointer nexo-text text-[10px]">
+                        {{ config.logo ? 'LOGO CARGADO' : 'SUBIR LOGO (DETECTAR COLOR)' }}
+                        <input type="file" class="hidden" @change="subirLogo" accept="image/*">
                     </label>
+                    <input type="color" v-model="config.color" @input="updateStyles" class="w-full h-10 p-0 bg-transparent cursor-pointer">
                 </div>
+                <button @click="guardarFantasma" class="w-full py-4 nexo-border nexo-bg nexo-text font-black text-xs">INICIAR CICLO</button>
+            </div>
 
-                <div class="space-y-2">
-                    <p class="text-[7px] text-zinc-500 uppercase">Frecuencia de Energía</p>
-                    <input type="color" v-model="config.color" @input="updateStyles" class="h-10 p-0 cursor-pointer">
-                </div>
+            <div v-if="paso === 'contrato'" class="w-full max-w-sm p-8 text-center">
+                <h2 class="nexo-text font-black mb-4 uppercase">Contrato Nexo</h2>
+                <p class="text-[8px] text-zinc-400 mb-6 text-left leading-relaxed">🔹 PROPIEDAD INTELECTUAL NEXO ARQUETIPO. 🔹 CICLO DE PRUEBA 20 DÍAS. 🔹 REGISTRO DE ADN OBLIGATORIO.</p>
+                <button @click="paso = 'adn'" class="w-full py-4 nexo-border nexo-text font-black text-xs">ACEPTAR</button>
+            </div>
 
-                <div class="space-y-2 pt-4">
-                    <p class="text-[7px] text-zinc-500 uppercase font-black">Fotos del Menú</p>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div v-for="p in platos" :key="p.id" class="relative group">
-                            <label class="block h-10 w-full border border-zinc-800 rounded overflow-hidden cursor-pointer">
-                                <img :src="p.customImg || getURL(p.img)" class="object-cover w-full h-full">
-                                <input type="file" class="file-input" @change="subirFotoPlato($event, p)" accept="image/*">
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="border-zinc-800">
-                
-                <button @click="guardarTodo" class="w-full py-4 nexo-border nexo-bg nexo-text font-black text-xs uppercase">Consolidar Cambios</button>
-                <button @click="panelControl = false" class="w-full text-[8px] text-zinc-600 font-black uppercase">Cerrar</button>
+            <div v-if="paso === 'adn'" class="w-full max-w-xs space-y-4 p-6">
+                <h2 class="nexo-text text-center font-black mb-4">SINC ADN</h2>
+                <input v-model="formADN.wa" placeholder="WHATSAPP" class="w-full p-3 bg-zinc-900 border border-zinc-800 text-cyan-400 text-xs text-center">
+                <input v-model="formADN.dni" placeholder="DNI" class="w-full p-3 bg-zinc-900 border border-zinc-800 text-cyan-400 text-xs text-center">
+                <button @click="consolidarADN" class="w-full py-4 nexo-bg nexo-text font-black text-xs">VINCULAR ADN</button>
             </div>
         </div>
 
@@ -111,21 +139,23 @@
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     panelControl: false, paso: 0, sistemaIniciado: false,
-                    config: { nombre: 'NEXO NAVE', color: '#ff6400', logo: null },
+                    config: { nombre: 'NEXO NAVE', color: '#00f2ff', logo: null },
+                    formADN: { wa: '', dni: '' },
                     sessionTipo: 'NULL',
                     platos: [
-                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', customImg: null },
-                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', customImg: null },
-                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', customImg: null },
-                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', customImg: null },
-                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre', customImg: null },
-                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas', customImg: null }
-                    ]
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado' },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa' },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza' },
+                        { id: 5, img: 'flan-casero-nexo.webp', label: 'Postre' },
+                        { id: 6, img: 'papas-mega-reactor.webp', label: 'Papas' }
+                    ],
+                    bebidas: [{id:7, img:'birra-cryo-amber.webp'},{id:8, img:'cava-tinto-premium.webp'},{id:9, img:'soda-lemon-reactor.webp'}]
                 }
             },
             mounted() {
-                this.cargarConfig();
-                this.sessionTipo = localStorage.getItem('nexo_adn') ? 'ADN' : (localStorage.getItem('nexo_h_fantasma') ? 'GHOST' : 'NULL');
+                this.cargarPersistencia();
+                this.updateStyles();
             },
             methods: {
                 getURL(n) { return `${this.base}/${n}`; },
@@ -133,7 +163,7 @@
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                abrirSala() { this.panelControl = true; },
+                abrirSala() { this.paso = 0; this.panelControl = true; },
                 subirLogo(e) {
                     const file = e.target.files[0];
                     if (file) {
@@ -142,38 +172,32 @@
                         reader.readAsDataURL(file);
                     }
                 },
-                subirFotoPlato(e, plato) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (f) => { plato.customImg = f.target.result; };
-                        reader.readAsDataURL(file);
-                    }
-                },
                 updateStyles() {
                     document.documentElement.style.setProperty('--main-color', this.config.color);
                     document.documentElement.style.setProperty('--glow', this.config.color + '44');
                 },
-                guardarTodo() {
-                    localStorage.setItem('nexo_config', JSON.stringify(this.config));
-                    localStorage.setItem('nexo_platos', JSON.stringify(this.platos));
+                guardarFantasma() {
                     localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                    localStorage.setItem('nexo_config', JSON.stringify(this.config));
                     this.panelControl = false;
-                    alert("SISTEMA ACTUALIZADO");
+                    location.reload();
                 },
-                cargarConfig() {
+                consolidarADN() {
+                    localStorage.setItem('nexo_adn', JSON.stringify(this.formADN));
+                    localStorage.setItem('nexo_inicio_adn', new Date().toISOString());
+                    location.reload();
+                },
+                cargarPersistencia() {
                     const conf = localStorage.getItem('nexo_config');
                     if(conf) this.config = JSON.parse(conf);
-                    const plats = localStorage.getItem('nexo_platos');
-                    if(plats) this.platos = JSON.parse(plats);
-                    this.updateStyles();
+                    this.sessionTipo = localStorage.getItem('nexo_adn') ? 'ADN' : (localStorage.getItem('nexo_h_fantasma') ? 'GHOST' : 'NULL');
                 },
                 handleReactor() {
                     if(this.sessionTipo === 'NULL') this.abrirSala();
                     else this.sistemaIniciado = !this.sistemaIniciado;
                 },
                 masterKey() {
-                    if(prompt("MASTER KEY") === "051112182129jsm13818") {
+                    if(prompt("CÓDIGO ALMIRANTE") === "051112182129jsm13818") {
                         localStorage.setItem('nexo_adn', 'MASTER');
                         location.reload();
                     }
