@@ -10,7 +10,6 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* Animaciones Reactor */
         @keyframes pulse-reactor {
             0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
             50% { box-shadow: 0 0 40px #ff3300; border-color: #ff3300; }
@@ -20,16 +19,16 @@
 
         .btn-vidrio-cian {
             background: rgba(0, 242, 255, 0.1); 
-            color: #00f2ff; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
-            border: 1px solid #00f2ff; backdrop-filter: blur(5px);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3); transition: all 0.3s ease;
+            color: #00f2ff; 
+            font-weight: 900;
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            border: 1px solid #00f2ff;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            transition: all 0.3s ease;
         }
         .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
-
-        /* Efecto Lluvia de Datos */
-        #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; background: rgba(0,0,0,0.8); }
-        .rain-char { position: absolute; font-family: monospace; font-size: 12px; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
 
         .pollo-holograma {
             width: 130%; position: absolute; top: 50%; left: 50%;
@@ -39,6 +38,11 @@
         @keyframes hologram-float {
             0%, 100% { transform: translate(-50%, -50%) scale(1) translateY(0); }
             50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
+        }
+
+        .monitor-video {
+            width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;
         }
 
         .silicio-modal {
@@ -55,23 +59,18 @@
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
         
-        <div id="data-rain"></div>
-
         <header class="text-center z-50 w-full relative">
-            <div class="absolute top-0 left-0 flex flex-col items-start gap-1">
-                <div v-if="!sessionActiva" class="bg-orange-600/20 border border-orange-500/40 px-2 py-1 rounded-sm">
-                    <span class="text-[6px] text-orange-500 font-black uppercase tracking-tighter">Fantasma Activo</span>
-                </div>
-                <button v-if="!sessionActiva" @click="panelRegistro = true" 
-                    class="text-[5px] text-zinc-500 hover:text-white uppercase font-black border-b border-zinc-800">Consolidar ADN</button>
+            <div v-if="!sessionActiva" class="absolute top-0 left-0 bg-black/40 border border-orange-500/30 px-2 py-1 rounded flex flex-col items-start">
+                <span class="text-[5px] text-orange-500 uppercase font-black italic">Ciclo Fantasma (24h)</span>
+                <button @click="panelRegistro = true" class="text-[7px] text-white underline font-bold uppercase">CONSOLIDAR</button>
             </div>
 
-            <div @click="almiranteCheck" class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center cursor-pointer">
+            <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
                 <span class="text-[5px] text-cyan-400 uppercase font-black">Ciclos</span>
-                <span class="text-[10px] font-mono text-white tracking-widest">{{ sessionActiva ? '0030' : '0001' }}</span>
+                <span id="visit-count" class="text-[10px] font-mono text-white">----</span>
             </div>
 
-            <h1 class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2">NEXO NAVE</h1>
+            <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer select-none">NEXO NAVE</h1>
             
             <div class="h-14 flex items-center justify-center">
                 <button v-if="pedido.length > 0" @click="verResumen = true" 
@@ -121,6 +120,8 @@
                     <video id="adVideo" loop muted playsinline autoplay class="w-full h-full object-cover">
                         <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
                     </video>
+                    <div v-if="videoMuted" class="absolute top-0 right-0 bg-black/60 px-1 text-[6px]">🔇</div>
+                    <div v-else class="absolute top-0 right-0 bg-cyan-600 px-1 text-[6px]">🔊</div>
                 </div>
                 <div v-else class="w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-lg flex items-center justify-center">
                     <span class="text-zinc-800 text-[6px] font-black uppercase">Radar</span>
@@ -129,56 +130,79 @@
         </div>
 
         <div class="silicio-modal" :class="{'active': panelRegistro}">
-            <div v-if="!aceptoPilares" class="w-full max-w-xs text-center px-4">
-                <h2 class="text-orange-500 text-lg font-black italic mb-6">CONTRATO NEXO</h2>
-                <div class="text-[7px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-loose">
+            <div class="w-full max-w-sm p-8 text-center" v-if="!aceptoPilares">
+                <h2 class="text-orange-500 text-xl font-black italic mb-6">CONTRATO NEXO</h2>
+                <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
                     <p v-for="p in pilares">🔹 {{p}}</p>
                 </div>
-                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR CONDICIONES</button>
-                <button @click="panelRegistro = false" class="mt-6 text-[8px] text-zinc-600 block w-full">VOLVER</button>
+                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR Y REGISTRAR ADN</button>
+                <button @click="panelRegistro = false" class="mt-4 text-[8px] text-zinc-600 block w-full uppercase font-black">Cerrar</button>
             </div>
-            <div v-else class="w-full max-w-xs text-center px-4">
-                <h2 class="text-cyan-400 text-lg font-black mb-8 uppercase tracking-widest italic">Sincronizar Piloto</h2>
-                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP DE CENTRAL" class="bg-black border border-zinc-800 p-4 w-full mb-4 text-cyan-400 text-center text-xs focus:border-cyan-500 outline-none">
-                <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT RESPONSABLE" class="bg-black border border-zinc-800 p-4 w-full mb-8 text-cyan-400 text-center text-xs focus:border-cyan-500 outline-none">
-                <button @click="consolidarVuelo" class="btn-vidrio-cian w-full py-4">VINCULAR UNIDAD</button>
+            <div class="w-full max-w-sm p-8 text-center" v-else>
+                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar Unidad</h2>
+                <input v-model="formADN.wa" type="tel" placeholder="NÚMERO WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs font-black">
+                <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs font-black">
+                <button @click="consolidarUnidad" class="btn-vidrio-cian w-full py-4">VINCULAR IDENTIDAD</button>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': panelOpciones}">
             <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
                 <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
-                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">+ {{ v }}</button>
-                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase">Volver</button>
+                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" 
+                    class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">
+                    + {{ v }}
+                </button>
+                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': verResumen}">
-            <div class="w-full flex flex-col items-center p-8">
+            <div class="w-full flex flex-col items-center p-8 overflow-y-auto">
                 <h2 class="text-orange-500 text-xl font-black mb-6 italic uppercase">Lista de Comando</h2>
-                <div class="w-full space-y-2 mb-8 max-h-64 overflow-y-auto">
-                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-900 py-3">
+                <div class="w-full space-y-3 mb-8 max-h-64 overflow-y-auto pr-2">
+                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-3">
                         <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}} - {{it.variedad}}</p>
-                        <button @click="pedido.splice(idx, 1)" class="text-red-600 font-bold">X</button>
+                        <button @click="pedido.splice(idx, 1)" class="text-red-600 font-bold px-2">X</button>
                     </div>
                 </div>
-                <button v-if="pedido.length > 0" @click="enviarWhatsApp" class="btn-vidrio-cian w-full py-5 text-sm">ENVIAR A CENTRAL</button>
-                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px]">SEGUIR SUMANDO</button>
+                <button v-if="pedido.length > 0" @click="enviarWhatsApp" 
+                    class="btn-vidrio-cian w-full py-5 text-sm shadow-[0_0_30px_rgba(0,242,255,0.4)]">
+                    ENVIAR PEDIDO A CENTRAL
+                </button>
+                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold">SEGUIR SUMANDO</button>
             </div>
         </div>
     </div>
 
     <script>
+        async function loadVisits() {
+            try {
+                const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-v1-fabian-unique/visits');
+                const data = await resp.json();
+                document.getElementById('visit-count').innerText = data.value.toString().padStart(4, '0');
+            } catch (e) { document.getElementById('visit-count').innerText = "0001"; }
+        }
+        loadVisits();
+
         const { createApp } = Vue;
         createApp({
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false, panelOpciones: false, verResumen: false, panelRegistro: false, aceptoPilares: false,
+                    sistemaIniciado: false,
+                    panelOpciones: false,
+                    verResumen: false,
+                    panelRegistro: false,
+                    aceptoPilares: false,
                     sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
-                    itemActual: null, pedido: [], motorAudio: null, videoMuted: true,
                     formADN: { wa: '', dni: '' },
-                    pilares: ["Propiedad Intelectual Nexo", "Ciclo de Abastecimiento 30 Días", "Vinculación ADN WA/DNI", "Responsabilidad de Operación", "Protocolo Anchored de Suspensión", "Jurisdicción Río Grande, TDF"],
+                    pilares: ["Propiedad Intelectual Nexo", "Ciclo de uso: 30 días", "Identidad vinculada WA/DNI", "Responsabilidad de comando", "Protocolo de datos Anchored", "Jurisdicción TDF"],
+                    itemActual: null,
+                    pedido: [],
+                    videoMuted: true,
+                    motorAudio: null,
+                    clicsVideo: 0,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
@@ -195,7 +219,9 @@
                     especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio', 'Cuarto'] }
                 }
             },
-            mounted() { this.checkCicloFantasma(); },
+            mounted() {
+                this.checkCicloFantasma();
+            },
             methods: {
                 getURL(n) { return `${this.base}/${n}`; },
                 getPos(i, total, radius) {
@@ -204,59 +230,79 @@
                 },
                 checkCicloFantasma() {
                     const h = localStorage.getItem('nexo_h_fantasma');
-                    if(!h) localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
-                    else if(!this.sessionActiva && (new Date() - new Date(h)) / 36e5 >= 24) { localStorage.clear(); location.reload(); }
+                    if(!h) {
+                        localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                    } else if(!this.sessionActiva) {
+                        const horas = (new Date() - new Date(h)) / 36e5;
+                        if(horas >= 24) {
+                            localStorage.clear();
+                            location.reload();
+                        }
+                    }
+                },
+                almiranteCheck() {
+                    const key = prompt("CÓDIGO ALMIRANTE");
+                    if(key === "051112182129jsm13818") {
+                        localStorage.setItem('nexo_consolidado', 'true');
+                        location.reload();
+                    }
+                },
+                consolidarUnidad() {
+                    if(this.formADN.wa && this.formADN.dni) {
+                        localStorage.setItem('nexo_consolidado', 'true');
+                        localStorage.setItem('nexo_adn', JSON.stringify(this.formADN));
+                        location.reload();
+                    }
+                },
+                playSnd(s, loop = false) { 
+                    const audio = new Audio(this.getURL(s));
+                    audio.volume = 0.1;
+                    if(loop) { audio.loop = true; this.motorAudio = audio; }
+                    audio.play().catch(e => {}); 
                 },
                 handlePollo() {
                     if (!this.sistemaIniciado) {
                         this.sistemaIniciado = true;
                         this.playSnd('sonido-motor.mp3', true);
                         this.playSnd('click-reactor.mp3');
-                    } else { this.abrirOpciones(this.especialPollo); }
-                },
-                playSnd(s, loop = false) { 
-                    const audio = new Audio(this.getURL(s)); audio.volume = 0.1;
-                    if(loop) { audio.loop = true; this.motorAudio = audio; }
-                    audio.play().catch(e => {}); 
+                    } else {
+                        this.abrirOpciones(this.especialPollo);
+                    }
                 },
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
-                    this.playSnd('click-reactor.mp3');
-                    this.itemActual = item; this.panelOpciones = true;
+                    const click = new Audio(this.getURL('click-reactor.mp3'));
+                    click.volume = 0.2;
+                    click.play();
+                    this.itemActual = item;
+                    this.panelOpciones = true;
                 },
-                agregarAlPedido(v) { this.pedido.push({ nombre: this.itemActual.label, variedad: v }); this.panelOpciones = false; },
-                consolidarVuelo() {
-                    if(this.formADN.wa && this.formADN.dni) { 
-                        this.lluvia('#00f2ff', 'SINCRONIZANDO ADN...'); 
-                        localStorage.setItem('nexo_consolidado', 'true');
-                        setTimeout(() => location.reload(), 4000); 
-                    }
-                },
-                almiranteCheck() {
-                    if(prompt("LLAVE MAESTRA") === "051112182129jsm13818") { 
-                        this.lluvia('#ffcc00', 'BYPASS DE ALMIRANTE ACTIVADO...'); 
-                        localStorage.setItem('nexo_consolidado', 'true');
-                        setTimeout(() => location.reload(), 4000); 
-                    }
-                },
-                lluvia(color, msj) {
-                    const r = document.getElementById('data-rain'); r.innerHTML = `<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:${color};font-weight:900;z-index:20001;text-shadow:0 0 15px ${color}">${msj}</div>`;
-                    r.style.display = 'block';
-                    for(let i=0; i<80; i++) {
-                        let c = document.createElement('div'); c.className = 'rain-char';
-                        c.innerText = Math.random() > 0.5 ? '1' : '0'; c.style.left = Math.random()*100+'vw';
-                        c.style.color = color; c.style.animationDuration = (Math.random()*1.5+0.5)+'s'; r.appendChild(c);
-                    }
+                agregarAlPedido(v) {
+                    this.pedido.push({ nombre: this.itemActual.label, variedad: v });
+                    this.panelOpciones = false;
                 },
                 toggleVideoAudio() {
                     const video = document.getElementById('adVideo');
-                    if (video) { video.muted = !video.muted; if(!video.muted) video.volume = 0.5; }
+                    if (video) {
+                        video.muted = !video.muted;
+                        this.videoMuted = video.muted;
+                        if(!video.muted) {
+                            if(this.motorAudio) this.motorAudio.pause();
+                            this.clicsVideo++;
+                            video.volume = 0.5;
+                        } else {
+                            if(this.motorAudio) this.motorAudio.play();
+                        }
+                    }
                 },
                 enviarWhatsApp() {
+                    if(this.motorAudio) { this.motorAudio.pause(); this.motorAudio = null; }
+                    this.sistemaIniciado = false;
                     let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
-                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}`);
+                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
                     window.open(`https://wa.me/5492964616053?text=${texto}`);
-                    this.pedido = []; this.verResumen = false;
+                    this.pedido = [];
+                    this.verResumen = false;
                 }
             }
         }).mount('#app')
