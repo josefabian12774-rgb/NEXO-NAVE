@@ -3,30 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexo Nave | Central de Pedidos Elite</title>
+    <title>NEXO NAVE | ORIGINAL RESTORED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
+        /* TU DISEÑO ORIGINAL */
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
+        .reactor-core { border: 2px solid #333; transition: all 0.5s ease; }
+        .active-core { border: 3px solid #ff6400; box-shadow: 0 0 30px #ff6400; }
+        .glass-panel { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(10px); }
         
-        /* EFECTOS DE SONIDO Y ANIMACIÓN */
-        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
-        @keyframes pulse-reactor { 
-            0%, 100% { box-shadow: 0 0 20px #ff6400; border-color: #ff6400; transform: scale(1); } 
-            50% { box-shadow: 0 0 50px #ff3300; border-color: #ff3300; transform: scale(1.05); } 
-        }
-
-        .glass-nexo { background: rgba(0, 15, 25, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(0, 242, 255, 0.3); }
-        .btn-nexo {
-            background: rgba(0, 242, 255, 0.1); color: #00f2ff; border: 1px solid #00f2ff;
-            text-transform: uppercase; font-weight: 900; letter-spacing: 2px;
-            transition: all 0.3s; cursor: pointer;
-        }
-        .btn-nexo:active { transform: scale(0.95); background: rgba(0, 242, 255, 0.3); }
-
-        .monitor-video { width: 100%; height: 100%; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0, 242, 255, 0.2); }
-        
+        /* Capa de Lluvia (Invisible hasta activarse) */
         #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
         .rain-char { position: absolute; color: #00f2ff; font-family: monospace; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
@@ -38,75 +26,61 @@
     <div id="app" v-cloak>
         <div id="data-rain"></div>
 
-        <div class="w-full max-w-lg h-screen flex flex-col items-center py-6 px-4 mx-auto relative">
-            
-            <header class="w-full flex justify-between items-start mb-4 z-50">
-                <div class="flex flex-col">
-                    <h1 class="text-xl font-black tracking-tighter text-orange-500 italic">NEXO NAVE</h1>
-                    <span class="text-[6px] text-cyan-400 tracking-[0.5em] uppercase">Soberanía de Datos</span>
-                </div>
-                <div class="bg-black/50 border border-cyan-500/30 p-2 rounded flex flex-col items-center">
-                    <span class="text-[5px] text-cyan-500 uppercase">Visitas</span>
-                    <span class="text-xs font-mono">0842</span>
-                </div>
-            </header>
-
-            <button v-if="!sessionActiva" @click="abrirConsolidacion" 
-                    class="mb-6 text-[7px] bg-orange-600/20 border border-orange-500/50 px-4 py-1 rounded-full animate-pulse text-orange-400 font-bold uppercase">
-                Modo Fantasma: Activar 20 días de prueba gratis
-            </button>
-
-            <div class="relative w-[320px] h-[320px] flex items-center justify-center my-auto">
-                <div class="w-44 h-44 rounded-full border-2 border-zinc-800 bg-black flex items-center justify-center z-50 cursor-pointer shadow-[0_0_30px_rgba(0,0,0,1)]"
-                     :class="{'reactor-core-active': sistemaIniciado}" @click="toggleReactor">
-                    <img v-if="sistemaIniciado" src="https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pollo-reactor.webp" 
-                         class="w-[110%] mix-blend-plus-lighter animate-pulse">
-                    <div v-else class="text-center">
-                        <span class="text-orange-600 text-[10px] font-black uppercase animate-pulse">Ignición</span>
-                    </div>
-                </div>
-
-                <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 125)"
-                     @click="plotearItem(p)"
-                     class="absolute w-16 h-16 rounded-2xl border border-white/10 overflow-hidden bg-zinc-900 shadow-2xl cursor-pointer hover:border-cyan-400 transition-colors">
-                     <img :src="p.img" class="w-full h-full object-cover" :class="{'grayscale': !sistemaIniciado}">
-                     <p class="absolute bottom-0 w-full text-[5px] font-black bg-black/90 py-1 text-orange-500 text-center uppercase">{{p.label}}</p>
-                </div>
-            </div>
-
-            <footer class="w-full grid grid-cols-4 gap-3 h-24 mt-auto mb-6">
-                <div class="col-span-2 monitor-video relative bg-black">
-                    <video id="radarVideo" loop muted playsinline autoplay class="w-full h-full object-cover opacity-60">
-                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
-                    </video>
-                    <div class="absolute inset-0 border-2 border-cyan-500/20 pointer-events-none"></div>
-                </div>
-                <div v-for="b in extras" :key="b.id" class="bg-zinc-900/50 border border-zinc-800 rounded-xl flex flex-col items-center justify-center p-1 cursor-pointer">
-                    <div class="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center mb-1">
-                        <span class="text-[10px]">🥃</span>
-                    </div>
-                    <span class="text-[6px] font-black text-zinc-500 uppercase">{{b.label}}</span>
-                </div>
-            </footer>
-        </div>
-
-        <div v-if="mostrandoConsolidacion" class="fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-6">
-            <div class="glass-nexo w-full max-w-sm p-8 rounded-[40px] text-center">
+        <div v-if="mostrandoModal" class="fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-4">
+            <div class="glass-panel w-full max-w-sm p-8 rounded-[30px] border-cyan-500/50 text-center">
                 <template v-if="!aceptoContrato">
-                    <h2 class="text-orange-500 font-black italic mb-6">LOS 6 PILARES</h2>
-                    <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-loose">
+                    <h2 class="text-orange-500 font-black mb-4 uppercase">Contrato Nexo</h2>
+                    <div class="text-[7px] text-left text-zinc-400 space-y-2 mb-6 uppercase">
                         <p v-for="p in pilares">🔹 {{p}}</p>
                     </div>
-                    <button @click="aceptoContrato = true" class="btn-nexo w-full py-4 text-[10px]">Acepto los términos de vuelo</button>
+                    <button @click="aceptoContrato = true" class="w-full py-3 border border-cyan-500 text-cyan-500 text-[10px]">ACEPTAR PILARES</button>
                 </template>
                 <template v-else>
-                    <h2 class="text-cyan-400 font-black mb-6 uppercase tracking-widest">ADN del Piloto</h2>
-                    <input v-model="form.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-cyan-500/30 p-4 rounded-xl w-full mb-3 text-cyan-400 text-center">
-                    <input v-model="form.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-cyan-500/30 p-4 rounded-xl w-full mb-6 text-cyan-400 text-center">
-                    <button @click="consolidarNave" class="btn-nexo w-full py-4">Sincronizar Unidad</button>
+                    <h2 class="text-cyan-400 font-black mb-4 uppercase">Registro de ADN</h2>
+                    <input v-model="form.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-3 w-full mb-2 text-center text-xs">
+                    <input v-model="form.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-3 w-full mb-4 text-center text-xs">
+                    <button @click="confirmarRegistro" class="w-full py-3 bg-cyan-500/20 border border-cyan-500 text-cyan-500 text-[10px]">SINCRONIZAR</button>
                 </template>
-                <button @click="accesoMaestro" class="mt-8 text-[5px] text-zinc-800 tracking-[0.5em] uppercase">Master Key</button>
+                <button @click="masterKey" class="mt-6 text-[5px] text-zinc-800 uppercase">Admin Access</button>
             </div>
+        </div>
+
+        <div class="w-full max-w-md h-screen mx-auto flex flex-col p-4 relative">
+            
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 class="text-lg font-black text-orange-500 italic tracking-tighter">NEXO NAVE</h1>
+                    <p class="text-[6px] text-cyan-500 uppercase tracking-[0.4em]">Protocolo PAV-UX</p>
+                </div>
+                <button v-if="!esCliente" @click="mostrandoModal = true" class="text-[6px] border border-orange-500/50 px-2 py-1 text-orange-500 animate-pulse">
+                    ACTIVAR PRUEBA 20 DÍAS
+                </button>
+            </header>
+
+            <div class="relative flex-1 flex items-center justify-center">
+                <div class="w-40 h-40 rounded-full reactor-core flex items-center justify-center bg-black z-50 cursor-pointer"
+                     :class="{'active-core': iniciado}" @click="iniciado = !iniciado">
+                    <img v-if="iniciado" src="https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pollo-reactor.webp" class="w-[110%] mix-blend-plus-lighter">
+                    <span v-else class="text-orange-600 text-[8px] font-black uppercase">Ignición</span>
+                </div>
+
+                <div v-for="(p, i) in platos" :key="i" :style="getPos(i, platos.length, 120)"
+                     class="absolute w-14 h-14 rounded-xl border border-zinc-800 bg-black overflow-hidden shadow-2xl">
+                    <img :src="p.img" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 w-full bg-black/80 text-[5px] text-orange-500 text-center py-1 uppercase">{{p.label}}</div>
+                </div>
+            </div>
+
+            <footer class="h-24 grid grid-cols-4 gap-2 mb-4">
+                <div class="col-span-2 bg-black border border-zinc-900 rounded-xl overflow-hidden relative">
+                    <video loop muted playsinline autoplay class="w-full h-full object-cover opacity-50">
+                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div v-for="n in 2" class="bg-zinc-900/30 border border-zinc-900 rounded-xl flex items-center justify-center">
+                    <span class="text-[6px] text-zinc-600 uppercase">Sensor</span>
+                </div>
+            </footer>
         </div>
     </div>
 
@@ -115,77 +89,57 @@
         createApp({
             data() {
                 return {
-                    sistemaIniciado: false,
-                    sessionActiva: localStorage.getItem('nexo_active') === 'true',
-                    mostrandoConsolidacion: false,
+                    iniciado: false,
+                    esCliente: localStorage.getItem('nexo_active') === 'true',
+                    mostrandoModal: false,
                     aceptoContrato: false,
-                    motorAudio: new Audio('https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/sonido-motor.mp3'),
                     form: { wa: '', dni: '' },
+                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
                     platos: [
-                        { id: 1, label: 'Asado', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/asado-escolta.webp' },
-                        { id: 2, label: 'Milanesa', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/milanga-soberana.webp' },
-                        { id: 3, label: 'Empanadas', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/empanada-escuadron.webp' },
-                        { id: 4, label: 'Pizza', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pizza-core.webp' },
-                        { id: 5, label: 'Postre', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/flan-casero-nexo.webp' },
-                        { id: 6, label: 'Papas', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/papas-mega-reactor.webp' }
-                    ],
-                    extras: [{id: 7, label: 'Vinos'}, {id: 8, label: 'Birras'}],
-                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"]
+                        { label: 'Asado', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/asado-escolta.webp' },
+                        { label: 'Pizza', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pizza-core.webp' },
+                        { label: 'Empanada', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/empanada-escuadron.webp' },
+                        { label: 'Milanesa', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/milanga-soberana.webp' }
+                    ]
                 }
             },
+            mounted() {
+                // Chequeo de 24 horas solares para purga en modo fantasma
+                const h = localStorage.getItem('nexo_h');
+                if(!h) localStorage.setItem('nexo_h', new Date().toISOString());
+                else if(!this.esCliente && (new Date() - new Date(h))/36e5 >= 24) localStorage.clear();
+            },
             methods: {
-                toggleReactor() {
-                    this.sistemaIniciado = !this.sistemaIniciado;
-                    if(this.sistemaIniciado) {
-                        this.motorAudio.loop = true;
-                        this.motorAudio.volume = 0.2;
-                        this.motorAudio.play().catch(e => {});
-                    } else {
-                        this.motorAudio.pause();
-                    }
+                getPos(i, total, r) {
+                    const a = (i * (360/total) - 90) * (Math.PI/180);
+                    return `transform: translate(${Math.cos(a)*r}px, ${Math.sin(a)*r}px)`;
                 },
-                getPos(i, total, radius) {
-                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
-                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
-                },
-                plotearItem(p) {
-                    if(this.sessionActiva) return; // Si ya es cliente, el ploteo es por DB
-                    const nuevaImg = prompt("URL de imagen para '"+p.label+"' (Simulación de Ploteo):", p.img);
-                    if(nuevaImg) p.img = nuevaImg;
-                },
-                abrirConsolidacion() { this.mostrandoConsolidacion = true; },
-                consolidarNave() {
+                confirmarRegistro() {
                     if(this.form.wa && this.form.dni) {
-                        this.lanzarLluvia('#00f2ff');
-                        setTimeout(() => {
-                            this.sessionActiva = true;
-                            this.mostrandoConsolidacion = false;
-                            localStorage.setItem('nexo_active', 'true');
-                            localStorage.setItem('nexo_fecha', new Date().toISOString());
-                        }, 3000);
-                    }
-                },
-                accesoMaestro() {
-                    if(prompt("PASSWORD ALMIRANTE") === "051112182129jsm13818") {
-                        this.lanzarLluvia('#ffcc00');
-                        this.sessionActiva = true;
-                        this.mostrandoConsolidacion = false;
+                        this.rain('#00f2ff');
                         localStorage.setItem('nexo_active', 'true');
+                        setTimeout(() => location.reload(), 3000);
                     }
                 },
-                lanzarLluvia(color) {
-                    const r = document.getElementById('data-rain');
-                    r.style.display = 'block';
-                    for(let i=0; i<100; i++){
+                masterKey() {
+                    if(prompt("PASS") === "051112182129jsm13818") {
+                        this.rain('#ffcc00');
+                        localStorage.setItem('nexo_active', 'true');
+                        setTimeout(() => location.reload(), 3000);
+                    }
+                },
+                rain(color) {
+                    const d = document.getElementById('data-rain');
+                    d.style.display = 'block';
+                    for(let i=0; i<50; i++) {
                         let c = document.createElement('div');
                         c.className = 'rain-char';
                         c.innerText = Math.random() > 0.5 ? '1' : '0';
                         c.style.left = Math.random()*100+'vw';
                         c.style.color = color;
                         c.style.animationDuration = (Math.random()*2+1)+'s';
-                        r.appendChild(c);
+                        d.appendChild(c);
                     }
-                    setTimeout(() => { r.style.display='none'; r.innerHTML=''; }, 3000);
                 }
             }
         }).mount('#app');
