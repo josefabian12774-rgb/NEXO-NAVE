@@ -28,18 +28,15 @@
             box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
             transition: all 0.3s ease;
         }
-        .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
 
-        /* ESTILO BOTÓN SALA DE CONTROL (ÁMBAR) */
         .btn-sala-control {
-            background: rgba(255, 100, 0, 0.15);
+            background: rgba(255, 100, 0, 0.2);
             color: #ff6400;
             border: 1px solid #ff6400;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(255, 100, 0, 0.2);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(255, 100, 0, 0.3);
+            cursor: pointer;
         }
 
         .pollo-holograma {
@@ -52,16 +49,11 @@
             50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
         }
 
-        .monitor-video {
-            width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;
-        }
-
         .silicio-modal {
             position: fixed; inset: 0; background: rgba(0, 5, 10, 0.98);
             backdrop-filter: blur(15px); z-index: 9999;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transform: translateY(100%); transition: 0.4s ease;
+            transform: translateY(100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .silicio-modal.active { transform: translateY(0); }
 
@@ -72,9 +64,8 @@
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
         
         <header class="text-center z-50 w-full relative">
-            <div v-if="!sessionActiva" class="absolute top-0 left-0 flex flex-col items-start">
-                <button @click="panelRegistro = true" class="btn-sala-control px-3 py-1.5 rounded-br-lg text-[8px]">SALA DE CONTROL</button>
-                <span class="text-[5px] text-orange-500 mt-1 uppercase font-bold px-1">Protocolo Externo</span>
+            <div v-if="!sessionActiva" class="absolute top-0 left-0">
+                <button @click="abrirSalaControl" class="btn-sala-control px-4 py-2 rounded-br-xl text-[10px]">SALA DE CONTROL</button>
             </div>
 
             <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
@@ -82,17 +73,14 @@
                 <span id="visit-count" class="text-[10px] font-mono text-white">----</span>
             </div>
 
-            <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer select-none">NEXO NAVE</h1>
+            <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer">NEXO NAVE</h1>
             
             <div class="h-14 flex items-center justify-center">
-                <button v-if="pedido.length > 0" @click="verResumen = true" 
-                    class="btn-vidrio-cian w-full max-w-xs py-3 rounded-xl text-xs animate-pulse">
-                    CONFIRMAR PEDIDO ({{ pedido.length }})
+                <button v-if="pedido.length > 0" @click="verResumen = true" class="btn-vidrio-cian w-full max-w-xs py-3 rounded-xl text-xs animate-pulse">
+                    CONFIRMAR ({{ pedido.length }})
                 </button>
                 <div v-else class="flex flex-col items-center">
-                    <span class="text-[8px] uppercase tracking-[0.5em] text-zinc-600 font-bold">
-                        ESTADO: {{ sistemaIniciado ? 'OPERATIVO' : 'EN ESPERA' }}
-                    </span>
+                    <span class="text-[8px] uppercase tracking-[0.5em] text-zinc-600 font-bold">ESTADO: {{ sistemaIniciado ? 'OPERATIVO' : 'EN ESPERA' }}</span>
                 </div>
             </div>
         </header>
@@ -109,56 +97,31 @@
                 </div>
             </div>
 
-            <div v-for="(p, i) in platos" :key="p.id" 
-                 :style="getPos(i, platos.length, 125)"
-                 @click="abrirOpciones(p)"
+            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 125)" @click="abrirOpciones(p)"
                  class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl transition-all">
                 <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
                 <p class="absolute bottom-0 w-full text-center text-[5px] font-black uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
             </div>
         </div>
 
-        <div class="mt-auto mb-6 w-full grid grid-cols-4 gap-2 h-24">
-            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" 
-                 class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
-                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
-                <div class="absolute inset-0 flex items-end justify-center p-1">
-                    <span class="text-[7px] font-black text-orange-500 uppercase">{{b.label}}</span>
-                </div>
-            </div>
-            
-            <div class="relative" @click="toggleVideoAudio">
-                <div v-if="sistemaIniciado" class="monitor-video">
-                    <video id="adVideo" loop muted playsinline autoplay class="w-full h-full object-cover">
-                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
-                    </video>
-                    <div v-if="videoMuted" class="absolute top-0 right-0 bg-black/60 px-1 text-[6px]">🔇</div>
-                    <div v-else class="absolute top-0 right-0 bg-cyan-600 px-1 text-[6px]">🔊</div>
-                </div>
-                <div v-else class="w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-lg flex items-center justify-center">
-                    <span class="text-zinc-800 text-[6px] font-black uppercase">Radar</span>
-                </div>
-            </div>
-        </div>
-
         <div class="silicio-modal" :class="{'active': panelRegistro}">
             <div v-if="pasoRegistro === 0" class="w-full max-w-sm p-8 text-center">
                 <h2 class="text-orange-500 text-xl font-black mb-8 italic uppercase tracking-widest">SALA DE CONTROL</h2>
-                <div class="space-y-3">
-                    <button @click="seleccionarPlan('fantasma')" class="w-full p-4 border border-zinc-700 bg-zinc-900/50 text-left">
-                        <p class="text-orange-500 font-black text-[10px] uppercase">Modo Fantasma</p>
-                        <p class="text-[6px] text-zinc-500 uppercase">Acceso 24hs / Sin Registro</p>
+                <div class="space-y-4">
+                    <button @click="seleccionarPlan('fantasma')" class="w-full p-4 border border-zinc-700 bg-zinc-900/50 text-left active:bg-orange-500/20">
+                        <p class="text-orange-500 font-black text-xs uppercase">1. Modo Fantasma</p>
+                        <p class="text-[7px] text-zinc-500 uppercase">Acceso inmediato 24hs (Sin ADN)</p>
                     </button>
-                    <button @click="seleccionarPlan('prueba')" class="w-full p-4 border border-cyan-500/50 bg-cyan-950/20 text-left">
-                        <p class="text-cyan-400 font-black text-[10px] uppercase">Prueba 20 Días</p>
-                        <p class="text-[6px] text-zinc-400 uppercase">Requiere Vinculación ADN</p>
+                    <button @click="seleccionarPlan('prueba')" class="w-full p-4 border border-cyan-500/50 bg-cyan-950/20 text-left active:bg-cyan-500/20">
+                        <p class="text-cyan-400 font-black text-xs uppercase">2. Ciclo de Prueba</p>
+                        <p class="text-[7px] text-zinc-400 uppercase">20 Días de acceso con ADN</p>
                     </button>
-                    <button @click="seleccionarPlan('premium')" class="w-full p-4 border border-yellow-600/50 bg-yellow-900/10 text-left opacity-50">
-                        <p class="text-yellow-500 font-black text-[10px] uppercase">Adquirir Plan Comando</p>
-                        <p class="text-[6px] text-zinc-500 uppercase">Próximamente</p>
+                    <button @click="seleccionarPlan('premium')" class="w-full p-4 border border-yellow-600/50 bg-yellow-900/10 text-left opacity-60">
+                        <p class="text-yellow-500 font-black text-xs uppercase">3. Plan Comando</p>
+                        <p class="text-[7px] text-zinc-500 uppercase">Adquirir Licencia (Próximamente)</p>
                     </button>
                 </div>
-                <button @click="panelRegistro = false" class="mt-8 text-[8px] text-zinc-600 font-black uppercase">Cerrar</button>
+                <button @click="panelRegistro = false" class="mt-10 text-[9px] text-zinc-600 font-black uppercase border-b border-zinc-800">Cerrar Sistema</button>
             </div>
 
             <div v-if="pasoRegistro === 1" class="w-full max-w-sm p-8 text-center">
@@ -166,56 +129,49 @@
                 <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
                     <p v-for="p in pilares">🔹 {{p}}</p>
                 </div>
-                <button @click="pasoRegistro = 2" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR CONDICIONES</button>
+                <button @click="pasoRegistro = 2" class="btn-vidrio-cian w-full py-5 text-sm">ACEPTAR Y CONTINUAR</button>
+                <button @click="pasoRegistro = 0" class="mt-6 text-[8px] text-zinc-600 uppercase">Volver</button>
             </div>
 
             <div v-if="pasoRegistro === 2" class="w-full max-w-sm p-8 text-center">
-                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar ADN</h2>
-                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs font-black">
-                <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs font-black">
-                <button @click="consolidarUnidad" class="btn-vidrio-cian w-full py-4">VINCULAR IDENTIDAD</button>
+                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Vincular ADN</h2>
+                <div class="space-y-4 mb-8">
+                    <input v-model="formADN.wa" type="tel" placeholder="NUMERO WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full text-cyan-400 text-center text-xs font-black outline-none focus:border-cyan-500">
+                    <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full text-cyan-400 text-center text-xs font-black outline-none focus:border-cyan-500">
+                </div>
+                <button @click="consolidarUnidad" class="btn-vidrio-cian w-full py-5 text-sm">SINCRONIZAR IDENTIDAD</button>
+            </div>
+        </div>
+
+        <div class="mt-auto mb-6 w-full grid grid-cols-4 gap-2 h-24">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 flex items-end justify-center p-1">
+                    <span class="text-[7px] font-black text-orange-500 uppercase">{{b.label}}</span>
+                </div>
+            </div>
+            <div class="relative" @click="toggleVideoAudio">
+                <div v-if="sistemaIniciado" class="monitor-video">
+                    <video id="adVideo" loop muted playsinline autoplay class="w-full h-full object-cover">
+                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div v-else class="w-full h-full bg-zinc-900/30 border border-zinc-800 rounded-lg flex items-center justify-center">
+                    <span class="text-zinc-800 text-[6px] font-black uppercase tracking-tighter">Radar Off</span>
+                </div>
             </div>
         </div>
 
         <div class="silicio-modal" :class="{'active': panelOpciones}">
             <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
                 <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
-                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" 
-                    class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">
-                    + {{ v }}
-                </button>
-                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
-            </div>
-        </div>
-
-        <div class="silicio-modal" :class="{'active': verResumen}">
-            <div class="w-full flex flex-col items-center p-8 overflow-y-auto">
-                <h2 class="text-orange-500 text-xl font-black mb-6 italic uppercase">Lista de Comando</h2>
-                <div class="w-full space-y-3 mb-8 max-h-64 overflow-y-auto pr-2">
-                    <div v-for="(it, idx) in pedido" :key="idx" class="flex justify-between items-center border-b border-zinc-800 py-3">
-                        <p class="text-cyan-400 text-[10px] font-black uppercase">{{it.nombre}} - {{it.variedad}}</p>
-                        <button @click="pedido.splice(idx, 1)" class="text-red-600 font-bold px-2">X</button>
-                    </div>
-                </div>
-                <button v-if="pedido.length > 0" @click="enviarWhatsApp" 
-                    class="btn-vidrio-cian w-full py-5 text-sm shadow-[0_0_30px_rgba(0,242,255,0.4)]">
-                    ENVIAR PEDIDO A CENTRAL
-                </button>
-                <button @click="verResumen = false" class="mt-8 text-zinc-500 text-[10px] font-bold">SEGUIR SUMANDO</button>
+                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">+ {{ v }}</button>
+                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Cerrar</button>
             </div>
         </div>
     </div>
 
     <script>
-        async function loadVisits() {
-            try {
-                const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-v1-fabian-unique/visits');
-                const data = await resp.json();
-                document.getElementById('visit-count').innerText = data.value.toString().padStart(4, '0');
-            } catch (e) { document.getElementById('visit-count').innerText = "0001"; }
-        }
-        loadVisits();
-
         const { createApp } = Vue;
         createApp({
             data() {
@@ -223,18 +179,13 @@
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
                     sistemaIniciado: false,
                     panelOpciones: false,
-                    verResumen: false,
                     panelRegistro: false,
                     pasoRegistro: 0,
-                    planSeleccionado: '',
                     sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
                     formADN: { wa: '', dni: '' },
                     pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
                     itemActual: null,
                     pedido: [],
-                    videoMuted: true,
-                    motorAudio: null,
-                    clicsVideo: 0,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
@@ -251,64 +202,42 @@
                     especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio', 'Cuarto'] }
                 }
             },
-            mounted() {
-                this.checkCicloFantasma();
-            },
             methods: {
                 getURL(n) { return `${this.base}/${n}`; },
                 getPos(i, total, radius) {
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                checkCicloFantasma() {
-                    const h = localStorage.getItem('nexo_h_fantasma');
-                    if(!this.sessionActiva && h) {
-                        const horas = (new Date() - new Date(h)) / 36e5;
-                        if(horas >= 24) { localStorage.clear(); location.reload(); }
-                    }
+                abrirSalaControl() {
+                    this.pasoRegistro = 0;
+                    this.panelRegistro = true;
                 },
                 seleccionarPlan(tipo) {
-                    this.planSeleccionado = tipo;
                     if(tipo === 'fantasma') {
                         localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
                         this.panelRegistro = false;
-                        alert("ACCESO FANTASMA ACTIVADO POR 24HS.");
+                        alert("MODO FANTASMA ACTIVADO POR 24HS");
                     } else if(tipo === 'prueba') {
-                        this.pasoRegistro = 1;
+                        this.pasoRegistro = 1; // Salta al contrato
                     }
                 },
                 consolidarUnidad() {
                     if(this.formADN.wa && this.formADN.dni) {
                         localStorage.setItem('nexo_consolidado', 'true');
                         localStorage.setItem('nexo_adn', JSON.stringify(this.formADN));
-                        location.reload();
+                        this.sessionActiva = true;
+                        this.panelRegistro = false;
+                        alert("UNIDAD CONSOLIDADA CON ÉXITO");
+                    } else {
+                        alert("FALTA ADN");
                     }
-                },
-                almiranteCheck() {
-                    if(prompt("CÓDIGO ALMIRANTE") === "051112182129jsm13818") {
-                        localStorage.setItem('nexo_consolidado', 'true');
-                        location.reload();
-                    }
-                },
-                playSnd(s, loop = false) { 
-                    const audio = new Audio(this.getURL(s));
-                    audio.volume = 0.1;
-                    if(loop) { audio.loop = true; this.motorAudio = audio; }
-                    audio.play().catch(e => {}); 
                 },
                 handlePollo() {
-                    if (!this.sistemaIniciado) {
-                        this.sistemaIniciado = true;
-                        this.playSnd('sonido-motor.mp3', true);
-                        this.playSnd('click-reactor.mp3');
-                    } else {
-                        this.abrirOpciones(this.especialPollo);
-                    }
+                    if (!this.sistemaIniciado) { this.sistemaIniciado = true; } 
+                    else { this.abrirOpciones(this.especialPollo); }
                 },
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
-                    const click = new Audio(this.getURL('click-reactor.mp3'));
-                    click.volume = 0.2; click.play();
                     this.itemActual = item;
                     this.panelOpciones = true;
                 },
@@ -316,27 +245,11 @@
                     this.pedido.push({ nombre: this.itemActual.label, variedad: v });
                     this.panelOpciones = false;
                 },
-                toggleVideoAudio() {
-                    const video = document.getElementById('adVideo');
-                    if (video) {
-                        video.muted = !video.muted;
-                        this.videoMuted = video.muted;
-                        if(!video.muted) {
-                            if(this.motorAudio) this.motorAudio.pause();
-                            this.clicsVideo++; video.volume = 0.5;
-                        } else {
-                            if(this.motorAudio) this.motorAudio.play();
-                        }
+                almiranteCheck() {
+                    if(prompt("CÓDIGO ALMIRANTE") === "051112182129jsm13818") {
+                        localStorage.setItem('nexo_consolidado', 'true');
+                        location.reload();
                     }
-                },
-                enviarWhatsApp() {
-                    if(this.motorAudio) { this.motorAudio.pause(); this.motorAudio = null; }
-                    this.sistemaIniciado = false;
-                    let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
-                    const adn = localStorage.getItem('nexo_adn') ? JSON.parse(localStorage.getItem('nexo_adn')) : {wa:'FANTASMA'};
-                    const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n👤 *CLIENTE:* ${adn.wa}\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
-                    window.open(`https://wa.me/5492964616053?text=${texto}`);
-                    this.pedido = []; this.verResumen = false;
                 }
             }
         }).mount('#app')
