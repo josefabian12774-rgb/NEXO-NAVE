@@ -1,3 +1,5 @@
+codigo NAVE NEXO 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -53,29 +55,19 @@
         }
         .silicio-modal.active { transform: translateY(0); }
 
-        #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
-        .rain-char { position: absolute; color: #00f2ff; font-family: monospace; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
-
         [v-cloak] { display: none; }
     </style>
 </head>
 <body class="flex justify-center items-center">
     <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
-        <div id="data-rain"></div>
         
         <header class="text-center z-50 w-full relative">
-            <div v-if="!sessionActiva" class="absolute top-0 left-0 bg-black/40 border border-orange-500/30 px-2 py-1 rounded flex flex-col items-start">
-                <span class="text-[5px] text-orange-500 uppercase font-black">Modo Fantasma</span>
-                <button @click="panelRegistro = true" class="text-[7px] text-white underline font-bold uppercase">Consolidar</button>
-            </div>
-
             <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
                 <span class="text-[5px] text-cyan-400 uppercase font-black">Ciclos</span>
                 <span id="visit-count" class="text-[10px] font-mono text-white">----</span>
             </div>
 
-            <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer">NEXO NAVE</h1>
+            <h1 class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2">NEXO NAVE</h1>
             
             <div class="h-14 flex items-center justify-center">
                 <button v-if="pedido.length > 0" @click="verResumen = true" 
@@ -134,23 +126,6 @@
             </div>
         </div>
 
-        <div class="silicio-modal" :class="{'active': panelRegistro}">
-            <div class="w-full max-w-sm p-8 text-center" v-if="!aceptoPilares">
-                <h2 class="text-orange-500 text-xl font-black italic mb-6">CONTRATO NEXO</h2>
-                <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
-                    <p v-for="p in pilares">🔹 {{p}}</p>
-                </div>
-                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTAR Y REGISTRAR</button>
-                <button @click="panelRegistro = false" class="mt-4 text-[8px] text-zinc-600 block w-full uppercase">Cerrar</button>
-            </div>
-            <div class="w-full max-w-sm p-8 text-center" v-else>
-                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase tracking-widest">Sincronizar ADN</h2>
-                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs">
-                <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs">
-                <button @click="consolidarVuelo" class="btn-vidrio-cian w-full py-4">Vincular Unidad</button>
-            </div>
-        </div>
-
         <div class="silicio-modal" :class="{'active': panelOpciones}">
             <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
                 <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
@@ -181,16 +156,28 @@
     </div>
 
     <script>
+        async function loadVisits() {
+            try {
+                const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-v1-fabian-unique/visits');
+                const data = await resp.json();
+                document.getElementById('visit-count').innerText = data.value.toString().padStart(4, '0');
+            } catch (e) { document.getElementById('visit-count').innerText = "0001"; }
+        }
+        loadVisits();
+
         const { createApp } = Vue;
         createApp({
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    sistemaIniciado: false, panelOpciones: false, verResumen: false, panelRegistro: false, aceptoPilares: false,
-                    sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
-                    itemActual: null, pedido: [], motorAudio: null, videoMuted: true, clicsVideo: 0,
-                    formADN: { wa: '', dni: '' },
-                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
+                    sistemaIniciado: false,
+                    panelOpciones: false,
+                    verResumen: false,
+                    itemActual: null,
+                    pedido: [],
+                    videoMuted: true,
+                    motorAudio: null,
+                    clicsVideo: 0,
                     platos: [
                         { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
@@ -207,70 +194,64 @@
                     especialPollo: { label: 'Pollo Reactor', variedades: ['Entero', 'Medio', 'Cuarto'] }
                 }
             },
-            mounted() { this.checkCicloFantasma(); this.loadVisits(); },
             methods: {
                 getURL(n) { return `${this.base}/${n}`; },
                 getPos(i, total, radius) {
                     const angle = (i * (360 / total) - 90) * (Math.PI / 180);
                     return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                checkCicloFantasma() {
-                    const h = localStorage.getItem('nexo_h_fantasma');
-                    if(!h) localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
-                    else if(!this.sessionActiva && (new Date() - new Date(h)) / 36e5 >= 24) { localStorage.clear(); location.reload(); }
+                playSnd(s, loop = false) { 
+                    const audio = new Audio(this.getURL(s));
+                    audio.volume = 0.1; // SUTIL: Volumen al 10%
+                    if(loop) { audio.loop = true; this.motorAudio = audio; }
+                    audio.play().catch(e => {}); 
                 },
                 handlePollo() {
                     if (!this.sistemaIniciado) {
                         this.sistemaIniciado = true;
                         this.playSnd('sonido-motor.mp3', true);
                         this.playSnd('click-reactor.mp3');
-                    } else { this.abrirOpciones(this.especialPollo); }
-                },
-                playSnd(s, loop = false) { 
-                    const audio = new Audio(this.getURL(s)); audio.volume = 0.1;
-                    if(loop) { audio.loop = true; this.motorAudio = audio; }
-                    audio.play().catch(e => {}); 
+                    } else {
+                        this.abrirOpciones(this.especialPollo);
+                    }
                 },
                 abrirOpciones(item) {
                     if (!this.sistemaIniciado) return;
-                    const click = new Audio(this.getURL('click-reactor.mp3')); click.volume = 0.2; click.play();
-                    this.itemActual = item; this.panelOpciones = true;
+                    const click = new Audio(this.getURL('click-reactor.mp3'));
+                    click.volume = 0.2;
+                    click.play();
+                    this.itemActual = item;
+                    this.panelOpciones = true;
                 },
-                agregarAlPedido(v) { this.pedido.push({ nombre: this.itemActual.label, variedad: v }); this.panelOpciones = false; },
-                consolidarVuelo() {
-                    if(this.formADN.wa && this.formADN.dni) { this.lluvia('#00f2ff'); localStorage.setItem('nexo_consolidado', 'true'); setTimeout(() => location.reload(), 3000); }
-                },
-                almiranteCheck() {
-                    if(prompt("PASSWORD ALMIRANTE") === "051112182129jsm13818") { this.lluvia('#ffcc00'); localStorage.setItem('nexo_consolidado', 'true'); setTimeout(() => location.reload(), 3000); }
-                },
-                lluvia(color) {
-                    const r = document.getElementById('data-rain'); r.style.display = 'block';
-                    for(let i=0; i<60; i++) {
-                        let c = document.createElement('div'); c.className = 'rain-char';
-                        c.innerText = Math.random() > 0.5 ? '1' : '0'; c.style.left = Math.random()*100+'vw';
-                        c.style.color = color; c.style.animationDuration = (Math.random()*2+1)+'s'; r.appendChild(c);
-                    }
+                agregarAlPedido(v) {
+                    this.pedido.push({ nombre: this.itemActual.label, variedad: v });
+                    this.panelOpciones = false;
                 },
                 toggleVideoAudio() {
                     const video = document.getElementById('adVideo');
                     if (video) {
-                        video.muted = !video.muted; this.videoMuted = video.muted;
-                        if(!video.muted) { if(this.motorAudio) this.motorAudio.pause(); this.clicsVideo++; video.volume = 0.5; } 
-                        else { if(this.motorAudio) this.motorAudio.play(); }
+                        video.muted = !video.muted;
+                        this.videoMuted = video.muted;
+                        
+                        if(!video.muted) {
+                            // SI EL VIDEO TIENE SONIDO: Pausar Reactor
+                            if(this.motorAudio) this.motorAudio.pause();
+                            this.clicsVideo++;
+                            video.volume = 0.5;
+                        } else {
+                            // SI EL VIDEO SE CALLA: Volver a sonar Reactor
+                            if(this.motorAudio) this.motorAudio.play();
+                        }
                     }
                 },
-                async loadVisits() {
-                    try {
-                        const resp = await fetch('https://api.countapi.xyz/hit/nexo-nave-v1-fabian-unique/visits');
-                        const data = await resp.json(); document.getElementById('visit-count').innerText = data.value.toString().padStart(4, '0');
-                    } catch (e) { document.getElementById('visit-count').innerText = "0842"; }
-                },
                 enviarWhatsApp() {
-                    if(this.motorAudio) { this.motorAudio.pause(); }
+                    if(this.motorAudio) { this.motorAudio.pause(); this.motorAudio = null; }
+                    this.sistemaIniciado = false;
                     let lista = this.pedido.map(it => `🔹 *${it.nombre}* (${it.variedad})`).join('\n');
                     const texto = encodeURIComponent(`🚀 *NEXO NAVE: NUEVO PEDIDO*\n\n${lista}\n\n*Radar Hits:* ${this.clicsVideo}`);
                     window.open(`https://wa.me/5492964616053?text=${texto}`);
-                    this.pedido = []; this.verResumen = false; this.sistemaIniciado = false;
+                    this.pedido = [];
+                    this.verResumen = false;
                 }
             }
         }).mount('#app')
