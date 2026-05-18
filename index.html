@@ -3,18 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXO NAVE | ORIGINAL RESTORED</title>
+    <title>Nexo Nave | Central de Pedidos Elite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        /* TU DISEÑO ORIGINAL */
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
-        .reactor-core { border: 2px solid #333; transition: all 0.5s ease; }
-        .active-core { border: 3px solid #ff6400; box-shadow: 0 0 30px #ff6400; }
-        .glass-panel { background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2); backdrop-filter: blur(10px); }
         
-        /* Capa de Lluvia (Invisible hasta activarse) */
+        @keyframes pulse-reactor {
+            0% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
+            50% { box-shadow: 0 0 40px #ff3300; border-color: #ff3300; }
+            100% { box-shadow: 0 0 15px #ff6400; border-color: #ff6400; }
+        }
+        .reactor-core-active { animation: pulse-reactor 2s infinite ease-in-out; border: 3px solid #ff6400 !important; }
+
+        .btn-vidrio-cian {
+            background: rgba(0, 242, 255, 0.1); color: #00f2ff; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 2px; border: 1px solid #00f2ff;
+            backdrop-filter: blur(5px); box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .btn-vidrio-cian:active { background: #00f2ff; color: #000; }
+
+        .pollo-holograma {
+            width: 130%; position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); mix-blend-mode: plus-lighter; display: none;
+        }
+        .pollo-holograma.visible { display: block; animation: hologram-float 4s infinite ease-in-out; }
+        @keyframes hologram-float {
+            0%, 100% { transform: translate(-50%, -50%) scale(1) translateY(0); }
+            50% { transform: translate(-50%, -50%) scale(1.05) translateY(-10px); }
+        }
+
+        .monitor-video {
+            width: 100%; height: 100%; border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;
+        }
+
+        .silicio-modal {
+            position: fixed; inset: 0; background: rgba(0, 5, 10, 0.98);
+            backdrop-filter: blur(15px); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transform: translateY(100%); transition: 0.4s ease;
+        }
+        .silicio-modal.active { transform: translateY(0); }
+
         #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
         .rain-char { position: absolute; color: #00f2ff; font-family: monospace; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
@@ -22,65 +55,87 @@
         [v-cloak] { display: none; }
     </style>
 </head>
-<body>
-    <div id="app" v-cloak>
+<body class="flex justify-center items-center">
+    <div id="app" v-cloak class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 relative">
         <div id="data-rain"></div>
+        
+        <header class="text-center z-50 w-full relative">
+            <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded flex flex-col items-center">
+                <span class="text-[5px] text-cyan-400 uppercase font-black">Ciclos</span>
+                <span id="visit-count" class="text-[10px] font-mono text-white">0842</span>
+            </div>
 
-        <div v-if="mostrandoModal" class="fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-4">
-            <div class="glass-panel w-full max-w-sm p-8 rounded-[30px] border-cyan-500/50 text-center">
-                <template v-if="!aceptoContrato">
-                    <h2 class="text-orange-500 font-black mb-4 uppercase">Contrato Nexo</h2>
-                    <div class="text-[7px] text-left text-zinc-400 space-y-2 mb-6 uppercase">
-                        <p v-for="p in pilares">🔹 {{p}}</p>
-                    </div>
-                    <button @click="aceptoContrato = true" class="w-full py-3 border border-cyan-500 text-cyan-500 text-[10px]">ACEPTAR PILARES</button>
-                </template>
-                <template v-else>
-                    <h2 class="text-cyan-400 font-black mb-4 uppercase">Registro de ADN</h2>
-                    <input v-model="form.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-3 w-full mb-2 text-center text-xs">
-                    <input v-model="form.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-3 w-full mb-4 text-center text-xs">
-                    <button @click="confirmarRegistro" class="w-full py-3 bg-cyan-500/20 border border-cyan-500 text-cyan-500 text-[10px]">SINCRONIZAR</button>
-                </template>
-                <button @click="masterKey" class="mt-6 text-[5px] text-zinc-800 uppercase">Admin Access</button>
+            <h1 @click="almiranteCheck" class="text-xl font-black tracking-[0.3em] text-orange-500 italic mb-2 cursor-pointer">NEXO NAVE</h1>
+            
+            <div class="h-14 flex items-center justify-center">
+                <button v-if="pedido.length > 0" @click="verResumen = true" 
+                    class="btn-vidrio-cian w-full max-w-xs py-3 rounded-xl text-xs animate-pulse">
+                    CONFIRMAR PEDIDO ({{ pedido.length }})
+                </button>
+                <div v-else class="flex flex-col items-center">
+                    <button v-if="!sessionActiva" @click="panelRegistro = true" class="text-[7px] border border-orange-500/50 px-3 py-1 text-orange-400 animate-pulse uppercase font-black rounded-full mb-1">
+                        Modo Fantasma (24h) - Activar Prueba Gratis
+                    </button>
+                    <span class="text-[8px] uppercase tracking-[0.5em] text-zinc-600 font-bold">
+                        ESTADO: {{ sistemaIniciado ? 'OPERATIVO' : 'EN ESPERA' }}
+                    </span>
+                </div>
+            </div>
+        </header>
+
+        <div class="relative w-[320px] h-[320px] flex items-center justify-center mt-4">
+            <div class="relative w-44 h-44 z-[1000] cursor-pointer rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center overflow-hidden"
+                 :class="{'reactor-core-active': sistemaIniciado}"
+                 @click="handlePollo">
+                <img :src="getURL('pollo-reactor.webp')" class="pollo-holograma" :class="{'visible': sistemaIniciado}">
+                <div v-if="!sistemaIniciado" class="absolute inset-0 flex items-center justify-center bg-orange-600/10">
+                    <span class="text-orange-500 text-2xl font-black italic animate-pulse uppercase">Activa</span>
+                </div>
+            </div>
+
+            <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 125)" @click="abrirOpciones(p)"
+                 class="absolute w-14 h-14 rounded-xl bg-black border border-white/10 overflow-hidden z-50 cursor-pointer shadow-2xl transition-all">
+                <img :src="getURL(p.img)" class="w-full h-full object-cover" :class="{'grayscale opacity-30': !sistemaIniciado}">
+                <p class="absolute bottom-0 w-full text-center text-[5px] font-black uppercase bg-black/90 py-1 text-orange-500">{{p.label}}</p>
             </div>
         </div>
 
-        <div class="w-full max-w-md h-screen mx-auto flex flex-col p-4 relative">
-            
-            <header class="flex justify-between items-center mb-10">
-                <div>
-                    <h1 class="text-lg font-black text-orange-500 italic tracking-tighter">NEXO NAVE</h1>
-                    <p class="text-[6px] text-cyan-500 uppercase tracking-[0.4em]">Protocolo PAV-UX</p>
-                </div>
-                <button v-if="!esCliente" @click="mostrandoModal = true" class="text-[6px] border border-orange-500/50 px-2 py-1 text-orange-500 animate-pulse">
-                    ACTIVAR PRUEBA 20 DÍAS
-                </button>
-            </header>
-
-            <div class="relative flex-1 flex items-center justify-center">
-                <div class="w-40 h-40 rounded-full reactor-core flex items-center justify-center bg-black z-50 cursor-pointer"
-                     :class="{'active-core': iniciado}" @click="iniciado = !iniciado">
-                    <img v-if="iniciado" src="https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pollo-reactor.webp" class="w-[110%] mix-blend-plus-lighter">
-                    <span v-else class="text-orange-600 text-[8px] font-black uppercase">Ignición</span>
-                </div>
-
-                <div v-for="(p, i) in platos" :key="i" :style="getPos(i, platos.length, 120)"
-                     class="absolute w-14 h-14 rounded-xl border border-zinc-800 bg-black overflow-hidden shadow-2xl">
-                    <img :src="p.img" class="w-full h-full object-cover">
-                    <div class="absolute bottom-0 w-full bg-black/80 text-[5px] text-orange-500 text-center py-1 uppercase">{{p.label}}</div>
+        <div class="mt-auto mb-6 w-full grid grid-cols-4 gap-2 h-24">
+            <div v-for="b in bebidas" :key="b.id" @click="abrirOpciones(b)" class="border border-zinc-900 rounded-lg overflow-hidden relative cursor-pointer bg-zinc-900/50">
+                <img :src="getURL(b.img)" class="w-full h-full object-cover opacity-40">
+                <div class="absolute inset-0 flex items-end justify-center p-1">
+                    <span class="text-[7px] font-black text-orange-500 uppercase">{{b.label}}</span>
                 </div>
             </div>
+            <div class="monitor-video" @click="toggleVideoAudio">
+                <video id="adVideo" loop muted playsinline autoplay class="w-full h-full object-cover opacity-60">
+                    <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
 
-            <footer class="h-24 grid grid-cols-4 gap-2 mb-4">
-                <div class="col-span-2 bg-black border border-zinc-900 rounded-xl overflow-hidden relative">
-                    <video loop muted playsinline autoplay class="w-full h-full object-cover opacity-50">
-                        <source src="grok_video_2026-03-15-16-48-07.mp4" type="video/mp4">
-                    </video>
+        <div class="silicio-modal" :class="{'active': panelRegistro}">
+            <div class="w-full max-w-sm p-8 text-center" v-if="!aceptoPilares">
+                <h2 class="text-orange-500 text-xl font-black italic mb-6 uppercase">6 Pilares de Acero</h2>
+                <div class="text-[8px] text-left text-zinc-400 space-y-3 mb-8 uppercase tracking-widest leading-relaxed">
+                    <p v-for="p in pilares">🔹 {{p}}</p>
                 </div>
-                <div v-for="n in 2" class="bg-zinc-900/30 border border-zinc-900 rounded-xl flex items-center justify-center">
-                    <span class="text-[6px] text-zinc-600 uppercase">Sensor</span>
-                </div>
-            </footer>
+                <button @click="aceptoPilares = true" class="btn-vidrio-cian w-full py-4 text-[10px]">Aceptar Contrato de Vuelo</button>
+            </div>
+            <div class="w-full max-w-sm p-8 text-center" v-else>
+                <h2 class="text-cyan-400 text-xl font-black mb-6 uppercase">Vincular ADN</h2>
+                <input v-model="formADN.wa" type="tel" placeholder="WHATSAPP" class="bg-black border border-zinc-800 p-4 w-full mb-3 text-cyan-400 text-center text-xs">
+                <input v-model="formADN.dni" type="text" placeholder="DNI / CUIT" class="bg-black border border-zinc-800 p-4 w-full mb-6 text-cyan-400 text-center text-xs">
+                <button @click="consolidarVuelo" class="btn-vidrio-cian w-full py-4">Iniciar Prueba 20 Días</button>
+            </div>
+        </div>
+
+        <div class="silicio-modal" :class="{'active': panelOpciones}">
+            <div v-if="itemActual" class="w-full flex flex-col items-center p-8">
+                <h2 class="text-cyan-400 text-2xl font-black uppercase mb-6">{{itemActual.label}}</h2>
+                <button v-for="v in itemActual.variedades" @click="agregarAlPedido(v)" class="btn-vidrio-cian w-full max-w-xs py-4 mb-3 text-xs">+ {{ v }}</button>
+                <button @click="panelOpciones = false" class="mt-6 text-zinc-500 text-[10px] uppercase font-bold">Volver</button>
+            </div>
         </div>
     </div>
 
@@ -89,60 +144,56 @@
         createApp({
             data() {
                 return {
-                    iniciado: false,
-                    esCliente: localStorage.getItem('nexo_active') === 'true',
-                    mostrandoModal: false,
-                    aceptoContrato: false,
-                    form: { wa: '', dni: '' },
-                    pilares: ["Propiedad Nexo", "Ciclo 30 días", "Identidad WA/DNI", "Responsabilidad Cliente", "Protocolo Anchored", "Jurisdicción TDF"],
+                    base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
+                    sistemaIniciado: false, panelOpciones: false, panelRegistro: false, aceptoPilares: false, verResumen: false,
+                    sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
+                    pedido: [], itemActual: null, motorAudio: null, formADN: { wa: '', dni: '' },
+                    pilares: ["Propiedad: Nexo es dueño de la estructura.", "Continuidad: Ciclo de 30 días renovables.", "Identidad: Vínculo por WA y DNI/CUIT.", "Responsabilidad: El cliente responde por ventas.", "Protocolo Anchored: Suspensión por impago.", "Jurisdicción: Rio Grande, TDF."],
                     platos: [
-                        { label: 'Asado', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/asado-escolta.webp' },
-                        { label: 'Pizza', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pizza-core.webp' },
-                        { label: 'Empanada', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/empanada-escuadron.webp' },
-                        { label: 'Milanesa', img: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/milanga-soberana.webp' }
-                    ]
+                        { id: 1, img: 'asado-escolta.webp', label: 'Asado', variedades: ['Tira', 'Vacío'] },
+                        { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa', variedades: ['Napolitana', 'Sola'] },
+                        { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas', variedades: ['Carne', 'Pollo'] },
+                        { id: 4, img: 'pizza-core.webp', label: 'Pizza', variedades: ['Muzza', 'Especial'] }
+                    ],
+                    bebidas: [{ id: 7, img: 'birra-cryo-amber.webp', label: 'Birra', variedades: ['IPA'] }]
                 }
             },
-            mounted() {
-                // Chequeo de 24 horas solares para purga en modo fantasma
-                const h = localStorage.getItem('nexo_h');
-                if(!h) localStorage.setItem('nexo_h', new Date().toISOString());
-                else if(!this.esCliente && (new Date() - new Date(h))/36e5 >= 24) localStorage.clear();
-            },
+            mounted() { this.checkCicloFantasma(); },
             methods: {
-                getPos(i, total, r) {
-                    const a = (i * (360/total) - 90) * (Math.PI/180);
-                    return `transform: translate(${Math.cos(a)*r}px, ${Math.sin(a)*r}px)`;
+                getURL(n) { return `${this.base}/${n}`; },
+                getPos(i, total, radius) {
+                    const angle = (i * (360 / total) - 90) * (Math.PI / 180);
+                    return `transform: translate(${Math.cos(angle)*radius}px, ${Math.sin(angle)*radius}px)`;
                 },
-                confirmarRegistro() {
-                    if(this.form.wa && this.form.dni) {
-                        this.rain('#00f2ff');
-                        localStorage.setItem('nexo_active', 'true');
-                        setTimeout(() => location.reload(), 3000);
+                checkCicloFantasma() {
+                    const h = localStorage.getItem('nexo_h_fantasma');
+                    if(!h) localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                    else if(!this.sessionActiva && (new Date() - new Date(h)) / 36e5 >= 24) { localStorage.clear(); location.reload(); }
+                },
+                handlePollo() {
+                    if (!this.sistemaIniciado) {
+                        this.sistemaIniciado = true;
+                        const a = new Audio(this.getURL('sonido-motor.mp3')); a.loop = true; a.volume = 0.1; a.play().catch(e=>{}); this.motorAudio = a;
+                    } else { this.itemActual = { label: 'Pollo Reactor', variedades: ['Entero'] }; this.panelOpciones = true; }
+                },
+                abrirOpciones(item) { if(this.sistemaIniciado){ this.itemActual = item; this.panelOpciones = true; } },
+                agregarAlPedido(v) { this.pedido.push({ n: this.itemActual.label, v }); this.panelOpciones = false; },
+                consolidarVuelo() {
+                    if(this.formADN.wa && this.formADN.dni) { this.lluvia('#00f2ff'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 3000); }
+                },
+                almiranteCheck() {
+                    if(prompt("PASS ALMIRANTE") === "051112182129jsm13818") { this.lluvia('#ffcc00'); localStorage.setItem('nexo_consolidado','true'); setTimeout(()=>location.reload(), 3000); }
+                },
+                lluvia(color) {
+                    const r = document.getElementById('data-rain'); r.style.display = 'block';
+                    for(let i=0; i<60; i++){
+                        let c = document.createElement('div'); c.className = 'rain-char'; c.innerText = Math.random()>0.5?'1':'0';
+                        c.style.left = Math.random()*100+'vw'; c.style.color = color; c.style.animationDuration = (Math.random()*2+1)+'s'; r.appendChild(c);
                     }
                 },
-                masterKey() {
-                    if(prompt("PASS") === "051112182129jsm13818") {
-                        this.rain('#ffcc00');
-                        localStorage.setItem('nexo_active', 'true');
-                        setTimeout(() => location.reload(), 3000);
-                    }
-                },
-                rain(color) {
-                    const d = document.getElementById('data-rain');
-                    d.style.display = 'block';
-                    for(let i=0; i<50; i++) {
-                        let c = document.createElement('div');
-                        c.className = 'rain-char';
-                        c.innerText = Math.random() > 0.5 ? '1' : '0';
-                        c.style.left = Math.random()*100+'vw';
-                        c.style.color = color;
-                        c.style.animationDuration = (Math.random()*2+1)+'s';
-                        d.appendChild(c);
-                    }
-                }
+                toggleVideoAudio() { const v = document.getElementById('adVideo'); if(v) v.muted = !v.muted; }
             }
-        }).mount('#app');
+        }).mount('#app')
     </script>
 </body>
 </html>
