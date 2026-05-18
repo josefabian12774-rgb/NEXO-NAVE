@@ -10,12 +10,12 @@
     <style>
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; min-height: 100vh; overflow: hidden; }
         
-        /* EFECTO LLUVIA DE DATOS */
+        /* LLUVIA DE DATOS (RITUAL) */
         #data-rain { position: fixed; inset: 0; pointer-events: none; z-index: 20000; display: none; }
         .rain-char { position: absolute; color: #00f2ff; font-family: monospace; font-size: 12px; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh); opacity: 0; } }
 
-        /* VIDRIO CIAN Y ESTILOS NEXO */
+        /* ESTÉTICA NEXO */
         .glass-nexo { background: rgba(0, 15, 25, 0.9); backdrop-filter: blur(25px); border: 1px solid rgba(0, 242, 255, 0.3); }
         .btn-vidrio-cian {
             background: rgba(0, 242, 255, 0.1); color: #00f2ff; font-weight: 900;
@@ -30,73 +30,68 @@
             background: rgba(0, 242, 255, 0.05); border: 1px solid rgba(0, 242, 255, 0.2);
             padding: 12px; border-radius: 10px; color: #00f2ff; width: 100%; font-family: monospace; text-align: center;
         }
-
-        .suspended-blur { filter: blur(10px) grayscale(1); pointer-events: none; }
         [v-cloak] { display: none; }
     </style>
 </head>
 <body>
     <div id="app" v-cloak>
-        
         <div id="data-rain"></div>
 
-        <div v-if="!contratoAceptado" class="fixed inset-0 z-[15000] bg-black flex items-center justify-center p-6">
-            <div class="glass-nexo w-full max-w-md p-8 rounded-3xl border-orange-500/50">
-                <h2 class="text-orange-500 font-black italic mb-4 text-center">CONTRATO DE SOBERANÍA</h2>
-                <div class="space-y-4 mb-8 text-[9px] text-zinc-400 uppercase tracking-widest leading-relaxed">
-                    <p v-for="(p, i) in pilares" :key="i">🔹 {{ p }}</p>
-                </div>
-                <button @click="aceptarContrato" class="btn-vidrio-cian w-full py-4">ACEPTO LOS TÉRMINOS DE VUELO</button>
+        <div v-if="mostrandoConsolidacion" class="fixed inset-0 z-[15000] bg-black/95 flex items-center justify-center p-6 overflow-y-auto">
+            <div class="glass-nexo w-full max-w-md p-8 rounded-3xl border-orange-500/50 my-auto">
+                <template v-if="!pasoFinal">
+                    <h2 class="text-orange-500 font-black italic mb-4 text-center">CONTRATO DE SOBERANÍA</h2>
+                    <div class="space-y-3 mb-6 text-[8px] text-zinc-400 uppercase tracking-widest leading-relaxed">
+                        <p v-for="(p, i) in pilares" :key="i">🔹 {{ p }}</p>
+                    </div>
+                    <button @click="pasoFinal = true" class="btn-vidrio-cian w-full py-4 text-[10px]">ACEPTO LOS 6 PILARES</button>
+                </template>
+                <template v-else>
+                    <h2 class="text-cyan-400 font-black mb-6 uppercase tracking-widest text-center">Vincular ADN del Piloto</h2>
+                    <input v-model="userForm.whatsapp" type="tel" placeholder="TU WHATSAPP" class="input-nexo mb-3">
+                    <input v-model="userForm.identidad" type="text" placeholder="DNI / CUIT" class="input-nexo mb-6">
+                    <button @click="finalizarRegistro" class="btn-vidrio-cian w-full py-4">CONSOLIDAR NAVE</button>
+                    <button @click="pasoFinal = false" class="mt-4 text-[8px] text-zinc-600 block w-full">VOLVER AL CONTRATO</button>
+                </template>
+                <button @click="accesoMaestro" class="mt-8 text-[6px] text-zinc-800 uppercase block w-full text-center tracking-[0.3em]">Acceso Almirante</button>
             </div>
         </div>
 
-        <div v-if="contratoAceptado && !sessionActiva" class="fixed inset-0 z-[14000] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
-            <div class="glass-nexo w-full max-w-xs p-8 rounded-3xl text-center">
-                <h2 class="text-cyan-400 font-black mb-6 uppercase tracking-widest">Sincronización ADN</h2>
-                <input v-model="userForm.whatsapp" type="tel" placeholder="WHATSAPP" class="input-nexo mb-3">
-                <input v-model="userForm.identidad" type="text" placeholder="DNI / CUIT" class="input-nexo mb-6">
-                <button @click="finalizarRegistro" class="btn-vidrio-cian w-full py-4">INICIAR IGNICIÓN</button>
-                <button @click="probarMasterKey" class="mt-4 text-[7px] text-zinc-700">MODO ALMIRANTE</button>
-            </div>
-        </div>
-
-        <div v-if="estadoNave === 'overdue'" class="fixed inset-0 z-[20000] flex flex-col items-center justify-center p-10 text-center bg-black/40">
-            <div class="glass-nexo p-10 rounded-2xl border-yellow-500/50">
-                <h1 class="text-yellow-500 text-xl font-black mb-2 animate-pulse">ESPERANDO ABASTECIMIENTO...</h1>
-                <p class="text-zinc-400 text-[10px] uppercase tracking-widest">El ciclo de 30 días ha concluido.</p>
-                <button onclick="window.open('https://wa.me/5492964616053')" class="mt-8 btn-vidrio-cian px-8 py-3 text-[10px]">SOLICITAR CARGA</button>
-            </div>
-        </div>
-
-        <div :class="{'suspended-blur': estadoNave === 'overdue'}" class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 mx-auto relative">
+        <div class="w-full max-w-lg h-screen flex flex-col items-center py-4 px-4 mx-auto relative">
             <header class="text-center w-full relative mb-4">
                 <div class="absolute top-0 right-0 bg-zinc-900/80 border border-cyan-500/30 p-1 rounded">
                     <span id="visit-count" class="text-[10px] font-mono text-white">0000</span>
                 </div>
+                
                 <h1 class="text-xl font-black tracking-[0.3em] text-orange-500 italic">NEXO NAVE</h1>
-                <p class="text-[7px] text-zinc-600 uppercase tracking-[0.4em] mt-1">Soberanía de Datos Nexo Arquetipo</p>
+                
+                <div class="mt-2">
+                    <button v-if="!sessionActiva" @click="mostrandoConsolidacion = true" 
+                            class="bg-orange-500/20 border border-orange-500/40 text-orange-500 text-[7px] px-3 py-1 rounded-full animate-pulse uppercase font-black">
+                        Modo Fantasma (24h) - Activar Prueba 20 Días
+                    </button>
+                    <span v-else class="text-cyan-400 text-[7px] font-black uppercase tracking-widest">Nave Consolidada: Piloto {{userForm.identidad || 'Activo'}}</span>
+                </div>
             </header>
 
             <div class="relative w-[300px] h-[300px] flex items-center justify-center my-auto">
                 <div class="w-40 h-40 rounded-full border-2 border-zinc-900 bg-black flex items-center justify-center z-50 cursor-pointer"
                      :class="{'reactor-core-active': sistemaIniciado}" @click="handleReactor">
-                    <span v-if="!sistemaIniciado" class="text-orange-500 text-[10px] font-black animate-pulse">IGNICIÓN</span>
-                    <img v-else src="https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pollo-reactor.webp" class="w-[120%] mix-blend-plus-lighter animate-pulse">
+                    <img v-if="sistemaIniciado" src="https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public/pollo-reactor.webp" class="w-[120%] mix-blend-plus-lighter animate-pulse">
+                    <span v-else class="text-orange-500 text-[10px] font-black animate-pulse uppercase">Ignición</span>
                 </div>
                 <div v-for="(p, i) in platos" :key="p.id" :style="getPos(i, platos.length, 120)"
-                     class="absolute w-14 h-14 rounded-xl border border-white/10 overflow-hidden bg-black cursor-pointer shadow-2xl">
+                     class="absolute w-14 h-14 rounded-xl border border-white/10 overflow-hidden bg-black">
                      <img :src="base + '/' + p.img" class="w-full h-full object-cover opacity-80">
                      <p class="absolute bottom-0 w-full text-center text-[5px] font-black bg-black/80 py-1 text-orange-500 uppercase">{{p.label}}</p>
                 </div>
             </div>
 
-            <div class="w-full grid grid-cols-4 gap-2 h-20 mt-auto mb-4">
-                <div v-for="b in bebidas" :key="b.id" class="bg-zinc-900/50 rounded-lg border border-zinc-800 overflow-hidden relative">
-                    <img :src="base + '/' + b.img" class="w-full h-full object-cover opacity-30">
-                    <div class="absolute inset-0 flex items-center justify-center text-[7px] font-black text-orange-400 uppercase">{{b.label}}</div>
-                </div>
-                <div class="bg-cyan-900/20 rounded-lg border border-cyan-500/30 flex items-center justify-center text-[7px] font-black text-cyan-400">RADAR</div>
-            </div>
+            <footer class="w-full grid grid-cols-4 gap-2 h-20 mt-auto mb-4">
+                <div class="bg-zinc-900/50 rounded-lg border border-zinc-800 flex items-center justify-center text-[7px] font-black text-zinc-600 uppercase">Bebidas</div>
+                <div class="bg-zinc-900/50 rounded-lg border border-zinc-800 flex items-center justify-center text-[7px] font-black text-zinc-600 uppercase">Postres</div>
+                <div class="col-span-2 bg-cyan-900/10 border border-cyan-500/20 flex items-center justify-center text-[8px] font-black text-cyan-500 italic">RADAR OPERATIVO</div>
+            </footer>
         </div>
     </div>
 
@@ -106,9 +101,9 @@
             data() {
                 return {
                     base: 'https://manaejtcurxbcsozqcsh.supabase.co/storage/v1/object/public/imagenes/public',
-                    contratoAceptado: localStorage.getItem('nexo_contrato') === 'true',
-                    sessionActiva: localStorage.getItem('nexo_session') === 'true',
-                    estadoNave: 'trial',
+                    sessionActiva: localStorage.getItem('nexo_consolidado') === 'true',
+                    mostrandoConsolidacion: false,
+                    pasoFinal: false,
                     sistemaIniciado: false,
                     userForm: { whatsapp: '', identidad: '' },
                     pilares: [
@@ -124,45 +119,48 @@
                         { id: 2, img: 'milanga-soberana.webp', label: 'Milanesa' },
                         { id: 3, img: 'empanada-escuadron.webp', label: 'Empanadas' },
                         { id: 4, img: 'pizza-core.webp', label: 'Pizza' }
-                    ],
-                    bebidas: [{ id: 5, img: 'birra-cryo-amber.webp', label: 'Birra' }, { id: 6, img: 'cava-tinto-premium.webp', label: 'Vino' }]
+                    ]
                 }
             },
             mounted() {
-                this.verificarCiclo();
+                this.gestionarCicloFantasma();
             },
             methods: {
-                verificarCiclo() {
-                    const inicio = localStorage.getItem('nexo_fecha_ignicion');
-                    if (inicio) {
-                        const dias = Math.floor((new Date() - new Date(inicio)) / (1000 * 60 * 60 * 24));
-                        if (dias >= 30) this.estadoNave = 'overdue';
+                gestionarCicloFantasma() {
+                    const h_inicio = localStorage.getItem('nexo_h_fantasma');
+                    if (!h_inicio) {
+                        localStorage.setItem('nexo_h_fantasma', new Date().toISOString());
+                    } else if (!this.sessionActiva) {
+                        const horas = (new Date() - new Date(h_inicio)) / (1000 * 60 * 60);
+                        if (horas >= 24) {
+                            console.log("PUGA SOLAR: Reiniciando hangar efímero.");
+                            localStorage.clear();
+                        }
                     }
-                },
-                aceptarContrato() {
-                    localStorage.setItem('nexo_contrato', 'true');
-                    this.contratoAceptado = true;
                 },
                 finalizarRegistro() {
                     if(this.userForm.whatsapp && this.userForm.identidad) {
-                        this.lanzarLluvia('base');
-                        localStorage.setItem('nexo_session', 'true');
-                        localStorage.setItem('nexo_fecha_ignicion', new Date().toISOString());
-                        setTimeout(() => { this.sessionActiva = true; }, 3000);
+                        this.ejecutarLluvia('base');
+                        localStorage.setItem('nexo_consolidado', 'true');
+                        localStorage.setItem('nexo_f_ignicion', new Date().toISOString());
+                        setTimeout(() => { 
+                            this.sessionActiva = true; 
+                            this.mostrandoConsolidacion = false;
+                        }, 3000);
                     }
                 },
-                probarMasterKey() {
-                    const pass = prompt("ACCESO DIRECCIÓN:");
+                accesoMaestro() {
+                    const pass = prompt("LLAVE MAESTRA:");
                     if(pass === "051112182129jsm13818") {
-                        this.lanzarLluvia('premium');
-                        this.estadoNave = 'active';
+                        this.ejecutarLluvia('premium');
                         this.sessionActiva = true;
-                        this.contratoAceptado = true;
+                        this.mostrandoConsolidacion = false;
+                        localStorage.setItem('nexo_consolidado', 'true');
                     }
                 },
-                lanzarLluvia(nivel) {
-                    const rain = document.getElementById('data-rain');
-                    rain.style.display = 'block';
+                ejecutarLluvia(nivel) {
+                    const r = document.getElementById('data-rain');
+                    r.style.display = 'block';
                     for(let i=0; i<100; i++) {
                         let c = document.createElement('div');
                         c.className = 'rain-char';
@@ -170,9 +168,9 @@
                         c.style.left = Math.random() * 100 + 'vw';
                         c.style.animationDuration = (Math.random() * 2 + 1) + 's';
                         c.style.color = nivel === 'premium' ? '#ffcc00' : '#00f2ff';
-                        rain.appendChild(c);
+                        r.appendChild(c);
                     }
-                    setTimeout(() => { rain.style.display = 'none'; rain.innerHTML = ''; }, 3000);
+                    setTimeout(() => { r.style.display = 'none'; r.innerHTML = ''; }, 3000);
                 },
                 handleReactor() { this.sistemaIniciado = !this.sistemaIniciado; },
                 getPos(i, total, radius) {
